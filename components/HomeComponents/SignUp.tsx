@@ -17,6 +17,15 @@ interface nameInfo {
   firstName: string;
   lastName: string;
 }
+interface additionalInfo {
+  age: string;
+  gender: string;
+  contactNumber: string;
+  country: string;
+  state: string;
+  zip: string;
+  street: string;
+}
 
 const SignUp = ({ setCurrentForm }: props) => {
   // States
@@ -25,6 +34,15 @@ const SignUp = ({ setCurrentForm }: props) => {
     firstName: "",
     lastName: "",
   });
+  const [additionalInfo, setAdditionalInfo] = useState<additionalInfo>({
+    age: "",
+    gender: "",
+    contactNumber: "",
+    country: "",
+    state: "",
+    zip: "",
+    street: "",
+  });
 
   return (
     <section className="bg-white rounded-2xl text-black p-3 relative phone:w-11/12">
@@ -32,7 +50,12 @@ const SignUp = ({ setCurrentForm }: props) => {
         {currentStep === 1 && (
           <FirstStep nameInfo={nameInfo} setNameInfo={setNameInfo} />
         )}
-        {currentStep === 2 && <SecondStep />}
+        {currentStep === 2 && (
+          <SecondStep
+            additionalInfo={additionalInfo}
+            setAdditioNalInfo={setAdditionalInfo}
+          />
+        )}
         {currentStep === 3 && <ThirdStep />}
       </div>
       <div className="w-full mt-8 flex justify-center items-center gap-10">

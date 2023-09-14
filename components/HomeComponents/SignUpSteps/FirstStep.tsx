@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import GreetingSvg from "@/svg/greetings.svg"
+import GreetingSvg from "@/svg/greetings.svg";
 import Input from "@/components/ReusableComponents/inputs/Input";
 
 interface nameInfo {
@@ -14,13 +14,13 @@ interface props {
 
 const FirstStep = ({ nameInfo, setNameInfo }: props) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const {name, value} = event.target;
+    const { name, value } = event.target;
 
     setNameInfo((prevInfo) => ({
       ...prevInfo,
-      [name]: value
-    }))
-  }
+      [name]: value,
+    }));
+  };
   return (
     <div className="flex flex-col items-center py-4">
       <div className="flex flex-col items-center gap-4">
@@ -37,7 +37,7 @@ const FirstStep = ({ nameInfo, setNameInfo }: props) => {
           placeholder="Enter your first name"
           label="First Name"
           onChange={handleInputChange}
-        />       
+        />
         <Input
           state={nameInfo.lastName}
           type="text"
