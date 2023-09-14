@@ -5,19 +5,15 @@ import SecondStep from "./SignUpSteps/SecondStep";
 import ThirdStep from "./SignUpSteps/ThirdStep";
 
 // Set prop types
-type props = {
+interface props {
   setCurrentForm: React.Dispatch<React.SetStateAction<string>>;
-};
-
-interface Steps {
-  stepId: number;
-  stepComponent: React.ReactNode;
 }
-interface nameInfo {
+
+type nameInfo = {
   firstName: string;
   lastName: string;
-}
-interface additionalInfo {
+};
+type additionalInfo = {
   age: string;
   gender: string;
   contactNumber: string;
@@ -25,7 +21,13 @@ interface additionalInfo {
   state: string;
   zip: string;
   street: string;
-}
+};
+type accountInfo = {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string
+};
 
 const SignUp = ({ setCurrentForm }: props) => {
   // States
@@ -43,6 +45,12 @@ const SignUp = ({ setCurrentForm }: props) => {
     zip: "",
     street: "",
   });
+  const [accountInfo, setAccountInfo] = useState<accountInfo>({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
 
   return (
     <section className="bg-white rounded-2xl text-black p-3 relative phone:w-11/12">
@@ -56,7 +64,12 @@ const SignUp = ({ setCurrentForm }: props) => {
             setAdditioNalInfo={setAdditionalInfo}
           />
         )}
-        {currentStep === 3 && <ThirdStep />}
+        {currentStep === 3 && (
+          <ThirdStep
+            accountInfo={accountInfo}
+            setAccountInfo={setAccountInfo}
+          />
+        )}
       </div>
       <div className="w-full mt-8 flex justify-center items-center gap-10">
         {currentStep !== 1 && (

@@ -26,7 +26,7 @@ const SecondStep = ({ additionalInfo, setAdditioNalInfo }: props) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 items-center">
+    <div className="flex flex-col gap-4">
       <div className="p-2">
         <p className="text-justify phone:text-sm">
           Hello,{" "}
