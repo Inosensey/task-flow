@@ -1,11 +1,14 @@
-import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import GreetingSvg from "@/svg/greetings.svg";
 import Input from "@/components/ReusableComponents/inputs/Input";
 
-interface nameInfo {
+type nameInfo = {
   firstName: string;
   lastName: string;
+}
+type validation = {
+  valid: null | boolean,
+  validationMessage: string
 }
 interface props {
   setNameInfo: React.Dispatch<React.SetStateAction<nameInfo>>;
@@ -13,6 +16,12 @@ interface props {
 }
 
 const FirstStep = ({ nameInfo, setNameInfo }: props) => {
+  // States
+  const [validation, setValidation] = useState<validation>({
+    valid:  null,
+    validationMessage: ""
+  })
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -37,6 +46,8 @@ const FirstStep = ({ nameInfo, setNameInfo }: props) => {
           placeholder="Enter your first name"
           label="First Name"
           onChange={handleInputChange}
+          valid={validation.valid}
+          validationMessage={validation.validationMessage}
         />
         <Input
           state={nameInfo.lastName}
@@ -45,6 +56,8 @@ const FirstStep = ({ nameInfo, setNameInfo }: props) => {
           placeholder="Enter your last name"
           label="Last Name"
           onChange={handleInputChange}
+          valid={validation.valid}
+          validationMessage={validation.validationMessage}
         />
       </div>
     </div>

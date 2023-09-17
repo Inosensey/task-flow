@@ -1,7 +1,12 @@
 import Input from "@/components/ReusableComponents/inputs/Input";
-import React from "react";
+import React, { useState } from "react";
 
-interface additionalInfo {
+type validation = {
+  valid: null | boolean,
+  validationMessage?: string,
+}
+
+type additionalInfo = {
   age: string;
   gender: string;
   contactNumber: string;
@@ -16,6 +21,12 @@ interface props {
 }
 
 const SecondStep = ({ additionalInfo, setAdditioNalInfo }: props) => {
+  //states
+  const [validation, setValidation] = useState<validation>({
+    valid: null,
+    validationMessage: ""
+  })
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -39,7 +50,7 @@ const SecondStep = ({ additionalInfo, setAdditioNalInfo }: props) => {
         <h1 className="border-b-2 border-LightPrimary w-max font-bold phone:text-lg">
           Personal Details
         </h1>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           <div className="flex">
             <div className="w-16">
               <Input
@@ -49,6 +60,8 @@ const SecondStep = ({ additionalInfo, setAdditioNalInfo }: props) => {
                 placeholder="Age"
                 label="Age"
                 onChange={handleInputChange}
+                valid={validation.valid}
+                validationMessage={validation.validationMessage}
               />
             </div>
             <div className="w-24">
@@ -59,6 +72,8 @@ const SecondStep = ({ additionalInfo, setAdditioNalInfo }: props) => {
                 placeholder="Gender"
                 label="Gender"
                 onChange={handleInputChange}
+                valid={validation.valid}
+                validationMessage={validation.validationMessage}
               />
             </div>
           </div>
@@ -69,6 +84,8 @@ const SecondStep = ({ additionalInfo, setAdditioNalInfo }: props) => {
             placeholder="Enter your Contact Number"
             label="Contact Number"
             onChange={handleInputChange}
+            valid={validation.valid}
+            validationMessage={validation.validationMessage}
           />
         </div>
       </div>
@@ -84,6 +101,8 @@ const SecondStep = ({ additionalInfo, setAdditioNalInfo }: props) => {
             placeholder="Enter your Country"
             label="Country"
             onChange={handleInputChange}
+            valid={validation.valid}
+            validationMessage={validation.validationMessage}
           />
           <Input
             state={additionalInfo.state}
@@ -92,6 +111,8 @@ const SecondStep = ({ additionalInfo, setAdditioNalInfo }: props) => {
             placeholder="Enter your State"
             label="State"
             onChange={handleInputChange}
+            valid={validation.valid}
+            validationMessage={validation.validationMessage}
           />
           <Input
             state={additionalInfo.street}
@@ -100,6 +121,8 @@ const SecondStep = ({ additionalInfo, setAdditioNalInfo }: props) => {
             placeholder="Enter your Street"
             label="Street"
             onChange={handleInputChange}
+            valid={validation.valid}
+            validationMessage={validation.validationMessage}
           />
           <div className="w-28">
             <Input
@@ -109,6 +132,8 @@ const SecondStep = ({ additionalInfo, setAdditioNalInfo }: props) => {
               placeholder="Zip Code"
               label="Zip"
               onChange={handleInputChange}
+              valid={validation.valid}
+              validationMessage={validation.validationMessage}
             />
           </div>
         </div>

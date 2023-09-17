@@ -1,5 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Input from "@/components/ReusableComponents/inputs/Input";
+
+type validation = {
+  valid: null | boolean,
+  validationMessage?: string
+}
 
 type accountInfo = {
   username: string;
@@ -14,6 +19,10 @@ interface props {
 }
 
 const ThirdStep = ({ accountInfo, setAccountInfo }: props) => {
+  const [validation, setValidation] = useState<validation>({
+    valid: null,
+    validationMessage: ""
+  })
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -45,6 +54,8 @@ const ThirdStep = ({ accountInfo, setAccountInfo }: props) => {
             placeholder="Enter your Username"
             label="Username"
             onChange={handleInputChange}
+            valid={validation.valid}
+            validationMessage={validation.validationMessage}
           />
           <Input
             state={accountInfo.email}
@@ -53,6 +64,8 @@ const ThirdStep = ({ accountInfo, setAccountInfo }: props) => {
             placeholder="Enter your Email"
             label="Email"
             onChange={handleInputChange}
+            valid={validation.valid}
+            validationMessage={validation.validationMessage}
           />
           <div className="mt-4 flex flex-col gap-2">
             <Input
@@ -62,6 +75,8 @@ const ThirdStep = ({ accountInfo, setAccountInfo }: props) => {
               placeholder="Enter your Password"
               label="Password"
               onChange={handleInputChange}
+              valid={validation.valid}
+              validationMessage={validation.validationMessage}
             />
             <Input
               state={accountInfo.confirmPassword}
@@ -70,6 +85,8 @@ const ThirdStep = ({ accountInfo, setAccountInfo }: props) => {
               placeholder="Confirm your Password"
               label="Confirm Password"
               onChange={handleInputChange}
+              valid={validation.valid}
+              validationMessage={validation.validationMessage}
             />
           </div>
         </div>
