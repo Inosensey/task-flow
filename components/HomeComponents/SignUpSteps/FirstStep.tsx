@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import GreetingSvg from "@/svg/greetings.svg";
 import Input from "@/components/ReusableComponents/inputs/Input";
+import FormValidation from "@/utils/validation";
 
 type nameInfo = {
   firstName: string;
@@ -24,11 +25,19 @@ const FirstStep = ({ nameInfo, setNameInfo }: props) => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+    const validationParams = {
+      value: value,
+      stateName: name
+    }
 
     setNameInfo((prevInfo) => ({
       ...prevInfo,
       [name]: value,
     }));
+
+    const result = FormValidation(validationParams);
+    console.log(result);
+
   };
   return (
     <div className="flex flex-col items-center py-4">
