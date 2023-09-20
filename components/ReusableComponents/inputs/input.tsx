@@ -7,9 +7,10 @@ interface inputParams<T> {
   name: string;
   placeholder: string;
   label: string;
-  valid: null | boolean,
-  validationMessage?: string,
+  valid: null | boolean;
+  validationMessage?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 const Input = <T extends string | number>({
@@ -17,10 +18,11 @@ const Input = <T extends string | number>({
   type,
   name,
   onChange,
+  onBlur,
   placeholder,
   label,
   valid,
-  validationMessage
+  validationMessage,
 }: inputParams<T>) => {
   return (
     <div className={`flex flex-col phone:w-11/12`}>
@@ -29,6 +31,7 @@ const Input = <T extends string | number>({
         <input
           value={state}
           onChange={onChange}
+          onBlur={onBlur}
           type={type}
           name={name}
           placeholder={placeholder}
@@ -39,7 +42,15 @@ const Input = <T extends string | number>({
           className={`h-[4px] w-full bg-LightPrimary absolute ${style.inputUnderline}`}
         ></div>
       </div>
-      {valid != null ? <span>{validationMessage}</span> : ""}
+      {valid != null ? (
+        valid === true ? (
+          ""
+        ) : (
+          <span className="text-[0.75rem] text-red-500 font-bold">{validationMessage}</span>
+        )
+      ) : (
+        ""
+      )}
     </div>
   );
 };

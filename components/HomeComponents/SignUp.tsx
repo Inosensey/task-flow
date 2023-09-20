@@ -26,12 +26,13 @@ type accountInfo = {
   username: string;
   email: string;
   password: string;
-  confirmPassword: string
+  confirmPassword: string;
 };
 
 const SignUp = ({ setCurrentForm }: props) => {
   // States
   const [currentStep, setCurrentStep] = useState<number>(1);
+  const [isValid, setIsValid] = useState<boolean>(false);
   const [nameInfo, setNameInfo] = useState<nameInfo>({
     firstName: "",
     lastName: "",
@@ -49,14 +50,17 @@ const SignUp = ({ setCurrentForm }: props) => {
     username: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
-
   return (
     <section className="bg-white rounded-2xl text-black p-3 relative phone:w-11/12">
       <div>
         {currentStep === 1 && (
-          <FirstStep nameInfo={nameInfo} setNameInfo={setNameInfo} />
+          <FirstStep
+            nameInfo={nameInfo}
+            setNameInfo={setNameInfo}
+            setIsValid={setIsValid}
+          />
         )}
         {currentStep === 2 && (
           <SecondStep
@@ -84,6 +88,7 @@ const SignUp = ({ setCurrentForm }: props) => {
         )}
         {currentStep !== 3 && (
           <motion.button
+            disabled={isValid ? false : true}
             onClick={() => setCurrentStep((prev) => prev + 1)}
             whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.9 }}
