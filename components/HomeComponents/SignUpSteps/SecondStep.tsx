@@ -150,11 +150,8 @@ const SecondStep = ({
       additionalInfoValidation.state.valid === true &&
       additionalInfoValidation.zip.valid === true
     ) {
-      console.log("true");
       setIsValid(true);
     } else {
-      console.log("false");
-      console.log(additionalInfoValidation);
       setIsValid(false);
     }
   };

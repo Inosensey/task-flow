@@ -76,6 +76,8 @@ const SignUp = ({ setCurrentForm }: props) => {
           <ThirdStep
             accountInfo={accountInfo}
             setAccountInfo={setAccountInfo}
+            setIsValid={setIsValid}
+            currentStep={currentStep}
           />
         </div>
       </div>

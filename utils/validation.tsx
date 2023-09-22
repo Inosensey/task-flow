@@ -1,6 +1,7 @@
 type params = {
   value: string;
   stateName: string;
+  confirmPassword?: string,
 };
 type validationInfo = {
   validationName: string;
@@ -39,6 +40,9 @@ const FormValidation = (data: params): validationInfo => {
   }
   if (data.stateName === "password") {
     return (validationResult = validatePassword(data));
+  }
+  if (data.stateName === "confirmPassword") {
+    return (validationResult = confirmPassword(data));
   }
 
   return (validationResult = {
@@ -146,14 +150,14 @@ const validateEmail = (data: params): validationInfo => {
 
   if (emailRegex.test(data.value)) {
     return (validationInfo = {
-      validationName: data.value,
+      validationName: data.stateName,
       valid: true,
       validationMessage: "",
     });
   }
 
   return (validationInfo = {
-    validationName: data.value,
+    validationName: data.stateName,
     valid: false,
     validationMessage: "Email is invalid",
   });
@@ -192,5 +196,20 @@ const validatePassword = (data: params): validationInfo => {
     validationMessage: "",
   });
 };
+
+const confirmPassword = (data:params):validationInfo => {
+  if(data.value !== data.confirmPassword) {
+    return (validationInfo = {
+      validationName: data.stateName,
+      valid: false,
+      validationMessage: "Password don't match",
+    });
+  }
+  return (validationInfo = {
+    validationName: data.stateName,
+    valid: true,
+    validationMessage: "",
+  });
+}
 
 export default FormValidation;
