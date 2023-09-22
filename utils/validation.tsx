@@ -3,7 +3,7 @@ type params = {
   stateName: string;
 };
 type validationInfo = {
-  validationName: string,
+  validationName: string;
   valid: boolean;
   validationMessage: string;
 };
@@ -17,10 +17,18 @@ const FormValidation = (data: params): validationInfo => {
   if (data.stateName === "firstName" || data.stateName === "lastName") {
     return (validationResult = validateName(data));
   }
-  if (data.stateName === "age" || data.stateName === "zip") {
+  if (
+    data.stateName === "age" ||
+    data.stateName === "zip" ||
+    data.stateName === "contactNumber"
+  ) {
     return (validationResult = validateNumber(data));
   }
-  if (data.stateName === "gender") {
+  if (
+    data.stateName === "gender" ||
+    data.stateName === "country" ||
+    data.stateName === "state"
+  ) {
     return (validationResult = validateString(data));
   }
   if (data.stateName === "username") {
@@ -47,6 +55,13 @@ let validationInfo: validationInfo = {
 };
 const validateNumber = (data: params): validationInfo => {
   const numbersRegex = /^[0-9]+$/;
+  if (data.value.length === 0) {
+    return (validationInfo = {
+      validationName: data.stateName,
+      valid: false,
+      validationMessage: "This field is required",
+    });
+  }
   if (numbersRegex.test(data.value)) {
     return (validationInfo = {
       validationName: data.stateName,
@@ -63,6 +78,13 @@ const validateNumber = (data: params): validationInfo => {
 
 const validateString = (data: params): validationInfo => {
   const numbersRegex = /[0-9]/;
+  if (data.value.length === 0) {
+    return (validationInfo = {
+      validationName: data.stateName,
+      valid: false,
+      validationMessage: "This field is required",
+    });
+  }
   if (!numbersRegex.test(data.value)) {
     return (validationInfo = {
       validationName: data.stateName,
@@ -79,7 +101,7 @@ const validateString = (data: params): validationInfo => {
 
 const validateName = (data: params): validationInfo => {
   const nameRegex =
-  /^(?!.*\d)(?:[A-Za-z\s]+(?:[.,](?![\s]))?)*(?:\s(?:Sr\.|Jr\.))?$/;
+    /^(?!.*\d)(?:[A-Za-z\s]+(?:[.,](?![\s]))?)*(?:\s(?:Sr\.|Jr\.))?$/;
   if (data.value.length === 0) {
     return (validationInfo = {
       validationName: data.stateName,

@@ -65,7 +65,6 @@ const FirstStep = ({ nameInfo, setNameInfo, setIsValid }: props) => {
     const result = FormValidation(validationParams);
 
     setValidationResult(result);
-    checkStepValidation();
   };
 
   // handle input blur
@@ -75,14 +74,8 @@ const FirstStep = ({ nameInfo, setNameInfo, setIsValid }: props) => {
       value: value,
       stateName: name,
     };
-
-    setNameInfo((prevInfo) => ({
-      ...prevInfo,
-      [name]: value,
-    }));
     const result = FormValidation(validationParams);
     setValidationResult(result);
-    checkStepValidation();
   };
 
   // Check if step is valid
