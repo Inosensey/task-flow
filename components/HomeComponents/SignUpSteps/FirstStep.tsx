@@ -26,9 +26,15 @@ interface props {
   setNameInfo: React.Dispatch<React.SetStateAction<nameInfo>>;
   setIsValid: React.Dispatch<React.SetStateAction<boolean>>;
   nameInfo: nameInfo;
+  currentStep: number;
 }
 
-const FirstStep = ({ nameInfo, setNameInfo, setIsValid }: props) => {
+const FirstStep = ({
+  nameInfo,
+  setNameInfo,
+  setIsValid,
+  currentStep,
+}: props) => {
   // States
   const [validation, setValidation] = useState<nameValidation>({
     firstName: {
@@ -43,11 +49,16 @@ const FirstStep = ({ nameInfo, setNameInfo, setIsValid }: props) => {
 
   // Use Effect
   useEffect(() => {
-    if (validation.firstName.valid == null && validation.lastName.valid == null)
-      return;
+    if(currentStep !== 1) return
+    if (
+      validation.firstName.valid == null &&
+      validation.lastName.valid == null
+    ) {
+      return setIsValid(false);
+    }
     checkStepValidation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [validation]);
+  }, [validation, currentStep]);
 
   // Handle input change
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

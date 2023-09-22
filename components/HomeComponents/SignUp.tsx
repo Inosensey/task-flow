@@ -60,6 +60,7 @@ const SignUp = ({ setCurrentForm }: props) => {
             nameInfo={nameInfo}
             setNameInfo={setNameInfo}
             setIsValid={setIsValid}
+            currentStep={currentStep}
           />
         </div>
         <div className={`${currentStep === 2 ? "block" : "hidden"}`}>
@@ -68,6 +69,7 @@ const SignUp = ({ setCurrentForm }: props) => {
             setAdditioNalInfo={setAdditionalInfo}
             firstName={nameInfo.firstName}
             setIsValid={setIsValid}
+            currentStep={currentStep}
           />
         </div>
         <div className={`${currentStep === 3 ? "block" : "hidden"}`}>

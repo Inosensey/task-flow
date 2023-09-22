@@ -29,10 +29,6 @@ interface additionalInfoValidation {
     valid: null | boolean;
     validationMessage: string;
   };
-  street: {
-    valid: null | boolean;
-    validationMessage: string;
-  };
   zip: {
     valid: null | boolean;
     validationMessage: string;
@@ -53,6 +49,7 @@ interface props {
   setAdditioNalInfo: React.Dispatch<React.SetStateAction<additionalInfo>>;
   setIsValid: React.Dispatch<React.SetStateAction<boolean>>;
   firstName: string;
+  currentStep: number;
 }
 
 const SecondStep = ({
@@ -60,6 +57,7 @@ const SecondStep = ({
   setAdditioNalInfo,
   setIsValid,
   firstName,
+  currentStep,
 }: props) => {
   //states
   const [additionalInfoValidation, setAdditionalInfoValidation] =
@@ -69,10 +67,6 @@ const SecondStep = ({
         validationMessage: "",
       },
       state: {
-        valid: null,
-        validationMessage: "",
-      },
-      street: {
         valid: null,
         validationMessage: "",
       },
@@ -96,19 +90,19 @@ const SecondStep = ({
 
   // Use Effect
   useEffect(() => {
+    if (currentStep !== 2) return;
     if (
       additionalInfoValidation.age.valid === null &&
       additionalInfoValidation.contactNumber.valid === true &&
       additionalInfoValidation.country.valid === null &&
       additionalInfoValidation.gender.valid === null &&
       additionalInfoValidation.state.valid === null &&
-      additionalInfoValidation.street.valid === null &&
       additionalInfoValidation.zip.valid === null
     )
-      return;
+      return setIsValid(false);
     checkStepValidation();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [additionalInfoValidation]);
+  }, [additionalInfoValidation, currentStep]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -150,15 +144,17 @@ const SecondStep = ({
   const checkStepValidation = () => {
     if (
       additionalInfoValidation.age.valid === true &&
+      additionalInfoValidation.gender.valid === true &&
       additionalInfoValidation.contactNumber.valid === true &&
       additionalInfoValidation.country.valid === true &&
-      additionalInfoValidation.gender.valid === true &&
       additionalInfoValidation.state.valid === true &&
-      additionalInfoValidation.street.valid === true &&
       additionalInfoValidation.zip.valid === true
     ) {
+      console.log("true");
       setIsValid(true);
     } else {
+      console.log("false");
+      console.log(additionalInfoValidation);
       setIsValid(false);
     }
   };
@@ -261,10 +257,8 @@ const SecondStep = ({
             label="Street"
             onChange={handleInputChange}
             onBlur={handleInputBlur}
-            valid={additionalInfoValidation.street.valid}
-            validationMessage={
-              additionalInfoValidation.street.validationMessage
-            }
+            valid={true}
+            validationMessage={""}
           />
           <div className="w-28">
             <Input
