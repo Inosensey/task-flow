@@ -79,7 +79,7 @@ const validateString = (data: params): validationInfo => {
 
 const validateName = (data: params): validationInfo => {
   const nameRegex =
-    /^(?!.*\d)(?:[A-Za-z]+(?:[.,](?![\s]))?)*(?:\s(?:Sr\.|Jr\.))?$/;
+  /^(?!.*\d)(?:[A-Za-z\s]+(?:[.,](?![\s]))?)*(?:\s(?:Sr\.|Jr\.))?$/;
   if (data.value.length === 0) {
     return (validationInfo = {
       validationName: data.stateName,

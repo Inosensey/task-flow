@@ -41,6 +41,14 @@ const FirstStep = ({ nameInfo, setNameInfo, setIsValid }: props) => {
     },
   });
 
+  // Use Effect
+  useEffect(() => {
+    if (validation.firstName.valid == null && validation.lastName.valid == null)
+      return;
+    checkStepValidation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [validation]);
+
   // Handle input change
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -99,8 +107,6 @@ const FirstStep = ({ nameInfo, setNameInfo, setIsValid }: props) => {
       },
     }));
   };
-
-  
 
   return (
     <div className="flex flex-col items-center py-4">

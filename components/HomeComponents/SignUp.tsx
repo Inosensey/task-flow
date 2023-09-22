@@ -55,25 +55,25 @@ const SignUp = ({ setCurrentForm }: props) => {
   return (
     <section className="bg-white rounded-2xl text-black p-3 relative phone:w-11/12">
       <div>
-        {currentStep === 1 && (
+        <div className={`${currentStep === 1 ? "block" : "hidden"}`}>
           <FirstStep
             nameInfo={nameInfo}
             setNameInfo={setNameInfo}
             setIsValid={setIsValid}
           />
-        )}
-        {currentStep === 2 && (
+        </div>
+        <div className={`${currentStep === 2 ? "block" : "hidden"}`}>
           <SecondStep
             additionalInfo={additionalInfo}
             setAdditioNalInfo={setAdditionalInfo}
           />
-        )}
-        {currentStep === 3 && (
+        </div>
+        <div className={`${currentStep === 3 ? "block" : "hidden"}`}>
           <ThirdStep
             accountInfo={accountInfo}
             setAccountInfo={setAccountInfo}
           />
-        )}
+        </div>
       </div>
       <div className="w-full mt-8 flex justify-center items-center gap-10">
         {currentStep !== 1 && (
@@ -92,7 +92,7 @@ const SignUp = ({ setCurrentForm }: props) => {
             onClick={() => setCurrentStep((prev) => prev + 1)}
             whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.9 }}
-            className="py-2 px-8 bg-LightPrimary text-LightSecondary"
+            className={`py-2 px-8 ${isValid ? 'bg-LightPrimary' : 'bg-Disabled'} text-LightSecondary`}
           >
             Next
           </motion.button>
