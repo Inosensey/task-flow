@@ -1,5 +1,6 @@
-import './globals.css'
-import type { Metadata } from 'next'
+import QueryWrapper from "@/components/Auth/QueryWrapper";
+import "./globals.css";
+import type { Metadata } from "next";
 import { Playfair_Display, Roboto } from "next/font/google";
 
 export const metadata = {
@@ -23,11 +24,13 @@ const roboto = Roboto({
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={roboto.className}>{children}</body>
-    </html>
-  )
+    <QueryWrapper>
+      <html lang="en">
+        <body className={roboto.className}>{children}</body>
+      </html>
+    </QueryWrapper>
+  );
 }

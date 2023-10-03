@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Mutation } from "react-query";
+import { Axios } from "axios";
+
+// Components
 import FirstStep from "./SignUpSteps/FirstStep";
 import SecondStep from "./SignUpSteps/SecondStep";
 import ThirdStep from "./SignUpSteps/ThirdStep";
@@ -52,9 +56,10 @@ const SignUp = ({ setCurrentForm }: props) => {
     password: "",
     confirmPassword: "",
   });
+
   return (
     <section className="bg-white rounded-2xl text-black p-3 relative phone:w-11/12">
-      <div>
+      <form>
         <div className={`${currentStep === 1 ? "block" : "hidden"}`}>
           <FirstStep
             nameInfo={nameInfo}
@@ -80,7 +85,7 @@ const SignUp = ({ setCurrentForm }: props) => {
             currentStep={currentStep}
           />
         </div>
-      </div>
+      </form>
       <div className="w-full mt-8 flex justify-center items-center gap-10">
         {currentStep !== 1 && (
           <motion.button
@@ -98,11 +103,22 @@ const SignUp = ({ setCurrentForm }: props) => {
             onClick={() => setCurrentStep((prev) => prev + 1)}
             whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.9 }}
-            className={`py-2 px-8 ${isValid ? 'bg-LightPrimary' : 'bg-Disabled'} text-LightSecondary`}
+            className={`py-2 px-8 ${
+              isValid ? "bg-LightPrimary" : "bg-Disabled"
+            } text-LightSecondary`}
           >
             Next
           </motion.button>
         )}
+        <motion.button
+          disabled={isValid ? false : true}
+          onClick={() => setCurrentStep((prev) => prev + 1)}
+          whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+          whileTap={{ scale: 0.9 }}
+          className={`py-2 px-8 ${"bg-LightPrimary"} text-LightSecondary`}
+        >
+          Test
+        </motion.button>
       </div>
     </section>
   );
