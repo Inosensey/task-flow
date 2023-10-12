@@ -1,0 +1,14 @@
+.loadingIcons {
+    overflow: hidden;
+  display: flex;
+  white-space: nowrap;
+  animation: widthAnimation 0.7s linear infinite;
+}
+@keyframes widthAnimation {
+    0% {
+      width: 0%; /* Initial width */
+    }
+    100% {
+      width: 66px; /* Final width */
+    }
+  }
