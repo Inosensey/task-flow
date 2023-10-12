@@ -76,17 +76,17 @@ const SignUp = ({ setCurrentForm }: props) => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 z-50 bg-black/[0.5] w-screen h-screen flex justify-center items-center">
-        <div className="bg-white flex flex-col items-center justify-center gap-2 rounded-lg phone:w-[450px] phone:h-36">
-          <HashLoader
-            color="#00ADB5"
-            size={40}
-            aria-label="Loading Spinner"
-            data-testid="loader"
-          />
-          <Loading message="Setting Up Your Task Command Center 🚀" />
-        </div>
-      </div>
+      {mutation.isLoading ? (
+        <Loading
+          isLoading={true}
+          message="Setting Up Your Task Command Center 🚀"
+        />
+      ) : (
+        <Loading
+          isLoading={false}
+          message="Setting Up Your Task Command Center 🚀"
+        />
+      )}
       <section className="bg-white rounded-2xl text-black p-3 relative phone:w-11/12">
         <form>
           <div className={`${currentStep === 1 ? "block" : "hidden"}`}>
