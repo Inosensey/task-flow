@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mutation } from "react-query";
-import { Axios } from "axios";
+import { useMutation } from "react-query";
+import axios, { Axios } from "axios";
 
 // Components
 import FirstStep from "./SignUpSteps/FirstStep";
@@ -32,6 +32,11 @@ type accountInfo = {
   password: string;
   confirmPassword: string;
 };
+interface SignUpInfo {
+  nameInfo: nameInfo;
+  additionalInfo: additionalInfo;
+  accountInfo: accountInfo;
+}
 
 const SignUp = ({ setCurrentForm }: props) => {
   // States
@@ -56,6 +61,11 @@ const SignUp = ({ setCurrentForm }: props) => {
     password: "",
     confirmPassword: "",
   });
+
+  // Mutations
+  const mutation = useMutation(async (userInfo: SignUpInfo) =>
+    axios.post("/api/supabase/signUp", { userInfo })
+  );
 
   return (
     <section className="bg-white rounded-2xl text-black p-3 relative phone:w-11/12">
@@ -89,6 +99,7 @@ const SignUp = ({ setCurrentForm }: props) => {
       <div className="w-full mt-8 flex justify-center items-center gap-10">
         {currentStep !== 1 && (
           <motion.button
+            type="button"
             onClick={() => setCurrentStep((prev) => prev - 1)}
             whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.9 }}
@@ -99,6 +110,7 @@ const SignUp = ({ setCurrentForm }: props) => {
         )}
         {currentStep !== 3 && (
           <motion.button
+            type="button"
             disabled={isValid ? false : true}
             onClick={() => setCurrentStep((prev) => prev + 1)}
             whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
@@ -110,15 +122,23 @@ const SignUp = ({ setCurrentForm }: props) => {
             Next
           </motion.button>
         )}
-        <motion.button
-          disabled={isValid ? false : true}
-          onClick={() => setCurrentStep((prev) => prev + 1)}
-          whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-          whileTap={{ scale: 0.9 }}
-          className={`py-2 px-8 ${"bg-LightPrimary"} text-LightSecondary`}
-        >
-          Test
-        </motion.button>
+        {currentStep === 3 && (
+          <motion.button
+            type="submit"
+            whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+            whileTap={{ scale: 0.9 }}
+            className={`py-2 px-8 ${"bg-LightPrimary"} text-LightSecondary`}
+            onClick={() => {
+              mutation.mutate({
+                nameInfo: nameInfo,
+                additionalInfo: additionalInfo,
+                accountInfo: accountInfo,
+              });
+            }}
+          >
+            Submit
+          </motion.button>
+        )}
       </div>
     </section>
   );

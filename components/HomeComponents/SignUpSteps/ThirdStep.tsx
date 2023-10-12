@@ -105,8 +105,6 @@ const ThirdStep = ({ accountInfo, setAccountInfo }: props) => {
     }));
   };
 
-  console.log(accountDetailsValidation)
-
   return (
     <div>
       <div className="p-2">
