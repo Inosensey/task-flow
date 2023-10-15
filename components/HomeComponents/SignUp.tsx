@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useMutation } from "react-query";
 import axios, { Axios } from "axios";
 import HashLoader from "react-spinners/HashLoader";
+import { useQueryClient } from "react-query";
 
 // Components
 import FirstStep from "./SignUpSteps/FirstStep";
@@ -46,6 +47,9 @@ interface SignUpInfo {
 }
 
 const SignUp = ({ setCurrentForm }: props) => {
+  // Initialize use query
+  const queryClient = useQueryClient();
+
   // States
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isValid, setIsValid] = useState<boolean>(false);
@@ -70,9 +74,14 @@ const SignUp = ({ setCurrentForm }: props) => {
   });
 
   // Mutations
-  const mutation = useMutation(async (userInfo: SignUpInfo) =>
-    axios.post("/api/supabase/signUp", { userInfo })
-  );
+  const mutation = useMutation({
+    mutationFn: async (userInfo: SignUpInfo) =>
+      axios.post("/api/supabase/useSignUp", { userInfo }),
+    onSuccess: (data) => {
+      queryClient.setQueryData(["session"], data.data.userData.session);
+      console.log(data);
+    },
+  });
 
   return (
     <>

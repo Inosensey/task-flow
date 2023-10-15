@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { supabase } from "./supabaseClient";
+import { useSupabase } from "./useSupabaseClient";
 import { Database, Table } from "@/Types/database.types";
 
 type nameInfo = {
@@ -14,7 +14,7 @@ type additionalInfo = {
   state: string;
   zip: string;
   street: string;
-  id?: number;
+  userId?: string;
 };
 type accountInfo = {
   username: string;
@@ -30,12 +30,13 @@ interface SignUpInfo {
 
 const insertProfile = async (
   personalInformation: additionalInfo,
-  nameInformation: nameInfo
+  nameInformation: nameInfo,
+  userInfo: any,
 ) => {
   const additionalInfo: additionalInfo = personalInformation;
   const nameInfo: nameInfo = nameInformation;
   try {
-    let { data, error } = await supabase.from("PersonalInformation").insert({
+    let { data, error } = await useSupabase.from("PersonalInformation").insert({
       firstName: nameInfo.firstName,
       lastName: nameInfo.lastName,
       age: additionalInfo.age,
@@ -45,9 +46,9 @@ const insertProfile = async (
       state: additionalInfo.state,
       street: additionalInfo.street,
       zip: additionalInfo.zip,
+      userId: userInfo.user?.id
     });
     if (error) {
-      console.log(error);
       throw new Error(error.message);
     }
   } catch (error) {
@@ -59,11 +60,10 @@ const insertUserData = async (userInfo: any, profileInfo: accountInfo) => {
   const accountInfo: accountInfo = profileInfo;
   // Insert User data
   try {
-    let { data, error } = await supabase
+    let { data, error } = await useSupabase
       .from("User")
       .insert({ username: accountInfo.username, userId: userInfo.user?.id });
     if (error) {
-      console.log(error);
       throw new Error(error.message);
     }
   } catch (error) {
@@ -82,19 +82,17 @@ export default async function handler(
     const additionalInfo: additionalInfo = userInfo.additionalInfo;
 
     // Register user
-    let { data, error } = await supabase.auth.signUp({
+    let { data, error } = await useSupabase.auth.signUp({
       email: accountInfo.email,
       password: accountInfo.password,
       phone: additionalInfo.contactNumber,
     });
-    console.log(data);
-    console.log(error);
 
     insertUserData(data, accountInfo);
-    insertProfile(additionalInfo, nameInfo);
+    insertProfile(additionalInfo, nameInfo, data);
 
     // Respond with JSON data
-    return res.status(200).json({ message: "Success" });
+    return res.status(200).json({ message: "Success", userData: data });
   } catch (error) {
     return res.status(500).json({ message: error });
   }
