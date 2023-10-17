@@ -1,0 +1,23 @@
+.navList,
+.utilsList {
+  padding: 0 0.7rem;
+}
+
+.navList li,
+.utilsList li {
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  font-weight: 60;
+  transition: padding .2s ease-in-out;
+  font-size: 0.9rem;
+}
+
+.navList li:hover,
+.utilsList li:hover {
+    background: #393e46;
+    padding: 0.4rem 1rem;
+}
