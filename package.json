@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "update-types": "npx supabase gen types typescript --project-id \"qqwhjzpdlzmhopmrzkvy\" > types/supabase.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -19,6 +20,7 @@
     "eslint-config-next": "13.4.13",
     "framer-motion": "^10.16.1",
     "next": "13.4.13",
+    "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-query": "^3.39.3",

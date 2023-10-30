@@ -1,5 +1,8 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import TaskIcon from "@/svg/SimpleIconsTask.svg";
+import { useAnimation, motion } from "framer-motion";
 
 // CSS modules
 import styles from "@/css/SidebarComponent/sidebar.module.css";
@@ -12,52 +15,119 @@ import GgNotes from "@/Icones/GgNotes";
 import IconamoonModeDark from "@/Icones/IconamoonModeDark";
 import PhSealQuestionDuotone from "@/Icones/PhSealQuestionDuotone";
 import MaterialSymbolsSettingsOutlineRounded from "@/Icones/MaterialSymbolsSettingsOutlineRounded";
+import MaterialSymbolsMenuRounded from "@/Icones/MaterialSymbolsMenuRounded";
 
 const Sidebar = () => {
+  // states
+  const [showSideBar, setShowSideBar] = useState<boolean>(true);
+
+  // Framer motion logics
+
+  // useAnimation
+  const sidebarAnimation = useAnimation();
+
+  // Variants
+  const sidebarVariant = {
+    hidden: {
+      x: "-100%",
+      transition: {
+        type: "tween",
+      },
+    },
+    show: {
+      x: "0%",
+      transition: {
+        type: "tween",
+      },
+    },
+  };
+
+  const animateSidebar = () => {
+    if (!showSideBar) {
+      sidebarAnimation.start("show");
+    } else {
+      sidebarAnimation.start("hidden");
+    }
+  };
+
   return (
-    <div className="bg-[#1a1a1a] w-64 h-screen shadow-inner shadow-Secondary">
-      <div className="flex items-center justify-center">
-        <TaskIcon />
-        <h1 className="text-LightPrimary font-semibold p-2 text-xl">
-          TaskFlow
-        </h1>
-      </div>
-      <div className="flex flex-col gap-10 mt-6">
-        <div>
-          <ul className={`flex flex-col gap-2 ${styles.navList}`}>
-            <li>
-              <MaterialSymbolsOverviewOutline color="#00ADB5" /> Overview
-            </li>
-            <li>
-              <MaterialSymbolsCalendarMonthOutlineRounded color="#00ADB5" />{" "}
-              Calendar
-            </li>
-            <li>
-              <IonTodayOutline color="#00ADB5" /> To Do List
-            </li>
-            <li>
-              <GgNotes color="#00ADB5" />
-              Notes
-            </li>
-          </ul>
+    <>
+      <motion.div
+        variants={sidebarVariant}
+        animate={sidebarAnimation}
+        className={`bg-[#1a1a1a] w-64 h-screen shadow-inner shadow-Secondary fixed`}
+      >
+        <div className="flex items-center justify-center">
+          <TaskIcon />
+          <h1 className="text-LightPrimary font-semibold p-2 text-xl">
+            TaskFlow
+          </h1>
         </div>
-        <div>
-          <ul className={`flex flex-col gap-2 ${styles.utilsList}`}>
-            <li>
-              <IconamoonModeDark color="#00ADB5" /> Dark Mode
-            </li>
-            <li>
-              <MaterialSymbolsSettingsOutlineRounded color="#00ADB5" />
-              Settings
-            </li>
-            <li>
-              <PhSealQuestionDuotone color="#00ADB5" />
-              Help Center
-            </li>
-          </ul>
+        <div className="flex flex-col mt-6">
+          <div className="px-3">
+            <ul className={`flex flex-col gap-2 ${styles.navList}`}>
+              <li>
+                <MaterialSymbolsOverviewOutline color="#00ADB5" /> Overview
+              </li>
+              <li>
+                <MaterialSymbolsCalendarMonthOutlineRounded color="#00ADB5" />{" "}
+                Calendar
+              </li>
+              <li>
+                <IonTodayOutline color="#00ADB5" /> To Do List
+              </li>
+              <li>
+                <GgNotes color="#00ADB5" />
+                Notes
+              </li>
+            </ul>
+          </div>
+          <div className="px-3">
+            <ul className={`flex flex-col gap-2 ${styles.utilsList}`}>
+              <li>
+                <IconamoonModeDark color="#00ADB5" /> Dark Mode
+              </li>
+              <li>
+                <MaterialSymbolsSettingsOutlineRounded color="#00ADB5" />
+                Settings
+              </li>
+              <li>
+                <PhSealQuestionDuotone color="#00ADB5" />
+                Help Center
+              </li>
+            </ul>
+          </div>
         </div>
+      </motion.div>
+      <div
+        className="fixed w-8 bottom-5 right-5 flex flex-col gap-2 cursor-pointer"
+        onClick={() => {
+          animateSidebar();
+          setShowSideBar((prev) => !prev);
+        }}
+      >
+        {/* <MaterialSymbolsMenuRounded color="#00ADB5" /> */}
+        <div
+          className={`w-[100%] border-2 border-LightPrimary rounded-md transition-all ${
+            showSideBar
+              ? "rotate-45 origin-top-left"
+              : "rotate-0 origin-top-left"
+          }`}
+        ></div>
+        <div
+          className={`w-[100%] border-2 border-LightPrimary rounded-md transition-all ${
+            showSideBar ? "opacity-0" : "opacity-1"
+          }`}
+        ></div>
+        <div
+          className={`w-[100%] border-2 border-LightPrimary rounded-md transition-all ${
+            showSideBar
+              ? "-rotate-45 origin-bottom-left"
+              : "-rotate-0 origin-bottom-left"
+          }`}
+        ></div>
       </div>
-    </div>
+    </>
   );
 };
 

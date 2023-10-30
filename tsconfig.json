@@ -24,10 +24,13 @@
       "@/*": ["./*"],
       "@/components/*": ["components/*"],
       "@/icones/*": ["icones/*"],
-      "@/svg/": ["svg/*"],
-      "@/css/": ["css/*"],
-      "@/types/": ["types/*"],
-    }
+      "@/svg/*": ["svg/*"],
+      "@/css/*": ["css/*"],
+      "@/types/*": ["types/*"],
+      "@/utils/*": ["utils/*"],
+      "@/actions/*": ["actions/*"]
+    },
+    "downlevelIteration": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

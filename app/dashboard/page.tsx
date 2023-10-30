@@ -1,9 +1,12 @@
-import React from 'react'
+import Schedules from "@/components/Calendar/Schedules";
 
-const Dashboard = () => {
+const Dashboard = async () => {
   return (
-    <div>Dashboard</div>
-  )
-}
+    <div className="flex flex-col">
+      <Schedules />
+      
+    </div>
+  );
+};
 
-export default Dashboard
+export default Dashboard;

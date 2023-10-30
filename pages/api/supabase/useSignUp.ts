@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { useSupabase } from "./useSupabaseClient";
+import { useSupabase } from "../../../utils/useSupabaseClient";
 import { Database, Table } from "@/Types/database.types";
 
 type nameInfo = {
@@ -31,7 +31,7 @@ interface SignUpInfo {
 const insertProfile = async (
   personalInformation: additionalInfo,
   nameInformation: nameInfo,
-  userInfo: any,
+  userInfo: any
 ) => {
   const additionalInfo: additionalInfo = personalInformation;
   const nameInfo: nameInfo = nameInformation;
@@ -46,7 +46,7 @@ const insertProfile = async (
       state: additionalInfo.state,
       street: additionalInfo.street,
       zip: additionalInfo.zip,
-      userId: userInfo.user?.id
+      userId: userInfo.user?.id,
     });
     if (error) {
       throw new Error(error.message);

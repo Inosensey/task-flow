@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { env } from "process";
-import { Database } from "../../../Types/database.types";
+import { Database } from "../Types/database.types";
 
 const supabaseUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const supabaseAnonKey: string = process.env.NEXT_PUBLIC_ANON_KEY ?? "";

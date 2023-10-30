@@ -1,6 +1,7 @@
 .navList,
 .utilsList {
-  padding: 0 0.7rem;
+  border-bottom: 1px solid #393e46;
+  padding: 1rem 0;
 }
 
 .navList li,
