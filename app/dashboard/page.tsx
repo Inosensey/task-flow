@@ -1,12 +1,7 @@
-import Schedules from "@/components/Calendar/Schedules";
+import Calendar from "@/components/Dashboard/Events/CalendarNav";
 
 const Dashboard = async () => {
-  return (
-    <div className="flex flex-col">
-      <Schedules />
-      
-    </div>
-  );
+  return <div className="flex flex-col w-full"></div>;
 };
 
 export default Dashboard;

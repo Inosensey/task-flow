@@ -55,7 +55,7 @@ const Sidebar = () => {
       <motion.div
         variants={sidebarVariant}
         animate={sidebarAnimation}
-        className={`bg-[#1a1a1a] w-64 h-screen shadow-inner shadow-Secondary fixed`}
+        className={`bg-[#1a1a1a] w-64 h-screen shadow-inner shadow-Secondary fixed z-50`}
       >
         <div className="flex items-center justify-center">
           <TaskIcon />
@@ -66,17 +66,17 @@ const Sidebar = () => {
         <div className="flex flex-col mt-6">
           <div className="px-3">
             <ul className={`flex flex-col gap-2 ${styles.navList}`}>
-              <li>
+              <li className="select-none">
                 <MaterialSymbolsOverviewOutline color="#00ADB5" /> Overview
               </li>
-              <li>
+              <li className="select-none">
                 <MaterialSymbolsCalendarMonthOutlineRounded color="#00ADB5" />{" "}
                 Calendar
               </li>
-              <li>
+              <li className="select-none">
                 <IonTodayOutline color="#00ADB5" /> To Do List
               </li>
-              <li>
+              <li className="select-none">
                 <GgNotes color="#00ADB5" />
                 Notes
               </li>
@@ -84,14 +84,14 @@ const Sidebar = () => {
           </div>
           <div className="px-3">
             <ul className={`flex flex-col gap-2 ${styles.utilsList}`}>
-              <li>
+              <li className="select-none">
                 <IconamoonModeDark color="#00ADB5" /> Dark Mode
               </li>
-              <li>
+              <li className="select-none">
                 <MaterialSymbolsSettingsOutlineRounded color="#00ADB5" />
                 Settings
               </li>
-              <li>
+              <li className="select-none">
                 <PhSealQuestionDuotone color="#00ADB5" />
                 Help Center
               </li>
@@ -100,7 +100,7 @@ const Sidebar = () => {
         </div>
       </motion.div>
       <div
-        className="fixed w-8 bottom-5 right-5 flex flex-col gap-2 cursor-pointer"
+        className="fixed w-8 bottom-5 right-5 flex flex-col gap-2 cursor-pointer z-50"
         onClick={() => {
           animateSidebar();
           setShowSideBar((prev) => !prev);
