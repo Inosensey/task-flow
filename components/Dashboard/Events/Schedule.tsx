@@ -1,4 +1,6 @@
-import React from "react";
+"use client"
+
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -47,18 +49,28 @@ const schedules: schedule[] = [
 ];
 // 1a1a1a
 const Schedule = ({ date }: props) => {
+  // States 
+  const [timeHeightNumber, setTimeHeightNumber] = useState<number>(0)
+
+  useEffect(() => {
+    if (window.innerWidth > 420) {
+      setTimeHeightNumber(96);
+    }
+    if (window.innerWidth > 280) {
+      setTimeHeightNumber(96);
+    }
+  },[])
+
   const hours = useHours();
-  const timeHeightNumber = 112;
   return (
     <div className="flex-1">
       <p className="py-4 px-2 border-b-2 border-LightPrimary">{date}</p>
       <div className="flex flex-col pl-2">
         {hours.map((hour, index: number) => (
-          <div className="flex relative justify-center h-28" key={index}>
+          <div className="flex relative justify-center phone:h-20 mdphone:h-24" key={index}>
             {schedules.map((info: schedule, index: number) => {
               if (info.timeStart === hour) {
                 const height = timeHeightNumber * info.duration;
-                console.log(height);
                 return (
                   <div
                     style={{ height: `${height}px` }}
@@ -68,21 +80,25 @@ const Schedule = ({ date }: props) => {
                     <div className="flex flex-col gap-1 bg-[#1a1a1a] rounded-lg w-full p-2 z-40">
                       <div className="flex text-LightSecondary phone:text-sm phone:flex-col phone:items-start mdphone:gap-3 mdphone:flex-row mdphone:items-center">
                         <p>{info.title}</p>
-                        <div className="flex items-center gap-1">
-                          <FontAwesomeIcon
-                            className="text-sm text-LightPrimary"
-                            icon={faClock}
-                          />
-                          <p className="text-sm">
-                            {info.timeStart}{" "}
+                        <div className="phone:w-10/12 flex items-center gap-1">
+                          <span className="w-4">
+                            <FontAwesomeIcon
+                              className="text-sm text-LightPrimary"
+                              icon={faClock}
+                            />
+                          </span>
+                          <div className="flex gap-1 text-sm">
+                            <p>{info.timeStart}</p>
                             {info.timeEnd !== "" && (
-                              <FontAwesomeIcon
-                                className="text-sm"
-                                icon={faArrowRight}
-                              />
-                            )}{" "}
-                            {info.timeEnd}
-                          </p>
+                              <span className="w-4">
+                                <FontAwesomeIcon
+                                  className="text-sm"
+                                  icon={faArrowRight}
+                                />
+                              </span>
+                            )}
+                            <p>{info.timeEnd}</p>
+                          </div>
                         </div>
                       </div>
                       <button className="cursor-pointer bg-Secondary phone:text-sm rounded-md text-LightSecondary phone:w-32 phone:py-1">

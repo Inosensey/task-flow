@@ -25,7 +25,8 @@ module.exports = {
         Secondary: '#393E46',
         LightPrimary: '#00ADB5',
         LightSecondary: '#EEEEEE',
-        Disabled: '#b3b3b3'
+        Disabled: '#b3b3b3',
+        SmoothDark: "#1a1a1a"
       },
       fontFamily: {
         Roboto: ['var(--font-roboto)'],

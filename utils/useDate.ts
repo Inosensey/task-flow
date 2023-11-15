@@ -7,6 +7,10 @@ interface dateType {
   month: number;
   year: number;
 }
+interface dateMonthsInterface {
+  currentDate: Date;
+  selectedMonth: number;
+}
 
 export const useHours = () => {
   let hours = ["All Day"];
@@ -55,6 +59,31 @@ export const useMonths = () => {
     "December",
   ];
   return months;
+};
+export const useDateMonths = ({ currentDate, selectedMonth }: dateMonthsInterface) => {
+  let monthDates:string[] = [];
+  currentDate.setMonth(selectedMonth);
+  currentDate.setDate(1);
+  // Loop through the days of the month
+  while (currentDate.getMonth() === selectedMonth) {
+    const dayOfWeek = currentDate.getDay();
+    const dayOfMonth = currentDate.getDate();
+
+    const dayName = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ][dayOfWeek];
+
+    // Move to the next day
+    currentDate.setDate(dayOfMonth + 1);
+    monthDates.push(`${dayOfMonth}, ${dayName}`)
+  }
+  return monthDates;
 };
 const useDate = ({ date }: props) => {
   const dates: dateType[] = [];
