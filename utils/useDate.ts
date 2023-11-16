@@ -60,7 +60,7 @@ export const useMonths = () => {
   ];
   return months;
 };
-export const useDateMonths = ({ currentDate, selectedMonth }: dateMonthsInterface) => {
+export const getDateMonths = ({ currentDate, selectedMonth }: dateMonthsInterface) => {
   let monthDates:string[] = [];
   currentDate.setMonth(selectedMonth);
   currentDate.setDate(1);
