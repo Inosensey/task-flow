@@ -6,7 +6,7 @@ import Schedules from "@/components/Dashboard/Events/Schedules";
 
 const Events = () => {
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full bg-Primary">
       <Header headerName="Calendar" />
       <CalendarNav />
       <div className="w-full">

@@ -45,7 +45,7 @@ const CalendarNav = () => {
     setCurrentDate(`${dayOfMonth}, ${days[dayOfWeek]}`)
   }
   return (
-    <div className="flex items-center gap-2 border-b-2 border-LightPrimary w-full h-14 px-2">
+    <div className="flex text-LightSecondary items-center gap-2 border-b-2 border-LightPrimary w-full h-14 px-2">
       <div className="relative">
         <div
           onClick={() => {

@@ -33,6 +33,9 @@ const Schedules = () => {
       </div>
 
       {/* Mobile */}
+      <div className="w-full flex">
+          <Schedule date="Monday" />
+      </div>
     </div>
   );
 };

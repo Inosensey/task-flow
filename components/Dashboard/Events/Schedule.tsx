@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -49,8 +49,8 @@ const schedules: schedule[] = [
 ];
 // 1a1a1a
 const Schedule = ({ date }: props) => {
-  // States 
-  const [timeHeightNumber, setTimeHeightNumber] = useState<number>(0)
+  // States
+  const [timeHeightNumber, setTimeHeightNumber] = useState<number>(0);
 
   useEffect(() => {
     if (window.innerWidth > 420) {
@@ -59,15 +59,20 @@ const Schedule = ({ date }: props) => {
     if (window.innerWidth > 280) {
       setTimeHeightNumber(96);
     }
-  },[])
+  }, []);
 
   const hours = useHours();
   return (
     <div className="flex-1">
       <p className="py-4 px-2 border-b-2 border-LightPrimary">{date}</p>
-      <div className="flex flex-col pl-2">
+
+      {/* Desktop */}
+      <div className="flex flex-col pl-2 phone:hidden laptop:flex">
         {hours.map((hour, index: number) => (
-          <div className="flex relative justify-center phone:h-20 mdphone:h-24" key={index}>
+          <div
+            className="flex relative justify-center phone:h-20 mdphone:h-24"
+            key={index}
+          >
             {schedules.map((info: schedule, index: number) => {
               if (info.timeStart === hour) {
                 const height = timeHeightNumber * info.duration;
@@ -110,7 +115,41 @@ const Schedule = ({ date }: props) => {
               }
             })}
           </div>
-          // <p>{hour}</p>
+        ))}
+      </div>
+
+      {/* Mobile */}
+      <div className="flex flex-wrap items-center justify-between px-2 gap-2 mt-2">
+        {schedules.map((info: schedule, index: number) => (
+          <div
+            key={index}
+            className="bg-SmoothDark w-[48%] p-3 flex flex-col gap-2 rounded-lg"
+          >
+            <div className="phone:w-10/12 flex items-center gap-1">
+              <span className="w-4">
+                <FontAwesomeIcon
+                  className="text-sm text-LightPrimary"
+                  icon={faClock}
+                />
+              </span>
+              <div className="flex gap-1 text-sm">
+                <p>{info.timeStart}</p>
+                {info.timeEnd !== "" && (
+                  <span className="w-4">
+                    <FontAwesomeIcon className="text-sm" icon={faArrowRight} />
+                  </span>
+                )}
+                <p>{info.timeEnd}</p>
+              </div>
+            </div>
+            <p className="font-semibold">{info.title}</p>
+            <div className="w-full h-20 line-clamp-4">
+              <p className="text-sm">{info.description}</p>
+            </div>
+            <button className="cursor-pointer bg-Secondary rounded-md text-LightSecondary phone:text-sm phone:w-32 phone:py-1">
+              More Details
+            </button>
+          </div>
         ))}
       </div>
     </div>

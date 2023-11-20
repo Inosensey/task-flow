@@ -55,7 +55,7 @@ const Sidebar = () => {
       <motion.div
         variants={sidebarVariant}
         animate={sidebarAnimation}
-        className={`bg-[#1a1a1a] w-64 h-screen shadow-inner shadow-Secondary fixed z-50`}
+        className={`bg-[#1a1a1a] text-LightSecondary w-64 h-screen shadow-inner shadow-Secondary fixed z-50`}
       >
         <div className="flex items-center justify-center">
           <TaskIcon />
