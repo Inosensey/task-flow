@@ -137,7 +137,7 @@ const Schedule = ({ date }: props) => {
           {schedules.map((info: schedule, index: number) => (
             <div
               key={index}
-              className="bg-SmoothDark w-[48%] p-3 flex flex-col gap-2 rounded-lg text-LightSecondary"
+              className="bg-SmoothDark p-3 flex flex-col gap-2 rounded-lg text-LightSecondary mdphone:w-[48%]"
             >
               <div className="phone:w-10/12 flex items-center gap-1">
                 <span className="w-4">

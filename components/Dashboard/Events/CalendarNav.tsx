@@ -51,7 +51,7 @@ const CalendarNav = () => {
           onClick={() => {
             setShowMonthList((prev) => !prev);
           }}
-          className="phone:w-44 phone:h-9 rounded-md bg-SmoothDark flex justify-between px-2 items-center cursor-pointer"
+          className="rounded-md bg-SmoothDark flex justify-between px-2 items-center cursor-pointer phone:w-40 phone:h-9 mdphone:w-44"
         >
           <p className="select-none text-sm">{months[currentMonth]}</p>
           <span
@@ -65,7 +65,7 @@ const CalendarNav = () => {
         </div>
         <div
           style={{ maxHeight: showMonthList ? "224px" : "0px" }}
-          className="phone:w-44 phone:text-sm transition-all rounded-md absolute top-10 bg-SmoothDark overflow-auto z-[100]"
+          className="phone:text-sm transition-all rounded-md absolute top-10 bg-SmoothDark overflow-auto z-[100] phone:w-40 mdphone:w-44"
         >
           {months.map((month, index) => (
             <div
@@ -89,7 +89,7 @@ const CalendarNav = () => {
           onClick={() => {
             setShowDateList((prev) => !prev);
           }}
-          className="phone:w-44 phone:h-9 rounded-md bg-SmoothDark flex justify-between px-2 items-center cursor-pointer"
+          className="rounded-md bg-SmoothDark flex justify-between px-2 items-center cursor-pointer phone:w-40 mdphone:w-44 phone:h-9"
         >
           <p className="select-none text-sm">{currentDate}</p>
           <span
@@ -103,7 +103,7 @@ const CalendarNav = () => {
         </div>
         <div
           style={{ maxHeight: showDateList ? "224px" : "0px" }}
-          className="phone:w-44 phone:text-sm transition-all rounded-md absolute top-10 bg-SmoothDark overflow-auto z-[100]"
+          className="transition-all rounded-md absolute top-10 bg-SmoothDark overflow-auto z-[100] phone:w-40 mdphone:w-44 phone:text-sm"
         >
           {datesOfMonth.map((date, index) => (
             <div
