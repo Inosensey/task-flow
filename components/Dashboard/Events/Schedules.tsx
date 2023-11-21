@@ -33,7 +33,7 @@ const Schedules = () => {
       </div>
 
       {/* Mobile */}
-      <div className="w-full flex">
+      <div className="w-full flex phone:flex laptop:hidden">
           <Schedule date="Monday" />
       </div>
     </div>

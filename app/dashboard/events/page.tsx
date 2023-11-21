@@ -9,7 +9,7 @@ const Events = () => {
     <div className="flex flex-col w-full bg-Primary">
       <Header headerName="Calendar" />
       <CalendarNav />
-      <div className="w-full">
+      <div className="w-full relative">
         <Schedules />
       </div>
     </div>

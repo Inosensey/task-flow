@@ -65,7 +65,7 @@ const CalendarNav = () => {
         </div>
         <div
           style={{ maxHeight: showMonthList ? "224px" : "0px" }}
-          className="phone:w-44 phone:text-sm transition-all rounded-md absolute top-10 bg-SmoothDark overflow-auto"
+          className="phone:w-44 phone:text-sm transition-all rounded-md absolute top-10 bg-SmoothDark overflow-auto z-[100]"
         >
           {months.map((month, index) => (
             <div
@@ -103,7 +103,7 @@ const CalendarNav = () => {
         </div>
         <div
           style={{ maxHeight: showDateList ? "224px" : "0px" }}
-          className="phone:w-44 phone:text-sm transition-all rounded-md absolute top-10 bg-SmoothDark overflow-auto"
+          className="phone:w-44 phone:text-sm transition-all rounded-md absolute top-10 bg-SmoothDark overflow-auto z-[100]"
         >
           {datesOfMonth.map((date, index) => (
             <div
