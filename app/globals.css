@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-input, button {
+input, button, textarea {
   outline: none;
 }
 p {
@@ -29,6 +29,9 @@ p {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 34, 40, 49;
     --background-end-rgb: 34, 40, 49;
+  }
+  .description-time-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
   }
 }
 
