@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from "framer-motion";
 // Utils
 import { useHours } from "@/utils/useDate";
 import DetailedSchedule from "./DetailedSchedule";
-import MaterialSymbolsLightAddCircleOutlineRounded from "@/Icones/MaterialSymbolsLightAddCircleOutlineRounded";
+import ScheduleForm from "./ScheduleForm";
 
 // Props
 type props = {
@@ -56,6 +56,7 @@ const Schedule = ({ date }: props) => {
   const [timeHeightNumber, setTimeHeightNumber] = useState<number>(0);
   const [showDetailedSchedule, setShowDetailedSchedule] =
     useState<boolean>(false);
+  const [showScheduleForm, setShowScheduleForm] = useState<boolean>(false);
   const [selectedSchedule, setSelectedSchedule] = useState<schedule>({
     timeStart: "",
     timeEnd: "",
@@ -82,6 +83,9 @@ const Schedule = ({ date }: props) => {
           <motion.button
             whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              setShowScheduleForm((prev) => !prev)
+            }}
             className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1"
           >
             Add schedule
@@ -189,6 +193,7 @@ const Schedule = ({ date }: props) => {
           ))}
         </div>
       </div>
+      {/* Detailed Schedule */}
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
         {showDetailedSchedule && (
           <DetailedSchedule
@@ -196,6 +201,11 @@ const Schedule = ({ date }: props) => {
             scheduleInfo={selectedSchedule}
           />
         )}
+      </AnimatePresence>
+
+      {/* Schedule form */}
+      <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
+        {showScheduleForm && <ScheduleForm setShowScheduleForm={setShowScheduleForm} />}
       </AnimatePresence>
     </>
   );
