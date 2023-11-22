@@ -3,12 +3,13 @@
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Utils
 import { useHours } from "@/utils/useDate";
 import DetailedSchedule from "./DetailedSchedule";
+import MaterialSymbolsLightAddCircleOutlineRounded from "@/Icones/MaterialSymbolsLightAddCircleOutlineRounded";
 
 // Props
 type props = {
@@ -60,7 +61,7 @@ const Schedule = ({ date }: props) => {
     timeEnd: "",
     title: "",
     description: "",
-    duration: 0
+    duration: 0,
   });
 
   useEffect(() => {
@@ -76,9 +77,19 @@ const Schedule = ({ date }: props) => {
   return (
     <>
       <div className="flex-1">
-        <p className="py-4 px-2 border-b-2 border-LightPrimary text-LightSecondary">
-          {date}
-        </p>
+        <div className="text-LightSecondary py-4 px-2 border-b-2 border-LightPrimary flex justify-between items-center">
+          <p className="p-0 h-max">{date}</p>
+          <motion.button
+            whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1"
+          >
+            Add schedule
+            <span className="w-4">
+              <FontAwesomeIcon className="text-sm" icon={faCirclePlus} />
+            </span>
+          </motion.button>
+        </div>
 
         {/* Desktop */}
         <div className="flex flex-col pl-2 phone:hidden laptop:flex">
