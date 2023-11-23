@@ -116,6 +116,8 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             state={scheduleInfo.description}
             cols={30}
             rows={7}
+            onChange={handleTextareaChange}
+            onBlur={handleTextareaChange}
           />
           <div className={`flex gap-2`}>
             <TimeInput
@@ -137,7 +139,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             <TimeInput
               label="Time End"
               name="timeEnd"
-              state={scheduleInfo.timeStart}
+              state={scheduleInfo.timeEnd}
               type="time"
               onChange={handleInputChange}
               onBlur={handleInputChange}
