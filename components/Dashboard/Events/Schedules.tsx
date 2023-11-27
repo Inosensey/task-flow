@@ -1,4 +1,8 @@
+"use client"
+
 import React from "react";
+import { getEvents } from "@/actions/eventActions";
+import { useQuery } from "@tanstack/react-query";
 
 import styles from "@/css/DashboardComponent/events.module.css";
 
@@ -6,6 +10,11 @@ import { useHours } from "@/utils/useDate";
 import Schedule from "./Schedule";
 
 const Schedules = () => {
+  const {data, error} = useQuery({
+    queryKey: ["events"],
+    queryFn: getEvents
+  })
+
   const hours = useHours();
   return (
     <div className="w-full flex">

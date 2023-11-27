@@ -1,7 +1,7 @@
-import QueryWrapper from "@/components/Auth/QueryWrapper";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Playfair_Display, Roboto } from "next/font/google";
+import Providers from "@/utils/Providers";
 
 export const metadata = {
   title: "Task Flow",
@@ -27,10 +27,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <QueryWrapper>
-      <html lang="en">
-        <body className={roboto.className}>{children}</body>
-      </html>
-    </QueryWrapper>
+    <html lang="en">
+      <body className={roboto.className}>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
 }
