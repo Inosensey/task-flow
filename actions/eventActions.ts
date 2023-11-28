@@ -4,42 +4,46 @@ import { revalidateTag } from "next/cache";
 // Supabase
 import { useSupabase } from "@/utils/useSupabaseClient";
 
+type ScheduleInfo = {
+  date: string;
+  timeStart: string;
+  timeEnd: string;
+  title: string;
+  description: string;
+  duration: number;
+};
+
 export const getEvents = async () => {
   try {
-    const res = await fetch("http://localhost:3000/api/supabase/getEvents")
-    const data = await res.json();
-    const events = data.data;
+    let { data, error } = await useSupabase.from("Events").select("*");
+
+    if (error) {
+      console.log(error);
+    }
+
+    const events = data;
     return { events };
   } catch (error) {
     return { message: error };
   }
 };
 
-export const createEvent = async (formData: FormData) => {
+export const createEvent = async (scheduleInfo: ScheduleInfo) => {
   try {
-    const todoListInfo = {
-      title: formData.get("title"),
-      description: formData.get("description"),
-      date: formData.get("date"),
-      timeStart: formData.get("timeStart"),
-      timeEnd: formData.get("timeEnd"),
-      themeColor: formData.get("themeColor"),
-    };
     let { data, error } = await useSupabase
       .from("Events")
       .insert({
-        title: todoListInfo.title,
-        description: todoListInfo.description,
-        date: todoListInfo.date,
-        timeStart: todoListInfo.timeStart,
-        timeEnd: todoListInfo.timeEnd,
-        themeColor: todoListInfo.themeColor,
+        title: scheduleInfo.title,
+        description: scheduleInfo.description,
+        date: scheduleInfo.date,
+        timeStart: scheduleInfo.timeStart,
+        timeEnd: scheduleInfo.timeEnd,
+        themeColor: "#000",
       })
       .select();
 
-    // revalidatePath('/')
-    revalidateTag("todoList");
-    return { message: `Added todo ${data}` };
+    
+    return { eventInfo: data, id: data[0].id };
   } catch (e) {
     return { message: "Failed to create todo" };
   }

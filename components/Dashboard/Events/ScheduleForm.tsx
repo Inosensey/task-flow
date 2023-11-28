@@ -1,15 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 import Input, {
   TextareaInput,
   TimeInput,
 } from "@/components/ReusableComponents/inputs/Input";
+
+// Actions
+import { createEvent, getEvents } from "@/actions/eventActions";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,6 +29,9 @@ type ScheduleInfo = {
 };
 
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
+  // Initial use query
+  const queryClient = useQueryClient();
+
   // States
   const [scheduleInfo, setScheduleInfo] = useState<ScheduleInfo>({
     date: "",
@@ -54,6 +61,14 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
       [name]: value,
     }));
   };
+
+  const {status, error, mutate} = useMutation({
+    mutationFn: (scheduleInfo:ScheduleInfo) => createEvent(scheduleInfo),
+    onSuccess: (newEvent) => {
+      console.log(newEvent)
+      queryClient.setQueryData(['events'], newEvent)
+    },
+  });
 
   // Variants
   const popUpVariants = {
@@ -149,7 +164,10 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             <motion.button
               whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.95 }}
-              className="bg-LightPrimary w-max px-4 py-1 rounded-md flex gap-1 my-0 mx-auto"
+              className="bg-LightPrimary w-max px-4 py-1 rounded-md flex gap-1 my-0 mx-auto"  
+              onClick={() => {
+                mutate(scheduleInfo)
+              }}
             >
               Save Schedule
               <span className="w-4">

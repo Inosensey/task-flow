@@ -1,19 +1,29 @@
-"use client"
+"use client";
 
 import React from "react";
 import { getEvents } from "@/actions/eventActions";
 import { useQuery } from "@tanstack/react-query";
 
-import styles from "@/css/DashboardComponent/events.module.css";
-
 import { useHours } from "@/utils/useDate";
 import Schedule from "./Schedule";
+import styles from "@/css/DashboardComponent/events.module.css";
+
+type ScheduleInfo = {
+  date: string;
+  timeStart: string;
+  timeEnd: string;
+  title: string;
+  description: string;
+  duration: number;
+};
 
 const Schedules = () => {
-  const {data, error} = useQuery({
+  const { data, error } = useQuery({
     queryKey: ["events"],
-    queryFn: getEvents
-  })
+    queryFn: getEvents,
+  });
+
+  console.log(data);
 
   const hours = useHours();
   return (
@@ -43,7 +53,12 @@ const Schedules = () => {
 
       {/* Mobile */}
       <div className="w-full flex phone:flex laptop:hidden">
-          <Schedule date="Monday" />
+        <div className="flex flex-col">
+          {data?.events?.map((info: ScheduleInfo) => (
+            <p key={Math.random() * 1000}>{info.title}</p>
+          ))}
+        </div>
+        <Schedule date="Monday" />
       </div>
     </div>
   );
