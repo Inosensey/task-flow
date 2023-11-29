@@ -4,7 +4,7 @@ import React, { FormEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useMutationState } from "@tanstack/react-query";
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 import Input, {
@@ -64,10 +64,12 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
 
   const {status, error, mutate} = useMutation({
     mutationFn: (scheduleInfo:ScheduleInfo) => createEvent(scheduleInfo),
-    onSuccess: (newEvent) => {
-      console.log(newEvent)
-      queryClient.setQueryData(['events'], newEvent)
+    // onSuccess: () => queryClient.invalidateQueries({ queryKey: ['events'], exact: true }),
+    onSuccess: (data) =>{ 
+      queryClient.setQueryData(["events"], (oldData) => oldData ? [...oldData, data] : oldData)
     },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['events']}),
+    mutationKey: ['addEvents']
   });
 
   // Variants

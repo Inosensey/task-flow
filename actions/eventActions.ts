@@ -22,7 +22,8 @@ export const getEvents = async () => {
     }
 
     const events = data;
-    return { events };
+    console.log("EVents",events);
+    return events;
   } catch (error) {
     return { message: error };
   }
@@ -43,7 +44,7 @@ export const createEvent = async (scheduleInfo: ScheduleInfo) => {
       .select();
 
     
-    return { eventInfo: data, id: data[0].id };
+    return data[0];
   } catch (e) {
     return { message: "Failed to create todo" };
   }

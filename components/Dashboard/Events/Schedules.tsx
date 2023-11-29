@@ -2,7 +2,7 @@
 
 import React from "react";
 import { getEvents } from "@/actions/eventActions";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutationState } from "@tanstack/react-query";
 
 import { useHours } from "@/utils/useDate";
 import Schedule from "./Schedule";
@@ -21,9 +21,9 @@ const Schedules = () => {
   const { data, error } = useQuery({
     queryKey: ["events"],
     queryFn: getEvents,
+    staleTime: 1 * (60 * 1000),
   });
-
-  console.log(data);
+  console.log(data)
 
   const hours = useHours();
   return (
@@ -54,7 +54,7 @@ const Schedules = () => {
       {/* Mobile */}
       <div className="w-full flex phone:flex laptop:hidden">
         <div className="flex flex-col">
-          {data?.events?.map((info: ScheduleInfo) => (
+          {data?.map((info: ScheduleInfo) => (
             <p key={Math.random() * 1000}>{info.title}</p>
           ))}
         </div>
