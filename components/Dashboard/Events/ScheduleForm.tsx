@@ -4,7 +4,11 @@ import React, { FormEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
-import { useMutation, useQueryClient, useMutationState } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useMutationState,
+} from "@tanstack/react-query";
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 import Input, {
@@ -62,16 +66,23 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
     }));
   };
 
-  const {status, error, mutate} = useMutation({
-    mutationFn: (scheduleInfo:ScheduleInfo) => createEvent(scheduleInfo),
-    // onSuccess: () => queryClient.invalidateQueries({ queryKey: ['events'], exact: true }),
-    onSuccess: (data) =>{ 
-      queryClient.setQueryData(["events"], (oldData) => oldData ? [...oldData, data] : oldData)
+  const { status, error, mutate } = useMutation({
+    mutationFn: (scheduleInfo: ScheduleInfo) => {
+      return createEvent(scheduleInfo);
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['events']}),
-    mutationKey: ['addEvents']
+    // onSuccess: () => queryClient.invalidateQueries({ queryKey: ['events'], exact: true }),
+    onSuccess: (data) => {
+      queryClient.setQueryData(["events"], (oldData) =>
+        oldData ? [...oldData, data] : oldData
+      );
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      console.log(queryClient);
+    },
+    mutationKey: ["addEvents"],
   });
-
+  
   // Variants
   const popUpVariants = {
     hidden: {
@@ -166,9 +177,9 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             <motion.button
               whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.95 }}
-              className="bg-LightPrimary w-max px-4 py-1 rounded-md flex gap-1 my-0 mx-auto"  
+              className="bg-LightPrimary w-max px-4 py-1 rounded-md flex gap-1 my-0 mx-auto"
               onClick={() => {
-                mutate(scheduleInfo)
+                mutate(scheduleInfo);
               }}
             >
               Save Schedule
