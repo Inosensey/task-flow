@@ -13,11 +13,12 @@ import CalendarNav from "@/components/Dashboard/Events/CalendarNav";
 import Header from "@/components/Dashboard/Events/Header";
 import Schedules from "@/components/Dashboard/Events/Schedules";
 
+const queryClient = new QueryClient();
 const Events = async () => {
-  const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["events"],
     queryFn: getEvents,
+    staleTime: 1 * (60 * 1000),
   });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

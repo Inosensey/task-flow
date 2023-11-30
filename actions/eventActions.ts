@@ -20,12 +20,10 @@ export const getEvents = async () => {
     if (error) {
       console.log(error);
     }
-
     const events = data;
-    // console.log("EVents",events);
     return events;
   } catch (error) {
-    return { message: error };
+    return error;
   }
 };
 
@@ -41,11 +39,8 @@ export const createEvent = async (scheduleInfo: ScheduleInfo) => {
         timeEnd: scheduleInfo.timeEnd,
         themeColor: "#000",
       })
-      .select();
-
-    console.log(await getEvents());
     return data[0];
   } catch (e) {
-    return { message: "Failed to create todo" };
+    return "Failed to create todo";
   }
 };

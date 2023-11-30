@@ -46,6 +46,17 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
     duration: 0,
   });
 
+  const { status, error, mutate } = useMutation({
+    mutationFn: (scheduleInfo: ScheduleInfo) => createEvent(scheduleInfo),
+
+    onSuccess: (data) => {
+      return queryClient.invalidateQueries({ queryKey: ["events"] });
+      // await queryClient.setQueryData(["events"], (oldData) =>
+      //   oldData ? [...oldData, data] : oldData
+      // );
+    },
+  });
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
@@ -66,23 +77,6 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
     }));
   };
 
-  const { status, error, mutate } = useMutation({
-    mutationFn: (scheduleInfo: ScheduleInfo) => {
-      return createEvent(scheduleInfo);
-    },
-    // onSuccess: () => queryClient.invalidateQueries({ queryKey: ['events'], exact: true }),
-    onSuccess: (data) => {
-      queryClient.setQueryData(["events"], (oldData) =>
-        oldData ? [...oldData, data] : oldData
-      );
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["events"] });
-      console.log(queryClient);
-    },
-    mutationKey: ["addEvents"],
-  });
-  
   // Variants
   const popUpVariants = {
     hidden: {

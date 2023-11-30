@@ -23,7 +23,6 @@ const Schedules = () => {
     queryFn: getEvents,
     staleTime: 1 * (60 * 1000),
   });
-  console.log(data)
 
   const hours = useHours();
   return (
