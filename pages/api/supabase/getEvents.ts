@@ -11,10 +11,11 @@ export default async function handler(
     if (error) {
       console.log(error);
     }
+    const events = data;
     // Respond with JSON data
     return res
       .status(200)
-      .json({ message: "Todo List SuccessFully Fetch", Data: data });
+      .json(events);
   } catch (error) {
     return res.status(500).json({ message: error });
   }

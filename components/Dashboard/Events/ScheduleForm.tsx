@@ -9,6 +9,7 @@ import {
   useQueryClient,
   useMutationState,
 } from "@tanstack/react-query";
+import axios from "axios";
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 import Input, {
@@ -33,6 +34,7 @@ type ScheduleInfo = {
 };
 
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
+
   // Initial use query
   const queryClient = useQueryClient();
 
@@ -46,8 +48,19 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
     duration: 0,
   });
 
+  
+  const createEvent = async () => {
+    const res = await axios({
+      method: "POST",
+      url: "http://localhost:3000/api/supabase/createEvents",
+      data: scheduleInfo
+    })
+    console.log(res);
+    return res;
+  }
+
   const { status, error, mutate } = useMutation({
-    mutationFn: (scheduleInfo: ScheduleInfo) => createEvent(scheduleInfo),
+    mutationFn: (scheduleInfo: ScheduleInfo) => createEvent(),
 
     onSuccess: (data) => {
       return queryClient.invalidateQueries({ queryKey: ["events"] });

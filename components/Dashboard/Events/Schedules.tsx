@@ -18,6 +18,12 @@ type ScheduleInfo = {
 };
 
 const Schedules = () => {
+  const getEvents = async () => {
+    const res = await fetch("http://localhost:3000/api/supabase/getEvents")
+    const events = await res.json();
+    console.log(events);
+    return events;
+  }
   const { data, error } = useQuery({
     queryKey: ["events"],
     queryFn: getEvents,
