@@ -34,7 +34,6 @@ type ScheduleInfo = {
 };
 
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
-
   // Initial use query
   const queryClient = useQueryClient();
 
@@ -48,25 +47,23 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
     duration: 0,
   });
 
-  
   const createEvent = async () => {
     const res = await axios({
       method: "POST",
       url: "http://localhost:3000/api/supabase/createEvents",
-      data: scheduleInfo
-    })
-    console.log(res);
+      data: scheduleInfo,
+    });
     return res;
-  }
+  };
 
   const { status, error, mutate } = useMutation({
     mutationFn: (scheduleInfo: ScheduleInfo) => createEvent(),
 
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      await queryClient.setQueryData(["events"], (oldData) => {
+        oldData ? [...oldData, data.data[0]] : oldData;
+      });
       return queryClient.invalidateQueries({ queryKey: ["events"] });
-      // await queryClient.setQueryData(["events"], (oldData) =>
-      //   oldData ? [...oldData, data] : oldData
-      // );
     },
   });
 

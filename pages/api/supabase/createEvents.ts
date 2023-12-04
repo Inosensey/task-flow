@@ -18,7 +18,7 @@ export default async function handler(
       timeStart: scheduleInfo.timeStart,
       timeEnd: scheduleInfo.timeEnd,
       themeColor: "#000",
-    });
+    }).select();
     if (error) {
       console.log(error);
     }

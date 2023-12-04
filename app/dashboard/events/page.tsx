@@ -13,18 +13,18 @@ import CalendarNav from "@/components/Dashboard/Events/CalendarNav";
 import Header from "@/components/Dashboard/Events/Header";
 import Schedules from "@/components/Dashboard/Events/Schedules";
 
-const queryClient = new QueryClient();
 const Events = async () => {
+  const queryClient = new QueryClient();
   const getEvents = async () => {
     const res = await fetch("http://localhost:3000/api/supabase/getEvents")
     const events = await res.json();
-    console.log(events);
     return events;
   }
 
   await queryClient.prefetchQuery({
     queryKey: ["events"],
     queryFn: getEvents,
+    staleTime: 1 * (60 * 1000),
   });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
