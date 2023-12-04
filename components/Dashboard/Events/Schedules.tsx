@@ -8,6 +8,9 @@ import { useHours } from "@/utils/useDate";
 import Schedule from "./Schedule";
 import styles from "@/css/DashboardComponent/events.module.css";
 
+// Types
+import { Table } from "@/Types/supabase";
+
 type ScheduleInfo = {
   date: string;
   timeStart: string;
@@ -18,17 +21,6 @@ type ScheduleInfo = {
 };
 
 const Schedules = () => {
-  const getEvents = async () => {
-    const res = await fetch("http://localhost:3000/api/supabase/getEvents")
-    const events = await res.json();
-    return events;
-  }
-  const { data, error } = useQuery({
-    queryKey: ["events"],
-    queryFn: getEvents,
-    staleTime: 1 * (60 * 1000),
-  });
-
   const hours = useHours();
   return (
     <div className="w-full flex">
@@ -58,9 +50,9 @@ const Schedules = () => {
       {/* Mobile */}
       <div className="w-full flex phone:flex laptop:hidden">
         <div className="flex flex-col">
-          {data?.map((info: ScheduleInfo) => (
+          {/* {data?.map((info: ScheduleInfo) => (
             <p key={Math.random() * 1000}>{info.title}</p>
-          ))}
+          ))} */}
         </div>
         <Schedule date="Monday" />
       </div>

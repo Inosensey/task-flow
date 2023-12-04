@@ -13,6 +13,9 @@ import CalendarNav from "@/components/Dashboard/Events/CalendarNav";
 import Header from "@/components/Dashboard/Events/Header";
 import Schedules from "@/components/Dashboard/Events/Schedules";
 
+// Types
+import { Table } from "@/Types/supabase";
+
 const Events = async () => {
   const queryClient = new QueryClient();
   const getEvents = async () => {
@@ -20,19 +23,15 @@ const Events = async () => {
     const events = await res.json();
     return events;
   }
+  const events:Table["Events"]["Rows"] = await getEvents();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["events"],
-    queryFn: getEvents,
-    staleTime: 1 * (60 * 1000),
-  });
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="flex flex-col w-full bg-Primary">
         <Header headerName="Calendar" />
         <CalendarNav />
         <div className="w-full relative">
-          <Schedules />
+          <Schedules events={events} />
         </div>
       </div>
     </HydrationBoundary>
