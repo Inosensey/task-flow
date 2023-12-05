@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock } from "@fortawesome/free-regular-svg-icons";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faClock, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { faArrowRight, faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 
@@ -20,7 +20,8 @@ type props = {
 };
 
 const DetailedSchedule = ({ scheduleInfo, setShowPopUp }: props) => {
-  //   if (showPopUp === false) return;
+  // State
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   // Variants
   const popUpVariants = {
@@ -65,7 +66,9 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp }: props) => {
           </p>
         </div>
         <div className="mt-2 flex flex-col gap-2">
-          <p className="text-LightPrimary font-semibold text-lg">{scheduleInfo.title}</p>
+          <p className="text-LightPrimary font-semibold text-lg">
+            {scheduleInfo.title}
+          </p>
           <div className="phone:w-10/12 flex items-center gap-1">
             <span className="w-4">
               <FontAwesomeIcon
@@ -84,6 +87,58 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp }: props) => {
             </div>
           </div>
           <p className="text-justify leading-7">{scheduleInfo.description}</p>
+        </div>
+        <div className="flex justify-between">
+          {isEditing ? (
+            <div className="flex w-full justify-between">
+              <motion.button
+                whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.9 }}
+                className="bg-Success w-max px-3 py-[0.1rem] rounded-md flex gap-1 mt-3 items-center"
+              >
+                <span className="w-4">
+                  <FontAwesomeIcon
+                    className="text-sm text-LightSecondary"
+                    icon={faCheck}
+                  />
+                </span>
+                Save
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.9 }}
+                className="border-2 border-Error w-max px-3 py-[0.1rem] rounded-md flex gap-1 mt-3 text-Error"
+                onClick={() => {
+                  setIsEditing((prev) => !prev)
+                }}
+              >
+                <span className="w-4">
+                  <FontAwesomeIcon
+                    className="text-sm"
+                    icon={faXmark}
+                  />
+                </span>
+                Cancel
+              </motion.button>
+            </div>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.9 }}
+              className="bg-LightPrimary w-max px-4 py-[0.1rem] rounded-md flex gap-1 mt-3"
+              onClick={() => {
+                setIsEditing((prev) => !prev)
+              }}
+            >
+              <span className="w-4">
+                <FontAwesomeIcon
+                  className="text-sm text-LightSecondary"
+                  icon={faPenToSquare}
+                />
+              </span>
+              Edit
+            </motion.button>
+          )}
         </div>
       </motion.div>
     </Overlay>

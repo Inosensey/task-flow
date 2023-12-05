@@ -12,7 +12,6 @@ export default async function handler(
       console.log(error);
     }
     const events = data;
-    console.log(events);
     // Respond with JSON data
     return res
       .status(200)

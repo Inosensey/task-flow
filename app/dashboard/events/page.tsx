@@ -14,19 +14,18 @@ import Header from "@/components/Dashboard/Events/Header";
 import Schedules from "@/components/Dashboard/Events/Schedules";
 
 // Types
-import { Table } from "@/Types/supabase";
+import { TableInsert, TableRow, TableUpdate } from "@/Types/database.types";
 
 const Events = async () => {
-  const queryClient = new QueryClient();
   const getEvents = async () => {
-    const res = await fetch("http://localhost:3000/api/supabase/getEvents")
+    const res = await fetch("http://localhost:3000/api/supabase/getEvents",{next:{tags: ["events"], revalidate: 300}})
     const events = await res.json();
     return events;
   }
-  const events:Table["Events"]["Rows"] = await getEvents();
+  const events:TableRow<"Events">[] = await getEvents();
 
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
+    <div>
       <div className="flex flex-col w-full bg-Primary">
         <Header headerName="Calendar" />
         <CalendarNav />
@@ -34,7 +33,7 @@ const Events = async () => {
           <Schedules events={events} />
         </div>
       </div>
-    </HydrationBoundary>
+    </div>
   );
 };
 

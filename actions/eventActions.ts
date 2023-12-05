@@ -4,6 +4,9 @@ import { revalidateTag } from "next/cache";
 // Supabase
 import { useSupabase } from "@/utils/useSupabaseClient";
 
+// Types
+import { TableInsert } from "@/Types/database.types";
+
 type ScheduleInfo = {
   date: string;
   timeStart: string;
@@ -27,19 +30,28 @@ export const getEvents = async () => {
   }
 };
 
-export const createEvent = async (scheduleInfo: ScheduleInfo) => {
+export const createEvent = async (formData: FormData) => {
   try {
+    const scheduleInfo: TableInsert<"Events"> = {
+      title: formData.get('title') as string,
+      description: formData.get('description') as string,
+      date: formData.get('date') as string,
+      timeStart: formData.get('timeStart') as string,
+      timeEnd: formData.get('timeEnd') as string,
+      themeColor: "#000",
+    }
     let { data, error } = await useSupabase
       .from("Events")
-      .insert({
+      .insert<TableInsert<"Events">>({
         title: scheduleInfo.title,
         description: scheduleInfo.description,
         date: scheduleInfo.date,
         timeStart: scheduleInfo.timeStart,
         timeEnd: scheduleInfo.timeEnd,
-        themeColor: "#000",
+        themeColor: scheduleInfo.themeColor
       })
-    return data[0];
+    revalidateTag("events")
+    return { message: `Added Event ${data}` }
   } catch (e) {
     return "Failed to create todo";
   }

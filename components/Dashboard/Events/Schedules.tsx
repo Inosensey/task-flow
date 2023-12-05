@@ -9,19 +9,17 @@ import Schedule from "./Schedule";
 import styles from "@/css/DashboardComponent/events.module.css";
 
 // Types
-import { Table } from "@/Types/supabase";
+import { TableInsert, TableRow, TableUpdate } from "@/Types/database.types";
 
-type ScheduleInfo = {
-  date: string;
-  timeStart: string;
-  timeEnd: string;
-  title: string;
-  description: string;
-  duration: number;
-};
+type props = {
+  events: TableRow<"Events">[]
+}
 
-const Schedules = () => {
+type ScheduleInfo = TableRow<"Events">;
+
+const Schedules = ({events}:props) => {
   const hours = useHours();
+  console.log(events);
   return (
     <div className="w-full flex">
       {/* desktop */}
@@ -49,11 +47,6 @@ const Schedules = () => {
 
       {/* Mobile */}
       <div className="w-full flex phone:flex laptop:hidden">
-        <div className="flex flex-col">
-          {/* {data?.map((info: ScheduleInfo) => (
-            <p key={Math.random() * 1000}>{info.title}</p>
-          ))} */}
-        </div>
         <Schedule date="Monday" />
       </div>
     </div>
