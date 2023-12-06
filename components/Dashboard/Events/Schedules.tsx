@@ -41,13 +41,13 @@ const Schedules = ({events}:props) => {
           d
         </div>
         <div className="flex flex-1">
-          <Schedule date="Monday" />
+          <Schedule/>
         </div>
       </div>
 
       {/* Mobile */}
       <div className="w-full flex phone:flex laptop:hidden">
-        <Schedule date="Monday" />
+        <Schedule/>
       </div>
     </div>
   );

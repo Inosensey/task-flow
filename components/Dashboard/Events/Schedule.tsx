@@ -7,7 +7,7 @@ import { faArrowRight, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Utils
-import { useHours } from "@/utils/useDate";
+import { useDays, useHours } from "@/utils/useDate";
 import DetailedSchedule from "./DetailedSchedule";
 import ScheduleForm from "./ScheduleForm";
 
@@ -51,7 +51,10 @@ const schedules: schedule[] = [
   },
 ];
 // 1a1a1a
-const Schedule = ({ date }: props) => {
+const Schedule = () => {
+  const date = new Date();
+  const days = useDays();
+
   // States
   const [timeHeightNumber, setTimeHeightNumber] = useState<number>(0);
   const [showDetailedSchedule, setShowDetailedSchedule] =
@@ -64,6 +67,7 @@ const Schedule = ({ date }: props) => {
     description: "",
     duration: 0,
   });
+  const [currentDate, setCurrentDate] = useState<string>(days[date.getDay()])
 
   useEffect(() => {
     if (window.innerWidth > 420) {
@@ -79,12 +83,12 @@ const Schedule = ({ date }: props) => {
     <>
       <div className="flex-1">
         <div className="text-LightSecondary py-4 px-2 border-b-2 border-LightPrimary flex justify-between items-center">
-          <p className="p-0 h-max">{date}</p>
+          <p className="p-0 h-max">{currentDate}</p>
           <motion.button
             whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.95 }}
             onClick={() => {
-              setShowScheduleForm((prev) => !prev)
+              setShowScheduleForm((prev) => !prev);
             }}
             className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1"
           >
@@ -152,7 +156,7 @@ const Schedule = ({ date }: props) => {
           {schedules.map((info: schedule, index: number) => (
             <div
               key={index}
-              className="bg-SmoothDark p-3 flex flex-col gap-2 rounded-lg text-LightSecondary mdphone:w-[48%]"
+              className="bg-SmoothDark p-3 flex flex-col gap-2 rounded-lg text-LightSecondary mdphone:w-[49%]"
             >
               <div className="phone:w-10/12 flex items-center gap-1">
                 <span className="w-4">
@@ -205,7 +209,9 @@ const Schedule = ({ date }: props) => {
 
       {/* Schedule form */}
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
-        {showScheduleForm && <ScheduleForm setShowScheduleForm={setShowScheduleForm} />}
+        {showScheduleForm && (
+          <ScheduleForm setShowScheduleForm={setShowScheduleForm} />
+        )}
       </AnimatePresence>
     </>
   );

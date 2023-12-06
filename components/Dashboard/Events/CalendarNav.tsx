@@ -23,7 +23,7 @@ const CalendarNav = () => {
   const months = useMonths();
   const getDays = useDays();
   const datesOfAMonth = getDateMonths({
-    currentDate: date,
+    currentDate: new Date(),
     selectedMonth: date.getMonth(),
   });
 
@@ -34,16 +34,18 @@ const CalendarNav = () => {
   const [currentYear, setCurrentYear] = useState<number>(date.getFullYear());
   const [showMonthList, setShowMonthList] = useState<boolean>(false);
   const [showDateList, setShowDateList] = useState<boolean>(false);
-  const [currentDate, setCurrentDate] = useState<string>("Select Date")
+  const [currentDate, setCurrentDate] = useState<string>("");
 
-  const setSelectedDate = (dateNumber:number) => {
+  const setSelectedDate = (dateNumber: number):string => {
     const date = new Date();
     date.setMonth(currentMonth);
-    date.setDate(dateNumber + 1)
+    date.setDate(dateNumber + 1);
     const dayOfWeek = date.getDay();
     const dayOfMonth = date.getDate();
-    setCurrentDate(`${dayOfMonth}, ${days[dayOfWeek]}`)
-  }
+    setCurrentDate(`${dayOfMonth}, ${days[dayOfWeek]}`);
+    return `${dayOfMonth}, ${days[dayOfWeek]}`
+  };
+
   return (
     <div className="flex text-LightSecondary items-center gap-2 border-b-2 border-LightPrimary w-full h-14 px-2">
       <div className="relative">
@@ -70,11 +72,14 @@ const CalendarNav = () => {
           {months.map((month, index) => (
             <div
               onClick={() => {
-                const getDateOfMonth = getDateMonths({currentDate: date, selectedMonth: index})
+                const getDateOfMonth = getDateMonths({
+                  currentDate: date,
+                  selectedMonth: index,
+                });
                 setCurrentMonth(index);
                 setShowMonthList(false);
                 setCurrentDate("Select Date");
-                setDatesOfMonth(getDateOfMonth)
+                setDatesOfMonth(getDateOfMonth);
               }}
               key={index}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer"
@@ -91,7 +96,7 @@ const CalendarNav = () => {
           }}
           className="rounded-md bg-SmoothDark flex justify-between px-2 items-center cursor-pointer phone:w-40 mdphone:w-44 phone:h-9"
         >
-          <p className="select-none text-sm">{currentDate}</p>
+          <p className="select-none text-sm">{currentDate === "" ? setSelectedDate(date.getDate() - 1) : currentDate}</p>
           <span
             className="transition-all"
             style={{
@@ -107,10 +112,10 @@ const CalendarNav = () => {
         >
           {datesOfMonth.map((date, index) => (
             <div
-            onClick={() => {
-              setSelectedDate(index)
-              setShowDateList(false);
-            }}
+              onClick={() => {
+                setSelectedDate(index);
+                setShowDateList(false);
+              }}
               key={index}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer"
             >
