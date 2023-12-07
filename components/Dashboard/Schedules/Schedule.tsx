@@ -11,9 +11,12 @@ import { useDays, useHours } from "@/utils/useDate";
 import DetailedSchedule from "./DetailedSchedule";
 import ScheduleForm from "./ScheduleForm";
 
+//types
+import { TableRow } from "@/Types/database.types";
+
 // Props
 type props = {
-  date: string;
+  scheduleData: TableRow<"Schedules">[] | null
 };
 type schedule = {
   timeStart: string;
@@ -23,35 +26,7 @@ type schedule = {
   duration: number;
 };
 
-// Sample data
-const schedules: schedule[] = [
-  {
-    title: "Sleep",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero quo accusantium provident amet consequuntur quam at, soluta recusandae maxime eos atque asperiores dolores quaerat veniam?",
-    timeStart: "All Day",
-    timeEnd: "",
-    duration: 1,
-  },
-  {
-    title: "Practice",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero quo accusantium provident amet consequuntur quam at, soluta recusandae maxime eos atque asperiores dolores quaerat veniam?",
-    timeStart: "8 AM",
-    timeEnd: "12 PM",
-    duration: 5,
-  },
-  {
-    title: "Second Practice",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero quo accusantium provident amet consequuntur quam at, soluta recusandae maxime eos atque asperiores dolores quaerat veniam?",
-    timeStart: "3 PM",
-    timeEnd: "5 PM",
-    duration: 3,
-  },
-];
-// 1a1a1a
-const Schedule = () => {
+const Schedule = ({scheduleData}:props) => {
   const date = new Date();
   const days = useDays();
 
@@ -60,12 +35,16 @@ const Schedule = () => {
   const [showDetailedSchedule, setShowDetailedSchedule] =
     useState<boolean>(false);
   const [showScheduleForm, setShowScheduleForm] = useState<boolean>(false);
-  const [selectedSchedule, setSelectedSchedule] = useState<schedule>({
-    timeStart: "",
-    timeEnd: "",
-    title: "",
+  const [selectedSchedule, setSelectedSchedule] = useState<TableRow<"Schedules">>({
+    created_at: "",
+    date: "",
     description: "",
-    duration: 0,
+    id: 0,
+    themeColor: "",
+    timeEnd: "",
+    timeStart: "",
+    title: "",
+    userId: null
   });
   const [currentDate, setCurrentDate] = useState<string>(days[date.getDay()])
 
@@ -106,9 +85,9 @@ const Schedule = () => {
               className="flex relative justify-center phone:h-20 mdphone:h-24"
               key={index}
             >
-              {schedules.map((info: schedule, index: number) => {
+              {scheduleData?.map((info: TableRow<"Schedules">, index: number) => {
                 if (info.timeStart === hour) {
-                  const height = timeHeightNumber * info.duration;
+                  const height = timeHeightNumber;
                   return (
                     <div
                       style={{ height: `${height}px` }}
@@ -153,7 +132,7 @@ const Schedule = () => {
 
         {/* Mobile */}
         <div className="flex flex-wrap items-center justify-between px-2 gap-2 mt-2 ">
-          {schedules.map((info: schedule, index: number) => (
+          {scheduleData?.map((info: TableRow<"Schedules">, index: number) => (
             <div
               key={index}
               className="bg-SmoothDark p-3 flex flex-col gap-2 rounded-lg text-LightSecondary mdphone:w-[49%]"

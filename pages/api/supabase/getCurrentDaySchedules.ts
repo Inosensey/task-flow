@@ -6,16 +6,15 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    let { data, error } = await useSupabase.from("Events").select("*");
-
+    let { data, error } = await useSupabase.from("Schedules").select("*").eq("date", req.body.currentDate);
     if (error) {
       console.log(error);
     }
-    const events = data;
+    const schedule = data;
     // Respond with JSON data
     return res
       .status(200)
-      .json(events);
+      .json(schedule);
   } catch (error) {
     return res.status(500).json({ message: error });
   }

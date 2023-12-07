@@ -19,7 +19,7 @@ import MaterialSymbolsMenuRounded from "@/Icones/MaterialSymbolsMenuRounded";
 
 const Sidebar = () => {
   // states
-  const [showSideBar, setShowSideBar] = useState<boolean>(true);
+  const [showSideBar, setShowSideBar] = useState<boolean>(false);
 
   // Framer motion logics
 
@@ -55,6 +55,7 @@ const Sidebar = () => {
       <motion.div
         variants={sidebarVariant}
         animate={sidebarAnimation}
+        initial={showSideBar ? "show" : "hidden"}
         className={`bg-[#1a1a1a] text-LightSecondary w-64 h-screen shadow-inner shadow-Secondary fixed z-50`}
       >
         <div className="flex items-center justify-center">

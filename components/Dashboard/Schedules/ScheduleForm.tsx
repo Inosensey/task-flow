@@ -12,7 +12,7 @@ import Input, {
 } from "@/components/ReusableComponents/inputs/Input";
 
 // Actions
-import { createEvent, getEvents } from "@/actions/eventActions";
+import { createSchedule } from "@/actions/scheduleActions";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -89,7 +89,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
         animate="show"
         exit="hidden"
         className="bg-Primary p-3 phone:w-11/12 rounded-md"
-        action={createEvent}
+        action={createSchedule}
       >
         <div className="flex justify-between items-center">
           <p className="py-0">Schedule Form</p>

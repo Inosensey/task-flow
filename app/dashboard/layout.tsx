@@ -7,7 +7,7 @@ export default function DashboardLayout({
 }) {
   return (
     <section className="flex bg-Primary">
-      {/* <Sidebar /> */}
+      <Sidebar />
       {children}
     </section>
   );

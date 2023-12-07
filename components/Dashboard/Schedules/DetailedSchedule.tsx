@@ -6,6 +6,9 @@ import { faArrowRight, faCheck, faXmark } from "@fortawesome/free-solid-svg-icon
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 
+// Types
+import { TableRow } from "@/Types/database.types";
+
 type schedule = {
   timeStart: string;
   timeEnd: string;
@@ -15,7 +18,7 @@ type schedule = {
 };
 
 type props = {
-  scheduleInfo: schedule;
+  scheduleInfo: TableRow<"Schedules">;
   setShowPopUp: React.Dispatch<React.SetStateAction<boolean>>;
 };
 

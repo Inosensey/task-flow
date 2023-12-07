@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { getEvents } from "@/actions/eventActions";
 import { useQuery, useMutationState } from "@tanstack/react-query";
 
 import { useHours } from "@/utils/useDate";
@@ -12,14 +11,14 @@ import styles from "@/css/DashboardComponent/events.module.css";
 import { TableInsert, TableRow, TableUpdate } from "@/Types/database.types";
 
 type props = {
-  events: TableRow<"Events">[]
+  schedules: TableRow<"Schedules">[] | null,
+  currentDaySchedules: TableRow<"Schedules">[] | null
 }
 
-type ScheduleInfo = TableRow<"Events">;
+type ScheduleInfo = TableRow<"Schedules">;
 
-const Schedules = ({events}:props) => {
+const Schedules = ({currentDaySchedules, schedules}:props) => {
   const hours = useHours();
-  console.log(events);
   return (
     <div className="w-full flex">
       {/* desktop */}
@@ -41,13 +40,13 @@ const Schedules = ({events}:props) => {
           d
         </div>
         <div className="flex flex-1">
-          <Schedule/>
+          <Schedule scheduleData={schedules} />
         </div>
       </div>
 
       {/* Mobile */}
       <div className="w-full flex phone:flex laptop:hidden">
-        <Schedule/>
+        <Schedule scheduleData={currentDaySchedules} />
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ export default async function handler(
   // const todoListInfo:TodoList = req.body.todoListInfo;
   const scheduleInfo = req.body;
   try {
-    let { data, error } = await useSupabase.from("Events").insert({
+    let { data, error } = await useSupabase.from("Schedules").insert({
       title: scheduleInfo.title,
       description: scheduleInfo.description,
       date: scheduleInfo.date,

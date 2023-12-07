@@ -16,23 +16,9 @@ type ScheduleInfo = {
   duration: number;
 };
 
-export const getEvents = async () => {
+export const createSchedule = async (formData: FormData) => {
   try {
-    let { data, error } = await useSupabase.from("Events").select("*");
-
-    if (error) {
-      console.log(error);
-    }
-    const events = data;
-    return events;
-  } catch (error) {
-    return error;
-  }
-};
-
-export const createEvent = async (formData: FormData) => {
-  try {
-    const scheduleInfo: TableInsert<"Events"> = {
+    const scheduleInfo: TableInsert<"Schedules"> = {
       title: formData.get('title') as string,
       description: formData.get('description') as string,
       date: formData.get('date') as string,
@@ -41,8 +27,8 @@ export const createEvent = async (formData: FormData) => {
       themeColor: "#000",
     }
     let { data, error } = await useSupabase
-      .from("Events")
-      .insert<TableInsert<"Events">>({
+      .from("Schedules")
+      .insert<TableInsert<"Schedules">>({
         title: scheduleInfo.title,
         description: scheduleInfo.description,
         date: scheduleInfo.date,
@@ -50,8 +36,8 @@ export const createEvent = async (formData: FormData) => {
         timeEnd: scheduleInfo.timeEnd,
         themeColor: scheduleInfo.themeColor
       })
-    revalidateTag("events")
-    return { message: `Added Event ${data}` }
+    revalidateTag("schedules")
+    return { message: `Added Schedule ${data}` }
   } catch (e) {
     return "Failed to create todo";
   }
