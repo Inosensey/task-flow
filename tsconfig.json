@@ -28,7 +28,8 @@
       "@/css/*": ["css/*"],
       "@/types/*": ["types/*"],
       "@/utils/*": ["utils/*"],
-      "@/actions/*": ["actions/*"]
+      "@/actions/*": ["actions/*"],
+      "@/lib/*": ["lib/*"]
     },
     "downlevelIteration": true
   },

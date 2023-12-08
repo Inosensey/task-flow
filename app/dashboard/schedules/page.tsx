@@ -5,6 +5,9 @@ import CalendarNav from "@/components/Dashboard/Schedules/CalendarNav";
 import Header from "@/components/Dashboard/Schedules/Header";
 import Schedules from "@/components/Dashboard/Schedules/Schedules";
 
+// Lib
+import { getCurrentDaySchedules, getSchedules } from "@/lib/scheduleMethods";
+
 // Types
 import { TableInsert, TableRow, TableUpdate } from "@/Types/database.types";
 interface scheduleProps {
@@ -20,25 +23,6 @@ const SchedulesPage = async () => {
     schedules: null,
     currentDaySchedules: null,
   };
-  const getSchedules = async () => {
-    const res = await fetch("http://localhost:3000/api/supabase/getSchedules", {
-      next: { tags: ["schedules"], revalidate: 300 },
-    });
-    const schedules: TableRow<"Schedules">[] = await res.json();
-    return schedules;
-  };
-  const getCurrentDaySchedules = async () => {
-    const currentDate = { currentDate: getCurrentDate() };
-    const res = await fetch("http://localhost:3000/api/supabase/getCurrentDaySchedules", {
-      next: { tags: ["schedule"], revalidate: 300 },
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(currentDate),
-    });
-    const data: TableRow<"Schedules">[] = await res.json();
-    return data;
-  };
-  // console.log(getSchedule());
 
   const schedules: TableRow<"Schedules">[] = await getSchedules();
   const currentDaySchedules: TableRow<"Schedules">[] = await getCurrentDaySchedules();
@@ -49,7 +33,7 @@ const SchedulesPage = async () => {
   };
 
   return (
-    <div>
+    <div className="w-full">
       <div className="flex flex-col w-full bg-Primary">
         <Header headerName="Calendar" />
         <CalendarNav />
