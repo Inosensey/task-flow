@@ -12,7 +12,6 @@ import { getCurrentDaySchedules, getSchedules } from "@/lib/scheduleMethods";
 import { TableInsert, TableRow, TableUpdate } from "@/Types/database.types";
 interface scheduleProps {
   schedules: TableRow<"Schedules">[] | null;
-  currentDaySchedules: TableRow<"Schedules">[] | null;
 }
 
 // Utils
@@ -20,16 +19,7 @@ import { getCurrentDate } from "@/utils/useDate";
 
 const SchedulesPage = async () => {
   let schedulePropData: scheduleProps = {
-    schedules: null,
-    currentDaySchedules: null,
-  };
-
-  const schedules: TableRow<"Schedules">[] = await getSchedules();
-  const currentDaySchedules: TableRow<"Schedules">[] = await getCurrentDaySchedules();
-
-  schedulePropData = {
-    schedules: schedules,
-    currentDaySchedules: currentDaySchedules,
+    schedules: await getSchedules(),
   };
 
   return (
@@ -39,7 +29,6 @@ const SchedulesPage = async () => {
         <CalendarNav />
         <div className="w-full relative">
           <Schedules
-            currentDaySchedules={schedulePropData.currentDaySchedules}
             schedules={schedulePropData.schedules}
           />
         </div>

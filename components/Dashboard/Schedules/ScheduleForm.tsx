@@ -4,6 +4,8 @@ import React, { FormEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
+import { useMutation,
+  useQueryClient, } from "@tanstack/react-query";
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 import Input, {
@@ -13,6 +15,7 @@ import Input, {
 
 // Actions
 import { createSchedule } from "@/actions/scheduleActions";
+import { TableRow } from "@/Types/database.types";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -28,6 +31,8 @@ type ScheduleInfo = {
 };
 
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
+  // Initial use query
+  const queryClient = useQueryClient();
 
   // States
   const [scheduleInfo, setScheduleInfo] = useState<ScheduleInfo>({
@@ -38,6 +43,20 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
     description: "",
     duration: 0,
   });
+
+  // Mutation
+  const {status, error, mutate} = useMutation({
+    mutationFn: (scheduleInfo: ScheduleInfo) => {
+      return createSchedule(scheduleInfo);
+    },
+    onSuccess: (data) => {
+      console.log(data);
+      queryClient.setQueryData(["schedules"], (oldData:TableRow<"Schedules">[]) =>
+        oldData ? [...oldData, data] : oldData
+      );
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+    },
+  })
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -83,13 +102,12 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
 
   return (
     <Overlay>
-      <motion.form
+      <motion.div
         variants={popUpVariants}
         initial="hidden"
         animate="show"
         exit="hidden"
         className="bg-Primary p-3 phone:w-11/12 rounded-md"
-        action={createSchedule}
       >
         <div className="flex justify-between items-center">
           <p className="py-0">Schedule Form</p>
@@ -155,6 +173,9 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
               whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.95 }}
               className="bg-LightPrimary w-max px-4 py-1 rounded-md flex gap-1 my-0 mx-auto"
+              onClick={() => {
+                mutate(scheduleInfo);
+              }}
             >
               Save Schedule
               <span className="w-4">
@@ -163,7 +184,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             </motion.button>
           </div>
         </div>
-      </motion.form>
+      </motion.div>
     </Overlay>
   );
 };

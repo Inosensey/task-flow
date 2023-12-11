@@ -1,23 +1,31 @@
 "use client";
 
 import React from "react";
-import { useQuery, useMutationState } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import { useHours } from "@/utils/useDate";
 import Schedule from "./Schedule";
 import styles from "@/css/DashboardComponent/events.module.css";
 
 // Types
-import { TableInsert, TableRow, TableUpdate } from "@/Types/database.types";
+import { TableRow } from "@/Types/database.types";
+import { getCurrentDaySchedules } from "@/utils/getCurrentDaySchedules";
+import { getSchedules } from "@/lib/scheduleMethods";
 
 type props = {
   schedules: TableRow<"Schedules">[] | null,
-  currentDaySchedules: TableRow<"Schedules">[] | null
 }
 
 type ScheduleInfo = TableRow<"Schedules">;
 
-const Schedules = ({currentDaySchedules, schedules}:props) => {
+const Schedules = ({schedules}:props) => {
+  console.log(schedules);
+  const {data, error, isFetched} = useQuery({
+    queryKey: ["schedules"],
+    queryFn: getSchedules,
+    initialData: schedules
+  })
+  const currentDaySchedules = getCurrentDaySchedules(schedules)
   const hours = useHours();
   return (
     <div className="w-full flex">
@@ -40,7 +48,7 @@ const Schedules = ({currentDaySchedules, schedules}:props) => {
           d
         </div>
         <div className="flex flex-1">
-          <Schedule scheduleData={schedules} />
+          <Schedule scheduleData={data} />
         </div>
       </div>
 
