@@ -12,6 +12,9 @@ import { TableRow } from "@/Types/database.types";
 import { getCurrentDaySchedules } from "@/utils/getCurrentDaySchedules";
 import { getSchedules } from "@/lib/scheduleMethods";
 
+// Store
+import {useDateStore} from "@/store/useDateStore";
+
 type props = {
   schedules: TableRow<"Schedules">[] | null,
 }
@@ -19,13 +22,13 @@ type props = {
 type ScheduleInfo = TableRow<"Schedules">;
 
 const Schedules = ({schedules}:props) => {
-  console.log(schedules);
+  const {dateSelected} = useDateStore();
   const {data, error, isFetched} = useQuery({
     queryKey: ["schedules"],
     queryFn: getSchedules,
     initialData: schedules
   })
-  const currentDaySchedules = getCurrentDaySchedules(schedules)
+  const currentDaySchedules = getCurrentDaySchedules(schedules, dateSelected)
   const hours = useHours();
   return (
     <div className="w-full flex">

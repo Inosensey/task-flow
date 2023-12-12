@@ -29,7 +29,8 @@
       "@/types/*": ["types/*"],
       "@/utils/*": ["utils/*"],
       "@/actions/*": ["actions/*"],
-      "@/lib/*": ["lib/*"]
+      "@/lib/*": ["lib/*"],
+      "@/store/*": ["store/*"]
     },
     "downlevelIteration": true
   },

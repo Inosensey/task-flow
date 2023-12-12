@@ -8,7 +8,7 @@ import styles from "@/css/DashboardComponent/Events.module.css";
 import MaterialSymbolsArrowBackIosNewRounded from "@/Icones/MaterialSymbolsArrowBackIosNewRounded";
 
 // Utils
-import getDate, { useDays, useMonths, getDateMonths } from "@/utils/useDate";
+import getDate, { useDays, useMonths, getDateMonths, getCurrentDate } from "@/utils/useDate";
 
 // Types
 interface dateType {
@@ -18,6 +18,9 @@ interface dateType {
   year: number;
 }
 
+// store
+import {useDateStore} from "@/store/useDateStore";
+
 const CalendarNav = () => {
   const date = new Date();
   const months = useMonths();
@@ -26,6 +29,7 @@ const CalendarNav = () => {
     currentDate: new Date(),
     selectedMonth: date.getMonth(),
   });
+  const {setDate} = useDateStore();
 
   // States
   const [days, setDays] = useState<string[]>(getDays);
@@ -36,13 +40,15 @@ const CalendarNav = () => {
   const [showDateList, setShowDateList] = useState<boolean>(false);
   const [currentDate, setCurrentDate] = useState<string>("");
 
-  const setSelectedDate = (dateNumber: number):string => {
+  const setSelectedDate = (dateNumber: number = 0):string => {
     const date = new Date();
     date.setMonth(currentMonth);
     date.setDate(dateNumber + 1);
     const dayOfWeek = date.getDay();
     const dayOfMonth = date.getDate();
+    const dateSelected = getCurrentDate(date)
     setCurrentDate(`${dayOfMonth}, ${days[dayOfWeek]}`);
+    setDate(dateSelected)
     return `${dayOfMonth}, ${days[dayOfWeek]}`
   };
 
@@ -78,7 +84,7 @@ const CalendarNav = () => {
                 });
                 setCurrentMonth(index);
                 setShowMonthList(false);
-                setCurrentDate("Select Date");
+                setSelectedDate()
                 setDatesOfMonth(getDateOfMonth);
               }}
               key={index}
@@ -115,6 +121,7 @@ const CalendarNav = () => {
               onClick={() => {
                 setSelectedDate(index);
                 setShowDateList(false);
+
               }}
               key={index}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer"
