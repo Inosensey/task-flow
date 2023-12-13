@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Playfair_Display, Roboto } from "next/font/google";
 import Providers from "@/utils/Providers";
+import SlideDownNotification from "@/components/Notification/SlideDownNotification";
 
 export const metadata = {
   title: "Task Flow",
@@ -29,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={roboto.className}>
+        <SlideDownNotification />
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -4,8 +4,7 @@ import React, { FormEvent, useState } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
-import { useMutation,
-  useQueryClient, } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 import Input, {
@@ -16,6 +15,10 @@ import Input, {
 // Actions
 import { createSchedule } from "@/actions/scheduleActions";
 import { TableRow } from "@/Types/database.types";
+import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
+
+// Import
+import { useNotificationStore } from "@/store/useNotificationStore"
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -30,33 +33,50 @@ type ScheduleInfo = {
   duration: number;
 };
 
+// Initial data for state
+const initialScheduleInfo = {
+  date: "",
+  timeStart: "",
+  timeEnd: "",
+  title: "",
+  description: "",
+  duration: 0,
+}
+
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
   // Initial use query
   const queryClient = useQueryClient();
 
+  const {setMessage, setShowSlideNotification} = useNotificationStore();
+  
+  const showNotificationTimer = () => {  
+    const interval = setInterval(setShowSlideNotification, 3000);
+  
+    return () => clearInterval(interval);
+  }
+
   // States
-  const [scheduleInfo, setScheduleInfo] = useState<ScheduleInfo>({
-    date: "",
-    timeStart: "",
-    timeEnd: "",
-    title: "",
-    description: "",
-    duration: 0,
-  });
+  const [scheduleInfo, setScheduleInfo] = useState<ScheduleInfo>(initialScheduleInfo);
 
   // Mutation
-  const {status, error, mutate} = useMutation({
+  const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
     mutationFn: (scheduleInfo: ScheduleInfo) => {
       return createSchedule(scheduleInfo);
     },
     onSuccess: (data) => {
-      console.log(data);
-      queryClient.setQueryData(["schedules"], (oldData:TableRow<"Schedules">[]) =>
-        oldData ? [...oldData, data] : oldData
+      setScheduleInfo(initialScheduleInfo);
+      setShowScheduleForm(false);
+      setMessage("Schedule Successfully Added")
+      setShowSlideNotification()
+      showNotificationTimer();
+      queryClient.setQueryData(
+        ["schedules"],
+        (oldData: TableRow<"Schedules">[]) =>
+          oldData ? [...oldData, data] : oldData
       );
       queryClient.invalidateQueries({ queryKey: ["schedules"] });
     },
-  })
+  });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -77,7 +97,6 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
       [name]: value,
     }));
   };
-
   // Variants
   const popUpVariants = {
     hidden: {
@@ -172,15 +191,28 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             <motion.button
               whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.95 }}
-              className="bg-LightPrimary w-max px-4 py-1 rounded-md flex gap-1 my-0 mx-auto"
+              className={`${isIdle || isSuccess ? "bg-LightPrimary text-LightSecondary" : ""} ${isPending && "bg-LightPrimaryDisabled text-Disabled"}  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
               onClick={() => {
                 mutate(scheduleInfo);
               }}
             >
-              Save Schedule
-              <span className="w-4">
-                <FontAwesomeIcon className="text-sm" icon={faCalendarPlus} />
-              </span>
+              {isIdle || isSuccess ? (
+                <>
+                  <span className="w-4">
+                    <FontAwesomeIcon
+                      className="text-sm"
+                      icon={faCalendarPlus}
+                    />
+                  </span>
+                  Save Schedule
+                </>
+              ) : ""}
+              {isPending && (
+                <>
+                  <SvgSpinnersBlocksShuffle3 />
+                  Saving Schedule
+                </>
+              )}
             </motion.button>
           </div>
         </div>
