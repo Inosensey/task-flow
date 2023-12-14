@@ -11,6 +11,6 @@ export const useNotificationStore = create<StoreType>((set) => ({
   showSlideNotification: false,
   message: "Message here",
   setShowSlideNotification: () =>
-    set((showSlideNotification) => ({ showSlideNotification: !showSlideNotification === false ? true : false })),
+    set((state) => ({ showSlideNotification: state.showSlideNotification === false ? true : false })),
   setMessage: (message) => set(() => ({ message: message })),
 }));

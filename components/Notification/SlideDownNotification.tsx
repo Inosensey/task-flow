@@ -8,6 +8,7 @@ import { useNotificationStore } from "@/store/useNotificationStore";
 
 const SlideDownNotification = () => {
   const { showSlideNotification, message } = useNotificationStore();
+
   // Variants
   const slideNotificationVariants = {
     hidden: {

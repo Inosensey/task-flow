@@ -48,12 +48,6 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
   const queryClient = useQueryClient();
 
   const {setMessage, setShowSlideNotification} = useNotificationStore();
-  
-  const showNotificationTimer = () => {  
-    const interval = setInterval(setShowSlideNotification, 3000);
-  
-    return () => clearInterval(interval);
-  }
 
   // States
   const [scheduleInfo, setScheduleInfo] = useState<ScheduleInfo>(initialScheduleInfo);
@@ -65,10 +59,10 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
     },
     onSuccess: (data) => {
       setScheduleInfo(initialScheduleInfo);
-      setShowScheduleForm(false);
       setMessage("Schedule Successfully Added")
       setShowSlideNotification()
-      showNotificationTimer();
+      hideNotificationTimer();
+      setShowScheduleForm(false);
       queryClient.setQueryData(
         ["schedules"],
         (oldData: TableRow<"Schedules">[]) =>
@@ -77,6 +71,11 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
       queryClient.invalidateQueries({ queryKey: ["schedules"] });
     },
   });
+  
+  const hideNotificationTimer = () => {  
+    const interval = setTimeout(setShowSlideNotification, 5000);
+    return () => clearTimeout(interval);
+  }
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
