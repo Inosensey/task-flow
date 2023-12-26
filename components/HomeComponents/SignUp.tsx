@@ -1,9 +1,8 @@
 import React, { useState, CSSProperties } from "react";
 import { motion } from "framer-motion";
-import { useMutation } from "react-query";
 import axios, { Axios } from "axios";
 import HashLoader from "react-spinners/HashLoader";
-import { useQueryClient } from "react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 // Components
 import FirstStep from "./SignUpSteps/FirstStep";
@@ -85,7 +84,7 @@ const SignUp = ({ setCurrentForm }: props) => {
 
   return (
     <>
-      {mutation.isLoading ? (
+      {mutation.isPending ? (
         <Loading
           isLoading={true}
           message="Setting Up Your Task Command Center 🚀"

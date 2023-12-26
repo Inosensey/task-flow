@@ -5,6 +5,12 @@ import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  GoogleMap,
+  InfoWindowF,
+  MarkerF,
+  useJsApiLoader,
+} from "@react-google-maps/api";
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 import Input, {
@@ -18,7 +24,7 @@ import { TableRow } from "@/Types/database.types";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
 // Import
-import { useNotificationStore } from "@/store/useNotificationStore"
+import { useNotificationStore } from "@/store/useNotificationStore";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,16 +47,35 @@ const initialScheduleInfo = {
   title: "",
   description: "",
   duration: 0,
-}
+};
+
+const containerStyle = {
+  width: "400px",
+  height: "400px",
+};
+
+const center = {
+  lat: -3.745,
+  lng: -38.523,
+};
 
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
   // Initial use query
   const queryClient = useQueryClient();
 
-  const {setMessage, setShowSlideNotification} = useNotificationStore();
+  // Google map api
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
+
+  console.log(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
+
+  const { setMessage, setShowSlideNotification } = useNotificationStore();
 
   // States
-  const [scheduleInfo, setScheduleInfo] = useState<ScheduleInfo>(initialScheduleInfo);
+  const [scheduleInfo, setScheduleInfo] =
+    useState<ScheduleInfo>(initialScheduleInfo);
 
   // Mutation
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
@@ -59,8 +84,8 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
     },
     onSuccess: (data) => {
       setScheduleInfo(initialScheduleInfo);
-      setMessage("Schedule Successfully Added")
-      setShowSlideNotification()
+      setMessage("Schedule Successfully Added");
+      setShowSlideNotification();
       hideNotificationTimer();
       setShowScheduleForm(false);
       queryClient.setQueryData(
@@ -71,11 +96,11 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
       queryClient.invalidateQueries({ queryKey: ["schedules"] });
     },
   });
-  
-  const hideNotificationTimer = () => {  
+
+  const hideNotificationTimer = () => {
     const interval = setTimeout(setShowSlideNotification, 5000);
     return () => clearTimeout(interval);
-  }
+  };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -186,11 +211,22 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
               onBlur={handleInputChange}
             />
           </div>
+          {isLoaded && (
+            <GoogleMap
+              mapContainerStyle={containerStyle}
+              center={center}
+              zoom={10}
+            ></GoogleMap>
+          )}
           <div>
             <motion.button
               whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.95 }}
-              className={`${isIdle || isSuccess ? "bg-LightPrimary text-LightSecondary" : ""} ${isPending && "bg-LightPrimaryDisabled text-Disabled"}  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
+              className={`${
+                isIdle || isSuccess ? "bg-LightPrimary text-LightSecondary" : ""
+              } ${
+                isPending && "bg-LightPrimaryDisabled text-Disabled"
+              }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
               onClick={() => {
                 mutate(scheduleInfo);
               }}
@@ -205,7 +241,9 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
                   </span>
                   Save Schedule
                 </>
-              ) : ""}
+              ) : (
+                ""
+              )}
               {isPending && (
                 <>
                   <SvgSpinnersBlocksShuffle3 />
