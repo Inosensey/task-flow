@@ -1,16 +1,10 @@
 "use client";
 
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  GoogleMap,
-  InfoWindowF,
-  MarkerF,
-  useJsApiLoader,
-} from "@react-google-maps/api";
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 import Input, {
@@ -25,6 +19,7 @@ import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
 // Import
 import { useNotificationStore } from "@/store/useNotificationStore";
+import useDebounce from "@/utils/useDebounce";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -49,27 +44,15 @@ const initialScheduleInfo = {
   duration: 0,
 };
 
-const containerStyle = {
-  width: "400px",
-  height: "400px",
-};
-
-const center = {
-  lat: -3.745,
-  lng: -38.523,
-};
-
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
-  // Initial use query
-  const queryClient = useQueryClient();
-
-  // Google map api
-  const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  // Example usage:
+  const debouncedFunction = useDebounce({
+    callBack: () => console.log("Hello World!"),
+    delay: 1000,
   });
 
-  console.log(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
+  // Initial use query
+  const queryClient = useQueryClient();
 
   const { setMessage, setShowSlideNotification } = useNotificationStore();
 
@@ -103,6 +86,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    debouncedFunction(); // 'Hello World!' is logged after 1 second
     const { name, value } = event.target;
 
     setScheduleInfo((prev) => ({
@@ -211,13 +195,6 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
               onBlur={handleInputChange}
             />
           </div>
-          {isLoaded && (
-            <GoogleMap
-              mapContainerStyle={containerStyle}
-              center={center}
-              zoom={10}
-            ></GoogleMap>
-          )}
           <div>
             <motion.button
               whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
