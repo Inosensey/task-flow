@@ -20,6 +20,7 @@ import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 // Import
 import { useNotificationStore } from "@/store/useNotificationStore";
 import useDebounce from "@/utils/useDebounce";
+import LocationInput from "@/components/ReusableComponents/inputs/LocationInput";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -194,6 +195,9 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
               onChange={handleInputChange}
               onBlur={handleInputChange}
             />
+          </div>
+          <div>
+            <LocationInput />
           </div>
           <div>
             <motion.button
