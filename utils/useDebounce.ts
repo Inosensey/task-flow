@@ -1,17 +1,21 @@
 interface DebounceProps {
-  callBack: (...args: any[]) => void;
+  callBack: (place: string) => void | Promise<void>;
   delay: number;
 }
 
-const useDebounce = ({ callBack, delay }: DebounceProps) => {
-  let timeOutId: NodeJS.Timeout;
-
-  return (...args: any[]) => {
-    clearTimeout(timeOutId);
-    timeOutId = setTimeout(() => {
-      callBack(...args);
+const useDebounce = (
+  callBack: (place: string) => void | Promise<void>,
+  delay: number
+) => {
+  const debounceCallback = (value: string) => {
+    const timeoutId = setTimeout(async () => {
+      await callBack(value);
     }, delay);
+
+    return () => clearTimeout(timeoutId);
   };
+
+  return debounceCallback;
 };
 
 export default useDebounce;

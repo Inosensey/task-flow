@@ -46,11 +46,6 @@ const initialScheduleInfo = {
 };
 
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
-  // Example usage:
-  const debouncedFunction = useDebounce({
-    callBack: () => console.log("Hello World!"),
-    delay: 1000,
-  });
 
   // Initial use query
   const queryClient = useQueryClient();
@@ -87,7 +82,6 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    debouncedFunction(); // 'Hello World!' is logged after 1 second
     const { name, value } = event.target;
 
     setScheduleInfo((prev) => ({

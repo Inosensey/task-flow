@@ -9,8 +9,9 @@ interface inputParams<T> {
   label: string;
   valid: null | boolean;
   validationMessage?: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onInput?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 interface timeInputParams {
@@ -38,6 +39,7 @@ const Input = <T extends string | number>({
   name,
   onChange,
   onBlur,
+  onInput,
   placeholder,
   label,
   valid,
@@ -51,6 +53,7 @@ const Input = <T extends string | number>({
           value={state}
           onChange={onChange}
           onBlur={onBlur}
+          onInput={onInput}
           type={type}
           name={name}
           placeholder={placeholder}
