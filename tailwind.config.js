@@ -23,14 +23,15 @@ module.exports = {
       colors: {
         Primary: '#222831',
         Secondary: '#393E46',
+        SmoothSecondary: '#2e3238',
         LightPrimary: '#00ADB5',
         LightPrimaryDisabled: '#006166',
         LightSecondary: '#EEEEEE',
         Disabled: '#b3b3b3',
-        TextDisabled: "#cccccc",
-        SmoothDark: "#1a1a1a",
-        Success: "#248f24",
-        Error: "#ff4d4d"
+        TextDisabled: '#cccccc',
+        SmoothDark: '#1a1a1a',
+        Success: '#248f24',
+        Error: '#ff4d4d'
       },
       fontFamily: {
         Roboto: ['var(--font-roboto)'],
