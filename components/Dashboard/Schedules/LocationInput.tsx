@@ -1,16 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 // Import components
-import Input from "./Input";
+import Input from "@/components/ReusableComponents/inputs/Input";
 import debounce from "@/utils/useDebounce";
 
 // Import utils
 import { AutoCompleteLocation } from "@/utils/useLocations";
-import supportedCategories from "@/utils/supportedCatList";
+import supportedCategories, {
+  formatCategoryKey,
+} from "@/utils/supportedCatList";
 
 // Import icones
 import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocationCityRounded";
-
+import CategorySelect from "./CategorySelect";
 
 // Types
 type locationInputType = {
@@ -36,6 +38,11 @@ type locationInfoType = {
 interface locationListType {
   locations: locationInfoType[];
 }
+interface supportedCategoriesType {
+  key: string;
+  Description: string | null;
+  categories: Array<string>;
+}
 
 // State Initials
 const locationInfoInitial: locationInputType = {
@@ -52,7 +59,6 @@ const LocationInput = () => {
   >(undefined);
   const [runAutoComplete, setRunAutoComplete] = useState<boolean>(false);
   const [showSupportedCat, setShowSupportedCat] = useState<boolean>(false);
-  const [selectedCategories, setSelectedCategories] = useState<string>("");
 
   const HandleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -79,7 +85,7 @@ const LocationInput = () => {
   }, [locationInfo.city, runAutoComplete]);
   return (
     <div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-2">
         <Input
           state={locationInfo.city}
           type="text"
@@ -113,9 +119,12 @@ const LocationInput = () => {
             ))}
           </div>
         )}
-        <div>
-          <p className="phone:text-sm">Categories</p>
-        </div>
+        {showSupportedCat && (
+          <div>
+            <p className="phone:text-sm">Place Information</p>
+            <CategorySelect />
+          </div>
+        )}
       </div>
     </div>
   );

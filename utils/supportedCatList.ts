@@ -1,4 +1,10 @@
-const supportedCategories = [
+interface supportedCategoriesType {
+  key: string;
+  Description: string | null;
+  categories: Array<string>;
+}
+
+const supportedCategories: supportedCategoriesType[] = [
   {
     key: "accommodation",
     Description: "Place to stay or live",
@@ -588,7 +594,7 @@ const supportedCategories = [
   {
     key: "religion",
     Description:
-      "Places that are associated with a particular faith or religious institution, such as churches, mosques, synagogues, temples, and other places of worship",
+      "Places that are associated with a particular faith or religious institution.",
     categories: [
       "religion.place_of_worship",
       "religion.place_of_worship.buddhism",
@@ -644,7 +650,7 @@ const supportedCategories = [
   },
   {
     key: "airport",
-    Description: "",
+    Description: null,
     categories: ["airport.international"],
   },
   {
@@ -779,5 +785,21 @@ const supportedCategories = [
     ],
   },
 ];
+
+export const formatCategoryKey = (key:string) => {
+  const words = key.split('_');
+  const capitalizedWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+  return capitalizedWords.join(' ');
+};
+
+export const formatPlacesType = (key:string) => {
+  const words = key.split('.');
+  // If there is at least one word after the period, capitalize each word
+  if (words.length > 1) {
+    const capitalizedWords = words[1].split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1));
+    return capitalizedWords.join(' ');
+  }
+  return key;
+}; 
 
 export default supportedCategories;

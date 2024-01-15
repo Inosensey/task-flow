@@ -20,7 +20,7 @@ import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 // Import
 import { useNotificationStore } from "@/store/useNotificationStore";
 import useDebounce from "@/utils/useDebounce";
-import LocationInput from "@/components/ReusableComponents/inputs/LocationInput";
+import LocationInput from "@/components/Dashboard/Schedules/LocationInput";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -46,7 +46,6 @@ const initialScheduleInfo = {
 };
 
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
-
   // Initial use query
   const queryClient = useQueryClient();
 
