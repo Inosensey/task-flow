@@ -5,7 +5,7 @@ import Input from "@/components/ReusableComponents/inputs/Input";
 import debounce from "@/utils/useDebounce";
 
 // Import utils
-import { AutoCompleteLocation } from "@/utils/useLocations";
+import { AutoCompleteLocation } from "@/lib/locationMethods";
 import supportedCategories, {
   formatCategoryKey,
 } from "@/utils/supportedCatList";
@@ -13,6 +13,7 @@ import supportedCategories, {
 // Import icones
 import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocationCityRounded";
 import CategorySelect from "./CategorySelect";
+import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
 // Types
 type locationInputType = {
@@ -34,14 +35,10 @@ type locationInfoType = {
   address_line1: string;
   address_line2: string;
   category: string;
+  place_id: string;
 };
 interface locationListType {
   locations: locationInfoType[];
-}
-interface supportedCategoriesType {
-  key: string;
-  Description: string | null;
-  categories: Array<string>;
 }
 
 // State Initials
@@ -51,7 +48,6 @@ const locationInfoInitial: locationInputType = {
 };
 
 const LocationInput = () => {
-  console.log(supportedCategories);
   const [locationInfo, setLocationInfo] =
     useState<locationInputType>(locationInfoInitial);
   const [locationList, setLocationList] = useState<
@@ -59,6 +55,9 @@ const LocationInput = () => {
   >(undefined);
   const [runAutoComplete, setRunAutoComplete] = useState<boolean>(false);
   const [showSupportedCat, setShowSupportedCat] = useState<boolean>(false);
+  const [autoCompleteRunning, setAutoCompleteRunning] =
+    useState<boolean>(false);
+  const [placeId, setPlaceId] = useState<string>("");
 
   const HandleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -73,7 +72,9 @@ const LocationInput = () => {
     } else {
       const debouncedAutoComplete = debounce(async (place: string) => {
         if (!runAutoComplete) return;
+        setAutoCompleteRunning(true);
         const response = await AutoCompleteLocation(place);
+        setAutoCompleteRunning(false);
         // console.log(response.results)
         setShowSupportedCat(false);
         setLocationList({ locations: response.results });
@@ -86,16 +87,23 @@ const LocationInput = () => {
   return (
     <div>
       <div className="flex flex-col gap-2">
-        <Input
-          state={locationInfo.city}
-          type="text"
-          name="city"
-          placeholder="Enter the City you are in"
-          label="City"
-          onChange={HandleInputChange}
-          valid={null}
-          validationMessage={""}
-        />
+        <div className="relative">
+          <Input
+            state={locationInfo.city}
+            type="text"
+            name="city"
+            placeholder="Enter the City you are in"
+            label="City"
+            onChange={HandleInputChange}
+            valid={null}
+            validationMessage={""}
+          />
+          {autoCompleteRunning && (
+            <div className="absolute bottom-[0.6rem] right-10">
+              <SvgSpinnersBlocksShuffle3 color="#00ADB5" />
+            </div>
+          )}
+        </div>
         {locationList?.locations && (
           <div className="flex flex-col gap-1 phone:text-sm phone:w-11/12">
             {locationList?.locations.map((info: locationInfoType) => (
@@ -108,6 +116,7 @@ const LocationInput = () => {
                   setLocationList(undefined);
                   setRunAutoComplete(false);
                   setShowSupportedCat(true);
+                  setPlaceId(info.place_id);
                 }}
               >
                 <MaterialSymbolsLocationCityRounded color="#00ADB5" />
@@ -122,7 +131,7 @@ const LocationInput = () => {
         {showSupportedCat && (
           <div>
             <p className="phone:text-sm">Place Information</p>
-            <CategorySelect />
+            <CategorySelect place_id={placeId} />
           </div>
         )}
       </div>

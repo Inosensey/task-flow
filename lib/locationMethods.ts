@@ -1,4 +1,4 @@
-// https://api.geoapify.com/v1/geocode/autocomplete?text=YOUR_TEXT&limit=5&type=city&filter=countrycode:ph&format=json&apiKey=YOUR_API_KEY
+
 
 export const AutoCompleteLocation = async (place: string | any) => {
   const res = await fetch(`
@@ -7,3 +7,12 @@ export const AutoCompleteLocation = async (place: string | any) => {
   const suggestedPlaces: any = await res.json();
   return suggestedPlaces;
 };
+
+
+export const GetListOfPlaces = async (place:string, categories:string) => {
+  const res = await fetch(`
+    ${process.env.GEOAPIFY_PLACES_API}?categories=${categories}&filter=place:${place}&limit=100&apiKey=${process.env.GEOAPIFY_API_KEY}
+  `)
+  const ListOfPlaces = await res.json();
+  return ListOfPlaces;
+}
