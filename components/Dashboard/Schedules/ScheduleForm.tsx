@@ -4,23 +4,27 @@ import React, { FormEvent, useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 import Input, {
   TextareaInput,
   TimeInput,
 } from "@/components/ReusableComponents/inputs/Input";
+import LocationInput from "@/components/Dashboard/Schedules/LocationInput";
+import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
 // Actions
 import { createSchedule } from "@/actions/scheduleActions";
-import { TableRow } from "@/Types/database.types";
-import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
-// Import
+// Types
+import { TableRow } from "@/Types/database.types";
+
+// store
 import { useNotificationStore } from "@/store/useNotificationStore";
+
+// Utils
 import useDebounce from "@/utils/useDebounce";
-import LocationInput from "@/components/Dashboard/Schedules/LocationInput";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;

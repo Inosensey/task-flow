@@ -6,7 +6,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    let { data, error } = await useSupabase.from("LocationCategories").select("*");
+    let { data, error } = await useSupabase.from("LocationCategories").select(`*`);
     if (error) {
       console.log(error);
     }
@@ -19,3 +19,10 @@ export default async function handler(
     return res.status(500).json({ message: error });
   }
 }
+
+
+// const { data, error } = await supabase.from('countries').select(`
+//   id, 
+//   name, 
+//   cities ( id, name )
+// `)

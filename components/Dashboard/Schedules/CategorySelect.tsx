@@ -1,19 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+
+// Libs
+import { getLocationCategories, getLocationKeys } from "@/lib/locationMethods";
+import { GetListOfPlaces } from "@/lib/locationMethods";
 
 // Utils
 import supportedCategories, {
-  formatCategoryKey,
-  formatPlacesType,
+  formatLocationName,
 } from "@/utils/supportedCatList";
-import { GetListOfPlaces } from "@/lib/locationMethods";
 
 // icones
 import MaterialSymbolsArrowBackIosNewRounded from "@/Icones/MaterialSymbolsArrowBackIosNewRounded";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
+// Type
+import { TableRow } from "@/Types/database.types";
+
+interface locationCategories {
+  category: string;
+  locationKeys: {
+    key: string;
+  };
+}
+interface locationKey {
+  locationKeys: TableRow<"LocationKeys">[] | null;
+}
 interface supportedCategoriesType {
   key: string;
   Description: string | null;
@@ -55,19 +69,37 @@ const CategorySelect = ({ place_id }: props) => {
   // Initialize query client
   const queryClient = useQueryClient();
 
+  // Use Query
+  const { data: locationKeyData } = useQuery({
+    queryKey: ["locationKeys"],
+    queryFn: getLocationKeys,
+  });
+  const { data: locationCategoriesData } = useQuery({
+    queryKey: ["locationCategories"],
+    queryFn: getLocationCategories,
+  });
+
   // State
   const [showChoices, setShowChoices] = useState<boolean>(false);
   const [showPlacesType, setShowPlacesType] = useState<boolean>(false);
   const [showPlaceList, setShowPlaceList] = useState<boolean>(false);
-  const [selectedChoice, setSelectedChoice] = useState<string>("Places");
-  const [selectedTypeOfPlace, setSelectedTypeOfPlace] =
-    useState<string>("Type of Place");
+  const [selectedChoice, setSelectedChoice] = useState<{
+    key: string | null;
+    id: number;
+  } | null>({ key: "Places", id: 0 });
+  const [selectedTypeOfPlace, setSelectedTypeOfPlace] = useState<string | null>(
+    "Type of Place"
+  );
   const [selectedPlace, setSelectedPlace] = useState<string>("Place List");
   const [listPlace, setListPlace] = useState<PlaceList | undefined>(undefined);
   const [isGettingListPlaces, setIsGettingListPlaces] =
     useState<boolean>(false);
 
-  const handlePlaceTypeChange = async (place: string, categories: string) => {
+  const handlePlaceTypeChange = async (
+    place: string,
+    categories: string | null
+  ) => {
+    if (!categories) return;
     queryClient.invalidateQueries({ queryKey: ["placesList"] });
     setIsGettingListPlaces(true);
     const data: PlaceList = await queryClient.fetchQuery({
@@ -89,7 +121,7 @@ const CategorySelect = ({ place_id }: props) => {
           className="rounded-md bg-Secondary flex justify-between px-2 items-center cursor-pointer phone:h-9 "
         >
           <p className="select-none text-sm">
-            {formatCategoryKey(selectedChoice)}
+            {formatLocationName(selectedChoice?.key)}
           </p>
           <span
             className="transition-all"
@@ -104,21 +136,26 @@ const CategorySelect = ({ place_id }: props) => {
           style={{ maxHeight: showChoices ? "224px" : "0px" }}
           className="phone:text-sm transition-all rounded-md absolute top-10 bg-Secondary overflow-auto z-[100] w-full"
         >
-          {supportedCategories.map((category: supportedCategoriesType) => (
+          {locationKeyData?.map((category: TableRow<"LocationKeys">) => (
             <div
               onClick={() => {
-                setSelectedChoice(category.key);
+                // setSelectedChoice(category.key);
+                setSelectedChoice((selectedChoicePrev) => ({
+                  ...selectedChoicePrev,
+                  key: category.key,
+                  id: category.id,
+                }));
                 setShowChoices((prev) => !prev);
               }}
               key={category.key}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >
               <p className="select-none">
-                {formatCategoryKey(category.key)}
-                {category.Description !== null && (
+                {formatLocationName(category.key)}
+                {category.description !== null && (
                   <span className="text-xs text-[#ccc]">
                     {" "}
-                    - {category.Description}
+                    - {category.description}
                   </span>
                 )}
               </p>
@@ -129,7 +166,7 @@ const CategorySelect = ({ place_id }: props) => {
       {/* Categories Select code end */}
 
       {/* Places type select code */}
-      {selectedChoice !== "Places" && (
+      {selectedChoice?.key !== "Places" && (
         <div className="relative phone:w-11/12">
           <div
             onClick={() => {
@@ -138,7 +175,7 @@ const CategorySelect = ({ place_id }: props) => {
             className="rounded-md bg-Secondary flex justify-between px-2 items-center cursor-pointer phone:h-9 "
           >
             <p className="select-none text-sm">
-              {formatPlacesType(selectedTypeOfPlace)}
+              {formatLocationName(selectedTypeOfPlace)}
             </p>
             <span
               className="transition-all"
@@ -153,22 +190,24 @@ const CategorySelect = ({ place_id }: props) => {
             style={{ maxHeight: showPlacesType ? "224px" : "0px" }}
             className="phone:text-sm transition-all rounded-md absolute top-10 bg-Secondary overflow-auto z-[100] w-full"
           >
-            {supportedCategories.map(
-              (category: supportedCategoriesType) =>
-                selectedChoice === category.key &&
-                category.categories.map((placeType: string) => (
+            {locationCategoriesData?.map(
+              (info: TableRow<"LocationCategories">) =>
+                selectedChoice?.id === info.keyId && (
                   <div
                     onClick={() => {
-                      setSelectedTypeOfPlace(placeType);
+                      const SelectedPlaceType = `${selectedChoice.key}.${info.category}`;
+                      setSelectedTypeOfPlace(info.category);
                       setShowPlacesType((prev) => !prev);
-                      handlePlaceTypeChange(place_id, placeType);
+                      handlePlaceTypeChange(place_id, SelectedPlaceType);
                     }}
-                    key={placeType}
+                    key={info.id}
                     className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
                   >
-                    <p className="select-none">{formatPlacesType(placeType)}</p>
+                    <p className="select-none">
+                      {formatLocationName(info.category)}
+                    </p>
                   </div>
-                ))
+                )
             )}
           </div>
         </div>
@@ -195,7 +234,7 @@ const CategorySelect = ({ place_id }: props) => {
               </div>
             ) : (
               <p className="select-none text-sm">
-                {formatPlacesType(selectedPlace)}
+                {formatLocationName(selectedPlace)}
               </p>
             )}
             {!isGettingListPlaces && (
@@ -213,16 +252,24 @@ const CategorySelect = ({ place_id }: props) => {
             style={{ maxHeight: showPlaceList ? "224px" : "0px" }}
             className="phone:text-sm transition-all rounded-md absolute top-10 bg-Secondary overflow-auto z-[100] w-full"
           >
-            {listPlace?.features.map((place: Feature) => (
-              <div
-                key={place.properties.place_id}
-                className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
-              >
+            {listPlace?.features ? (
+              listPlace?.features.map((place: Feature) => (
+                <div
+                  key={place.properties.place_id}
+                  className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
+                >
+                  <p className="select-none">
+                    {formatLocationName(place.properties.address_line1)}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <div className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary">
                 <p className="select-none">
-                  {formatPlacesType(place.properties.address_line1)}
+                  The selected city doesn&lsquo;t have this place
                 </p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       )}

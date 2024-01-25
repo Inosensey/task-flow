@@ -451,7 +451,8 @@ const supportedCategories: supportedCategoriesType[] = [
   },
 ];
 
-export const formatCategoryKey = (key: string) => {
+export const formatLocationName = (key: string | null | undefined) => {
+  if (!key) return
   const words = key.split("_");
   const capitalizedWords = words.map(
     (word) => word.charAt(0).toUpperCase() + word.slice(1)
@@ -459,16 +460,13 @@ export const formatCategoryKey = (key: string) => {
   return capitalizedWords.join(" ");
 };
 
-export const formatPlacesType = (key: string) => {
-  const words = key.split(".");
-  // If there is at least one word after the period, capitalize each word
-  if (words.length > 1) {
-    const capitalizedWords = words[1]
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1));
-    return capitalizedWords.join(" ");
-  }
-  return key;
+export const formatPlacesType = (key: string | null | undefined) => {
+  if (!key) return
+  const words = key.split("_");
+  const capitalizedWords = words.map(
+    (word) => word.charAt(0).toUpperCase() + word.slice(1)
+  );
+  return capitalizedWords.join(" ");
 };
 
 export default supportedCategories;

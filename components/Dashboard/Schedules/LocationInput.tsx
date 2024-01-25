@@ -2,13 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 
 // Import components
 import Input from "@/components/ReusableComponents/inputs/Input";
-import debounce from "@/utils/useDebounce";
 
 // Import utils
+import debounce from "@/utils/useDebounce";
+
+// import libs
 import { AutoCompleteLocation } from "@/lib/locationMethods";
-import supportedCategories, {
-  formatCategoryKey,
-} from "@/utils/supportedCatList";
 
 // Import icones
 import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocationCityRounded";

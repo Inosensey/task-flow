@@ -3,32 +3,60 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { useHours } from "@/utils/useDate";
+// Component
 import Schedule from "./Schedule";
-import styles from "@/css/DashboardComponent/events.module.css";
 
 // Types
 import { TableRow } from "@/Types/database.types";
+
+// Utils
 import { getCurrentDaySchedules } from "@/utils/getCurrentDaySchedules";
+import { useHours } from "@/utils/useDate";
+
+// Libs
 import { getSchedules } from "@/lib/scheduleMethods";
+import { getLocationCategories, getLocationKeys } from "@/lib/locationMethods";
 
 // Store
-import {useDateStore} from "@/store/useDateStore";
+import { useDateStore } from "@/store/useDateStore";
 
-type props = {
-  schedules: TableRow<"Schedules">[] | null,
+interface props {
+  schedules: TableRow<"Schedules">[] | null;
+  locationKeys: TableRow<"LocationKeys">[] | null;
+  locationCategories: TableRow<"LocationCategories">[] | null;
 }
 
 type ScheduleInfo = TableRow<"Schedules">;
 
-const Schedules = ({schedules}:props) => {
-  const {dateSelected} = useDateStore();
-  const {data, error, isFetched} = useQuery({
+const Schedules = ({ schedules, locationCategories, locationKeys }: props) => {
+  const { dateSelected } = useDateStore();
+
+  // Use query
+  const {
+    data: scheduleData,
+    error: scheduleError,
+    isFetched: scheduleIsFetched,
+  } = useQuery({
     queryKey: ["schedules"],
     queryFn: getSchedules,
-    initialData: schedules
-  })
-  const currentDaySchedules = getCurrentDaySchedules(schedules, dateSelected)
+    initialData: schedules,
+  });
+  const {
+    data: locationKeyData,
+  } = useQuery({
+    queryKey: ["locationKeys"],
+    queryFn: getLocationKeys,
+    initialData: locationKeys,
+  });
+  const {
+    data: locationCategoriesData,
+  } = useQuery({
+    queryKey: ["locationCategories"],
+    queryFn: getLocationCategories,
+    initialData: locationCategories,
+  });
+
+  const currentDaySchedules = getCurrentDaySchedules(schedules, dateSelected);
   const hours = useHours();
   return (
     <div className="w-full flex">
@@ -51,7 +79,7 @@ const Schedules = ({schedules}:props) => {
           d
         </div>
         <div className="flex flex-1">
-          <Schedule scheduleData={data} />
+          <Schedule scheduleData={scheduleData} />
         </div>
       </div>
 
