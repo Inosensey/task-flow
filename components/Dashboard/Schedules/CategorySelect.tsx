@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 // Libs
@@ -19,6 +19,16 @@ import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 // Type
 import { TableRow } from "@/Types/database.types";
 
+
+// Types
+type LocationInfoInput = {
+  city: string,
+  specificPlace: string,
+  categoryKeyId: number,
+  categoryKey: number,
+  namePlace: string,
+}
+
 interface locationCategories {
   category: string;
   locationKeys: {
@@ -32,9 +42,6 @@ interface supportedCategoriesType {
   key: string;
   Description: string | null;
   categories: Array<string>;
-}
-interface props {
-  place_id: string;
 }
 interface Feature {
   geometry: {
@@ -60,12 +67,15 @@ interface Feature {
     street: string;
   };
 }
-
 interface PlaceList {
   features: Feature[];
 }
+interface props {
+  place_id: string;
+  setLocationInfo: React.Dispatch<React.SetStateAction<LocationInfoInput>>
+}
 
-const CategorySelect = ({ place_id }: props) => {
+const CategorySelect = ({ place_id, setLocationInfo }: props) => {
   // Initialize query client
   const queryClient = useQueryClient();
 
@@ -146,6 +156,7 @@ const CategorySelect = ({ place_id }: props) => {
                   id: category.id,
                 }));
                 setShowChoices((prev) => !prev);
+                setLocationInfo((locationInfoPrev) => ({...locationInfoPrev, categoryKeyId: category.id}))
               }}
               key={category.key}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -199,6 +210,7 @@ const CategorySelect = ({ place_id }: props) => {
                       setSelectedTypeOfPlace(info.category);
                       setShowPlacesType((prev) => !prev);
                       handlePlaceTypeChange(place_id, SelectedPlaceType);
+                      setLocationInfo((locationInfoPrev) => ({...locationInfoPrev, categoryKey: info.id}))
                     }}
                     key={info.id}
                     className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -256,6 +268,12 @@ const CategorySelect = ({ place_id }: props) => {
               listPlace?.features.map((place: Feature) => (
                 <div
                   key={place.properties.place_id}
+                  onClick={() => {
+                    setSelectedPlace(place.properties.address_line1);
+                    setLocationInfo((locationInfoPrev) => ({...locationInfoPrev, namePlace: place.properties.place_id}))
+                    setShowPlaceList((prev) => !prev);
+
+                  }}
                   className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
                 >
                   <p className="select-none">

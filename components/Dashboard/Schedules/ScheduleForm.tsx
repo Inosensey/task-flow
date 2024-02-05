@@ -39,8 +39,21 @@ type ScheduleInfo = {
   duration: number;
 };
 
+type LocationInfo = {
+  city: string,
+  specificPlace: string,
+  categoryKeyId: number,
+  categoryKey: number,
+  namePlace: string,
+}
+
+interface MutationType {
+  scheduleInfo: ScheduleInfo,
+  locationInfo: LocationInfo
+}
+
 // Initial data for state
-const initialScheduleInfo = {
+const initialScheduleInfo: ScheduleInfo = {
   date: "",
   timeStart: "",
   timeEnd: "",
@@ -48,6 +61,14 @@ const initialScheduleInfo = {
   description: "",
   duration: 0,
 };
+
+const initialLocationInfo: LocationInfo = {
+  city: "",
+  specificPlace: "",
+  categoryKeyId: 0,
+  categoryKey: 0,
+  namePlace: "",
+}
 
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
   // Initial use query
@@ -58,11 +79,12 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
   // States
   const [scheduleInfo, setScheduleInfo] =
     useState<ScheduleInfo>(initialScheduleInfo);
+  const [locationInfo, setLocationInfo] = useState<LocationInfo>(initialLocationInfo);
 
   // Mutation
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
-    mutationFn: (scheduleInfo: ScheduleInfo) => {
-      return createSchedule(scheduleInfo);
+    mutationFn: ({scheduleInfo, locationInfo}:MutationType) => {
+      return createSchedule(scheduleInfo, locationInfo);
     },
     onSuccess: (data) => {
       setScheduleInfo(initialScheduleInfo);
@@ -194,7 +216,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             />
           </div>
           <div>
-            <LocationInput />
+            <LocationInput locationInfo={locationInfo} setLocationInfo={setLocationInfo} />
           </div>
           <div>
             <motion.button
@@ -206,7 +228,11 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
                 isPending && "bg-LightPrimaryDisabled text-Disabled"
               }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
               onClick={() => {
-                mutate(scheduleInfo);
+                const mutationData:MutationType = {
+                  scheduleInfo: scheduleInfo,
+                  locationInfo: locationInfo
+                }
+                mutate(mutationData);
               }}
             >
               {isIdle || isSuccess ? (
@@ -224,7 +250,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
               )}
               {isPending && (
                 <>
-                  <SvgSpinnersBlocksShuffle3 />
+                  <SvgSpinnersBlocksShuffle3 color="#00ADB5" />
                   Saving Schedule
                 </>
               )}

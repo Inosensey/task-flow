@@ -15,10 +15,13 @@ import CategorySelect from "./CategorySelect";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
 // Types
-type locationInputType = {
-  city: string;
-  specificPlace: string;
-};
+type LocationInfoInput = {
+  city: string,
+  specificPlace: string,
+  categoryKeyId: number,
+  categoryKey: number,
+  namePlace: string,
+}
 type locationInfoType = {
   name: string;
   ref: string;
@@ -39,16 +42,12 @@ type locationInfoType = {
 interface locationListType {
   locations: locationInfoType[];
 }
+interface props {
+  setLocationInfo: React.Dispatch<React.SetStateAction<LocationInfoInput>>,
+  locationInfo: LocationInfoInput
+}
 
-// State Initials
-const locationInfoInitial: locationInputType = {
-  city: "",
-  specificPlace: "",
-};
-
-const LocationInput = () => {
-  const [locationInfo, setLocationInfo] =
-    useState<locationInputType>(locationInfoInitial);
+const LocationInput = ({locationInfo, setLocationInfo}: props) => {
   const [locationList, setLocationList] = useState<
     locationListType | undefined
   >(undefined);
@@ -108,7 +107,7 @@ const LocationInput = () => {
             {locationList?.locations.map((info: locationInfoType) => (
               <div
                 className="flex gap-1 items-center px-2 py-2 cursor-pointer border-white bg-Secondary hover:bg-SmoothSecondary"
-                key={info.name}
+                key={info.place_id}
                 onClick={() => {
                   const city = `${info.city}, ${info.postcode} ${info.state} ${info.country}`;
                   setLocationInfo((prev) => ({ ...prev, city: city }));
@@ -130,7 +129,7 @@ const LocationInput = () => {
         {showSupportedCat && (
           <div>
             <p className="phone:text-sm">Place Information</p>
-            <CategorySelect place_id={placeId} />
+            <CategorySelect place_id={placeId} setLocationInfo={setLocationInfo} />
           </div>
         )}
       </div>

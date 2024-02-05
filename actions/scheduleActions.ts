@@ -16,16 +16,8 @@ type ScheduleInfo = {
   duration: number;
 };
 
-export const createSchedule = async (scheduleInfo: TableInsert<"Schedules">) => {
+export const createSchedule = async (scheduleInfo: TableInsert<"Schedules">, locationInfo: TableInsert<"ScheduleLocation">) => {
   try {
-    // const scheduleInfo: TableInsert<"Schedules"> = {
-    //   title: formData.get('title') as string,
-    //   description: formData.get('description') as string,
-    //   date: formData.get('date') as string,
-    //   timeStart: formData.get('timeStart') as string,
-    //   timeEnd: formData.get('timeEnd') as string,
-    //   themeColor: "#000",
-    // }
     let { data, error } = await useSupabase
       .from("Schedules")
       .insert<TableInsert<"Schedules">>({
@@ -36,14 +28,34 @@ export const createSchedule = async (scheduleInfo: TableInsert<"Schedules">) => 
         timeEnd: scheduleInfo.timeEnd,
         themeColor: scheduleInfo.themeColor
       }).select()
-    revalidateTag("schedules")
     const schedule:TableRow<"Schedules">[] | null = data;
+    if(error) return error;
     if(schedule !== null) {
+      revalidateTag("schedules")
+      const AddLocationResult = await createLocationInfo(locationInfo, schedule[0].id)
+      console.log(AddLocationResult);
       return schedule[0];
     } else {
       return null;
     }
   } catch (e) {
-    return "Failed to create todo";
+    return `Failed to add Schedule: ${e}`;
   }
 };
+
+const createLocationInfo = async (locationInfo: TableInsert<"ScheduleLocation">, scheduleId: number) => {
+  try {
+    let {data, error} = await useSupabase.from("ScheduleLocation").insert<TableInsert<"ScheduleLocation">>({
+      scheduleId: scheduleId,
+      city: locationInfo.city,
+      specificPlace: locationInfo.specificPlace,
+      categoryKeyId: locationInfo.categoryKeyId,
+      categoryKey: locationInfo.categoryKey,
+      namePlace: locationInfo.namePlace
+    }).select()
+    const location:TableRow<"ScheduleLocation">[] | null = data;
+    return error ? error : true;
+  } catch (e) {
+    return `Failed to add Schedule Location: ${e}`;
+  }
+}
