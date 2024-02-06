@@ -48,8 +48,7 @@ const createLocationInfo = async (locationInfo: TableInsert<"ScheduleLocation">,
     let {data, error} = await useSupabase.from("ScheduleLocation").insert<TableInsert<"ScheduleLocation">>({
       scheduleId: scheduleId,
       city: locationInfo.city,
-      specificPlace: locationInfo.specificPlace,
-      categoryKeyId: locationInfo.categoryKeyId,
+      categoryKeyId: locationInfo.categoryKeyId, 
       categoryKey: locationInfo.categoryKey,
       namePlace: locationInfo.namePlace
     }).select()

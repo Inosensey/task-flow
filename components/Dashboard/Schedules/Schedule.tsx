@@ -177,14 +177,14 @@ const Schedule = ({scheduleData}:props) => {
         </div>
       </div>
       {/* Detailed Schedule */}
-      <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
+      {/* <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
         {showDetailedSchedule && (
           <DetailedSchedule
             setShowPopUp={setShowDetailedSchedule}
             scheduleInfo={selectedSchedule}
           />
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
 
       {/* Schedule form */}
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>

@@ -30,3 +30,36 @@ export const getCurrentDaySchedules = async (selectedDate: string = "") => {
   const data: TableRow<"Schedules">[] = await res.json();
   return data;
 };
+
+export const getScheduleDetails = async () => {
+  type returnType = [
+    TableRow<"Schedules"> & {
+      LocationInfo: [
+        {
+          city: string;
+          LocationCategories: {
+            id: number;
+            category: string;
+          };
+          LocationKeys: {
+            id: number;
+            key: string;
+          };
+        }
+      ];
+    }
+  ];
+
+  const res = await fetch(
+    "http://localhost:3000/api/supabase/getScheduleDetails",
+    {
+      next: { tags: ["schedule134"], revalidate: 300 },
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      // body: JSON.stringify(currentDate),
+    }
+  );
+
+  const data: returnType = await res.json();
+  return data;
+};

@@ -1,8 +1,14 @@
+"use client";
+
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
-import { faArrowRight, faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faCheck,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 
@@ -18,33 +24,40 @@ type schedule = {
 };
 
 type props = {
-  scheduleInfo: TableRow<"Schedules">;
-  setShowPopUp: React.Dispatch<React.SetStateAction<boolean>>;
+  scheduleInfo?: TableRow<"Schedules">;
+  setShowPopUp?: React.Dispatch<React.SetStateAction<boolean>>;
+  details: [
+    TableRow<"Schedules"> & {
+      LocationInfo: [
+        {
+          city: string;
+          LocationCategories: {
+            id: number;
+            category: string;
+          };
+          LocationKeys: {
+            id: number;
+            key: string;
+          };
+        }
+      ];
+    }
+  ];
 };
 
-const DetailedSchedule = ({ scheduleInfo, setShowPopUp }: props) => {
+const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
   // State
   const [isEditing, setIsEditing] = useState<boolean>(false);
+
+  console.log(details);
 
   // Variants
   const popUpVariants = {
     hidden: {
-      scale: 0,
       opacity: 0,
-      transition: {
-        type: "tween",
-        ease: "easeOut",
-        duration: 0.25,
-      },
     },
     show: {
-      scale: 1,
       opacity: 1,
-      transition: {
-        type: "tween",
-        ease: "easeIn",
-        duration: 0.25,
-      },
     },
   };
   return (
@@ -54,23 +67,14 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp }: props) => {
         initial="hidden"
         animate="show"
         exit="hidden"
-        className="bg-Primary p-3 phone:w-11/12"
+        className="bg-Primary p-3 phone:w-full phone:h-full"
       >
         <div className="flex justify-between items-center">
           <p className="py-0">Schedule Details</p>
-          <p
-            style={{ height: "max-content" }}
-            className="cursor-pointer bg-LightPrimary px-2 py-0 font-bold text-lg rounded-md"
-            onClick={() => {
-              setShowPopUp((prev) => !prev);
-            }}
-          >
-            X
-          </p>
         </div>
         <div className="mt-2 flex flex-col gap-2">
           <p className="text-LightPrimary font-semibold text-lg">
-            {scheduleInfo.title}
+            {details[0].title}
           </p>
           <div className="phone:w-10/12 flex items-center gap-1">
             <span className="w-4">
@@ -80,16 +84,16 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp }: props) => {
               />
             </span>
             <div className="flex gap-1 text-sm">
-              <p>{scheduleInfo.timeStart}</p>
-              {scheduleInfo.timeEnd !== "" && (
+              <p>{details[0].timeStart}</p>
+              {details[0].timeEnd !== "" && (
                 <span className="w-4">
                   <FontAwesomeIcon className="text-sm" icon={faArrowRight} />
                 </span>
               )}
-              <p>{scheduleInfo.timeEnd}</p>
+              <p>{details[0].timeEnd}</p>
             </div>
           </div>
-          <p className="text-justify leading-7">{scheduleInfo.description}</p>
+          <p className="text-justify leading-7">{details[0].description}</p>
         </div>
         <div className="flex justify-between">
           {isEditing ? (
@@ -112,14 +116,11 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp }: props) => {
                 whileTap={{ scale: 0.9 }}
                 className="border-2 border-Error w-max px-3 py-[0.1rem] rounded-md flex gap-1 mt-3 text-Error"
                 onClick={() => {
-                  setIsEditing((prev) => !prev)
+                  setIsEditing((prev) => !prev);
                 }}
               >
                 <span className="w-4">
-                  <FontAwesomeIcon
-                    className="text-sm"
-                    icon={faXmark}
-                  />
+                  <FontAwesomeIcon className="text-sm" icon={faXmark} />
                 </span>
                 Cancel
               </motion.button>
@@ -130,7 +131,7 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp }: props) => {
               whileTap={{ scale: 0.9 }}
               className="bg-LightPrimary w-max px-4 py-[0.1rem] rounded-md flex gap-1 mt-3"
               onClick={() => {
-                setIsEditing((prev) => !prev)
+                setIsEditing((prev) => !prev);
               }}
             >
               <span className="w-4">

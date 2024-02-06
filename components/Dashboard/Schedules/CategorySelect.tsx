@@ -270,7 +270,7 @@ const CategorySelect = ({ place_id, setLocationInfo }: props) => {
                   key={place.properties.place_id}
                   onClick={() => {
                     setSelectedPlace(place.properties.address_line1);
-                    setLocationInfo((locationInfoPrev) => ({...locationInfoPrev, namePlace: place.properties.place_id}))
+                    setLocationInfo((locationInfoPrev) => ({...locationInfoPrev, namePlace: place.properties.address_line1}))
                     setShowPlaceList((prev) => !prev);
 
                   }}
