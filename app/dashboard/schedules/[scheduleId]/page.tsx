@@ -29,7 +29,7 @@ interface props {
 }
 
 const page = async ({ params }: props) => {
-  const scheduleDetails: returnType = await getScheduleDetails();
+  const scheduleDetails: returnType = await getScheduleDetails(params.scheduleId);
   return (
     <div>
       <DetailedSchedule details={scheduleDetails} />

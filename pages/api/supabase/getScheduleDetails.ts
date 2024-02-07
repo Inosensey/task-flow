@@ -5,19 +5,21 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // req.body.currentDate
   //   city, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category)
+  if (req.query.scheduleId === undefined) return;
+  const scheduleId = parseInt(req.query.scheduleId.toString());
   try {
     let { data, error } = await useSupabase
       .from("Schedules")
       .select(
         `*, ScheduleLocation(city, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))`
       )
-      .eq("id", 134);
+      .eq("id", scheduleId);
     if (error) {
       console.log(error);
     }
     const ScheduleDetails = data;
+
     // Respond with JSON data
     return res.status(200).json(ScheduleDetails);
   } catch (error) {

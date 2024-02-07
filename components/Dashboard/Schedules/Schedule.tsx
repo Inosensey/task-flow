@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useLayoutEffect, useState } from "react";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faArrowRight, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
@@ -16,7 +17,7 @@ import { TableRow } from "@/Types/database.types";
 
 // Props
 type props = {
-  scheduleData: TableRow<"Schedules">[] | null
+  scheduleData: TableRow<"Schedules">[] | null;
 };
 type schedule = {
   timeStart: string;
@@ -26,7 +27,7 @@ type schedule = {
   duration: number;
 };
 
-const Schedule = ({scheduleData}:props) => {
+const Schedule = ({ scheduleData }: props) => {
   const date = new Date();
   const days = useDays();
 
@@ -35,7 +36,9 @@ const Schedule = ({scheduleData}:props) => {
   const [showDetailedSchedule, setShowDetailedSchedule] =
     useState<boolean>(false);
   const [showScheduleForm, setShowScheduleForm] = useState<boolean>(false);
-  const [selectedSchedule, setSelectedSchedule] = useState<TableRow<"Schedules">>({
+  const [selectedSchedule, setSelectedSchedule] = useState<
+    TableRow<"Schedules">
+  >({
     created_at: "",
     date: "",
     description: "",
@@ -44,9 +47,9 @@ const Schedule = ({scheduleData}:props) => {
     timeEnd: "",
     timeStart: "",
     title: "",
-    userId: null
+    userId: null,
   });
-  const [currentDate, setCurrentDate] = useState<string>(days[date.getDay()])
+  const [currentDate, setCurrentDate] = useState<string>(days[date.getDay()]);
 
   useEffect(() => {
     if (window.innerWidth > 420) {
@@ -56,7 +59,7 @@ const Schedule = ({scheduleData}:props) => {
       setTimeHeightNumber(96);
     }
   }, []);
-
+  console.log(scheduleData);
   const hours = useHours();
   return (
     <>
@@ -85,47 +88,49 @@ const Schedule = ({scheduleData}:props) => {
               className="flex relative justify-center phone:h-20 mdphone:h-24"
               key={index}
             >
-              {scheduleData?.map((info: TableRow<"Schedules">, index: number) => {
-                if (info.timeStart === hour) {
-                  const height = timeHeightNumber;
-                  return (
-                    <div
-                      style={{ height: `${height}px` }}
-                      className={`absolute flex items-center px-2 border-l-2 border-LightPrimary w-full rounded-2xl`}
-                      key={index}
-                    >
-                      <div className="flex flex-col gap-1 bg-[#1a1a1a] rounded-lg w-full p-2 z-40">
-                        <div className="flex text-LightSecondary phone:text-sm phone:flex-col phone:items-start mdphone:gap-3 mdphone:flex-row mdphone:items-center">
-                          <p>{info.title}</p>
-                          <div className="phone:w-10/12 flex items-center gap-1">
-                            <span className="w-4">
-                              <FontAwesomeIcon
-                                className="text-sm text-LightPrimary"
-                                icon={faClock}
-                              />
-                            </span>
-                            <div className="flex gap-1 text-sm">
-                              <p>{info.timeStart}</p>
-                              {info.timeEnd !== "" && (
-                                <span className="w-4">
-                                  <FontAwesomeIcon
-                                    className="text-sm"
-                                    icon={faArrowRight}
-                                  />
-                                </span>
-                              )}
-                              <p>{info.timeEnd}</p>
+              {scheduleData?.map(
+                (info: TableRow<"Schedules">, index: number) => {
+                  if (info.timeStart === hour) {
+                    const height = timeHeightNumber;
+                    return (
+                      <div
+                        style={{ height: `${height}px` }}
+                        className={`absolute flex items-center px-2 border-l-2 border-LightPrimary w-full rounded-2xl`}
+                        key={index}
+                      >
+                        <div className="flex flex-col gap-1 bg-[#1a1a1a] rounded-lg w-full p-2 z-40">
+                          <div className="flex text-LightSecondary phone:text-sm phone:flex-col phone:items-start mdphone:gap-3 mdphone:flex-row mdphone:items-center">
+                            <p>{info.title}</p>
+                            <div className="phone:w-10/12 flex items-center gap-1">
+                              <span className="w-4">
+                                <FontAwesomeIcon
+                                  className="text-sm text-LightPrimary"
+                                  icon={faClock}
+                                />
+                              </span>
+                              <div className="flex gap-1 text-sm">
+                                <p>{info.timeStart}</p>
+                                {info.timeEnd !== "" && (
+                                  <span className="w-4">
+                                    <FontAwesomeIcon
+                                      className="text-sm"
+                                      icon={faArrowRight}
+                                    />
+                                  </span>
+                                )}
+                                <p>{info.timeEnd}</p>
+                              </div>
                             </div>
                           </div>
+                          <button className="cursor-pointer bg-Secondary phone:text-sm rounded-md text-LightSecondary phone:w-32 phone:py-1">
+                            More Details
+                          </button>
                         </div>
-                        <button className="cursor-pointer bg-Secondary phone:text-sm rounded-md text-LightSecondary phone:w-32 phone:py-1">
-                          More Details
-                        </button>
                       </div>
-                    </div>
-                  );
+                    );
+                  }
                 }
-              })}
+              )}
             </div>
           ))}
         </div>
@@ -161,17 +166,19 @@ const Schedule = ({scheduleData}:props) => {
               <div className="w-full h-20 line-clamp-4">
                 <p className="text-sm">{info.description}</p>
               </div>
-              <motion.button
-                whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => {
-                  setShowDetailedSchedule((prev) => !prev);
-                  setSelectedSchedule(info);
-                }}
-                className="cursor-pointer bg-Secondary rounded-md text-LightSecondary phone:text-sm phone:w-28 phone:py-1"
-              >
-                More Details
-              </motion.button>
+              <Link href={`/dashboard/schedules/${info.id}`}>
+                <motion.button
+                  whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => {
+                    setShowDetailedSchedule((prev) => !prev);
+                    setSelectedSchedule(info);
+                  }}
+                  className="cursor-pointer bg-Secondary rounded-md text-LightSecondary phone:text-sm phone:w-28 phone:py-1"
+                >
+                  More Details
+                </motion.button>
+              </Link>
             </div>
           ))}
         </div>
