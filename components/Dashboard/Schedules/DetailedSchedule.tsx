@@ -12,8 +12,12 @@ import {
 
 import Overlay from "@/components/ReusableComponents/Overlay";
 
+// Import icones
+import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocationCityRounded";
+
 // Types
 import { TableRow } from "@/Types/database.types";
+import DisplayMap from "@/components/ReusableComponents/DisplayMap";
 
 type schedule = {
   timeStart: string;
@@ -22,15 +26,29 @@ type schedule = {
   description: string;
   duration: number;
 };
+type LocationInfo = [
+  {
+    city: string;
+    LocationCategories: {
+      id: number;
+      category: string;
+    };
+    LocationKeys: {
+      id: number;
+      key: string;
+    };
+  }
+];
 
 type props = {
   scheduleInfo?: TableRow<"Schedules">;
   setShowPopUp?: React.Dispatch<React.SetStateAction<boolean>>;
   details: [
     TableRow<"Schedules"> & {
-      LocationInfo: [
+      ScheduleLocation: [
         {
           city: string;
+          namePlace: string;
           LocationCategories: {
             id: number;
             category: string;
@@ -49,7 +67,8 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
   // State
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  console.log(details);
+  const locationDetails = details[0].ScheduleLocation[0];
+  console.log(details[0]);
 
   // Variants
   const popUpVariants = {
@@ -61,39 +80,56 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
     },
   };
   return (
-    <Overlay>
+    <>
       <motion.div
         variants={popUpVariants}
         initial="hidden"
         animate="show"
         exit="hidden"
-        className="bg-Primary p-3 phone:w-full phone:h-full"
+        className="bg-Primary relative p-3 phone:w-full phone:h-full"
       >
-        <div className="flex justify-between items-center">
-          <p className="py-0">Schedule Details</p>
-        </div>
-        <div className="mt-2 flex flex-col gap-2">
-          <p className="text-LightPrimary font-semibold text-lg">
-            {details[0].title}
-          </p>
-          <div className="phone:w-10/12 flex items-center gap-1">
-            <span className="w-4">
-              <FontAwesomeIcon
-                className="text-sm text-LightPrimary"
-                icon={faClock}
-              />
-            </span>
-            <div className="flex gap-1 text-sm">
-              <p>{details[0].timeStart}</p>
-              {details[0].timeEnd !== "" && (
-                <span className="w-4">
-                  <FontAwesomeIcon className="text-sm" icon={faArrowRight} />
-                </span>
-              )}
-              <p>{details[0].timeEnd}</p>
+        <div className="mt-2 flex flex-col">
+          <div className="bg-Secondary p-2 rounded-md">
+            <p className="text-LightPrimary font-semibold text-lg">
+              {details[0].title}
+            </p>
+            <div className="font-semibold text-sm text-LightSecondary">
+              <p className="flex items-center">
+                <MaterialSymbolsLocationCityRounded color="#00ADB5" />
+                {locationDetails.namePlace},
+              </p>
+              <p className="flex items-center">
+                <MaterialSymbolsLocationCityRounded color="#00ADB5" />
+                {locationDetails.city}
+              </p>
             </div>
+            <div className="phone:w-10/12 flex items-center gap-1">
+              <span className="w-4">
+                <FontAwesomeIcon
+                  className="text-sm text-LightPrimary"
+                  icon={faClock}
+                />
+              </span>
+              <div className="flex gap-1 text-sm">
+                <p>{details[0].timeStart}</p>
+                {details[0].timeEnd !== "" && (
+                  <span className="w-4">
+                    <FontAwesomeIcon className="text-sm" icon={faArrowRight} />
+                  </span>
+                )}
+                <p>{details[0].timeEnd}</p>
+              </div>
+            </div>
+            <button className="text-xs bg-LightPrimary w-max px-3 py-[0.2rem] rounded-md flex gap-1 mt-3">
+              View Map
+            </button>
           </div>
-          <p className="text-justify leading-7">{details[0].description}</p>
+          <div className="p-2">
+            <p className="text-lg font-semibold text-LightPrimary">
+              Description
+            </p>
+            <p className="text-justify leading-6">{details[0].description}</p>
+          </div>
         </div>
         <div className="flex justify-between">
           {isEditing ? (
@@ -145,7 +181,8 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
           )}
         </div>
       </motion.div>
-    </Overlay>
+      <DisplayMap />
+    </>
   );
 };
 
