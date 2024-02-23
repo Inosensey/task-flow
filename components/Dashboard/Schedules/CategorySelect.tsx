@@ -19,30 +19,18 @@ import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 // Type
 import { TableRow } from "@/Types/database.types";
 
+// Components
+import Input from "@/components/ReusableComponents/inputs/Input";
 
 // Types
 type LocationInfoInput = {
-  city: string,
-  specificPlace: string,
-  categoryKeyId: number,
-  categoryKey: number,
-  namePlace: string,
-}
+  categoryKeyId: number;
+  categoryKey: number;
+  namePlace: string;
+  lat: number;
+  long: number;
+};
 
-interface locationCategories {
-  category: string;
-  locationKeys: {
-    key: string;
-  };
-}
-interface locationKey {
-  locationKeys: TableRow<"LocationKeys">[] | null;
-}
-interface supportedCategoriesType {
-  key: string;
-  Description: string | null;
-  categories: Array<string>;
-}
 interface Feature {
   geometry: {
     coordinates: [number, number];
@@ -72,10 +60,18 @@ interface PlaceList {
 }
 interface props {
   place_id: string;
-  setLocationInfo: React.Dispatch<React.SetStateAction<LocationInfoInput>>
 }
 
-const CategorySelect = ({ place_id, setLocationInfo }: props) => {
+// Initial data
+const locationInfoInitial: LocationInfoInput = {
+  categoryKeyId: 0,
+  categoryKey: 0,
+  namePlace: "",
+  lat: 0,
+  long: 0,
+};
+
+const CategorySelect = ({ place_id }: props) => {
   // Initialize query client
   const queryClient = useQueryClient();
 
@@ -90,6 +86,8 @@ const CategorySelect = ({ place_id, setLocationInfo }: props) => {
   });
 
   // State
+  const [locationInfo, setLocationInfo] =
+    useState<LocationInfoInput>(locationInfoInitial);
   const [showChoices, setShowChoices] = useState<boolean>(false);
   const [showPlacesType, setShowPlacesType] = useState<boolean>(false);
   const [showPlaceList, setShowPlaceList] = useState<boolean>(false);
@@ -156,7 +154,10 @@ const CategorySelect = ({ place_id, setLocationInfo }: props) => {
                   id: category.id,
                 }));
                 setShowChoices((prev) => !prev);
-                setLocationInfo((locationInfoPrev) => ({...locationInfoPrev, categoryKeyId: category.id}))
+                setLocationInfo((locationInfoPrev) => ({
+                  ...locationInfoPrev,
+                  categoryKeyId: category.id,
+                }));
               }}
               key={category.key}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -169,6 +170,15 @@ const CategorySelect = ({ place_id, setLocationInfo }: props) => {
                     - {category.description}
                   </span>
                 )}
+                <Input
+                  state={locationInfo.categoryKeyId.toString()}
+                  type="hidden"
+                  name="categoryKeyId"
+                  placeholder=""
+                  label=""
+                  valid={null}
+                  validationMessage={""}
+                />
               </p>
             </div>
           ))}
@@ -210,13 +220,25 @@ const CategorySelect = ({ place_id, setLocationInfo }: props) => {
                       setSelectedTypeOfPlace(info.category);
                       setShowPlacesType((prev) => !prev);
                       handlePlaceTypeChange(place_id, SelectedPlaceType);
-                      setLocationInfo((locationInfoPrev) => ({...locationInfoPrev, categoryKey: info.id}))
+                      setLocationInfo((locationInfoPrev) => ({
+                        ...locationInfoPrev,
+                        categoryKey: info.id,
+                      }));
                     }}
                     key={info.id}
                     className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
                   >
                     <p className="select-none">
                       {formatLocationName(info.category)}
+                      <Input
+                        state={locationInfo.categoryKey.toString()}
+                        type="hidden"
+                        name="categoryKey"
+                        placeholder=""
+                        label=""
+                        valid={null}
+                        validationMessage={""}
+                      />
                     </p>
                   </div>
                 )
@@ -269,15 +291,47 @@ const CategorySelect = ({ place_id, setLocationInfo }: props) => {
                 <div
                   key={place.properties.place_id}
                   onClick={() => {
+                    console.log(place);
                     setSelectedPlace(place.properties.address_line1);
-                    setLocationInfo((locationInfoPrev) => ({...locationInfoPrev, namePlace: place.properties.address_line1}))
+                    setLocationInfo((locationInfoPrev) => ({
+                      ...locationInfoPrev,
+                      namePlace: place.properties.address_line1,
+                      lat: place.geometry.coordinates[1],
+                      long: place.geometry.coordinates[0],
+                    }));
                     setShowPlaceList((prev) => !prev);
-
                   }}
                   className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
                 >
                   <p className="select-none">
                     {formatLocationName(place.properties.address_line1)}
+                    <Input
+                      state={locationInfo.namePlace}
+                      type="hidden"
+                      name="namePlace"
+                      placeholder=""
+                      label=""
+                      valid={null}
+                      validationMessage={""}
+                    />
+                    <Input
+                      state={locationInfo.lat.toString()}
+                      type="hidden"
+                      name="lat"
+                      placeholder=""
+                      label=""
+                      valid={null}
+                      validationMessage={""}
+                    />
+                    <Input
+                      state={locationInfo.long.toString()}
+                      type="hidden"
+                      name="long"
+                      placeholder=""
+                      label=""
+                      valid={null}
+                      validationMessage={""}
+                    />
                   </p>
                 </div>
               ))

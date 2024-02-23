@@ -50,7 +50,9 @@ const createLocationInfo = async (locationInfo: TableInsert<"ScheduleLocation">,
       city: locationInfo.city,
       categoryKeyId: locationInfo.categoryKeyId, 
       categoryKey: locationInfo.categoryKey,
-      namePlace: locationInfo.namePlace
+      namePlace: locationInfo.namePlace,
+      lat: locationInfo.lat,
+      long: locationInfo.long
     }).select()
     const location:TableRow<"ScheduleLocation">[] | null = data;
     return error ? error : true;

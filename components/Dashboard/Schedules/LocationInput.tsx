@@ -17,10 +17,6 @@ import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 // Types
 type LocationInfoInput = {
   city: string,
-  specificPlace: string,
-  categoryKeyId: number,
-  categoryKey: number,
-  namePlace: string,
 }
 type locationInfoType = {
   name: string;
@@ -42,12 +38,9 @@ type locationInfoType = {
 interface locationListType {
   locations: locationInfoType[];
 }
-interface props {
-  setLocationInfo: React.Dispatch<React.SetStateAction<LocationInfoInput>>,
-  locationInfo: LocationInfoInput
-}
 
-const LocationInput = ({locationInfo, setLocationInfo}: props) => {
+const LocationInput = () => {
+  const [locationInfo, setLocationInfo] = useState<LocationInfoInput>({city: ""})
   const [locationList, setLocationList] = useState<
     locationListType | undefined
   >(undefined);
@@ -129,7 +122,7 @@ const LocationInput = ({locationInfo, setLocationInfo}: props) => {
         {showSupportedCat && (
           <div>
             <p className="phone:text-sm">Place Information</p>
-            <CategorySelect place_id={placeId} setLocationInfo={setLocationInfo} />
+            <CategorySelect place_id={placeId} />
           </div>
         )}
       </div>

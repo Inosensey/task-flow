@@ -40,16 +40,18 @@ type ScheduleInfo = {
 };
 
 type LocationInfo = {
-  city: string,
-  specificPlace: string,
-  categoryKeyId: number,
-  categoryKey: number,
-  namePlace: string,
-}
+  city: string;
+  specificPlace: string;
+  categoryKeyId: number;
+  categoryKey: number;
+  namePlace: string;
+  lat: number;
+  long: number;
+};
 
 interface MutationType {
-  scheduleInfo: ScheduleInfo,
-  locationInfo: LocationInfo
+  scheduleInfo: ScheduleInfo;
+  locationInfo: LocationInfo;
 }
 
 // Initial data for state
@@ -68,7 +70,9 @@ const initialLocationInfo: LocationInfo = {
   categoryKeyId: 0,
   categoryKey: 0,
   namePlace: "",
-}
+  lat: 0,
+  long: 0,
+};
 
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
   // Initial use query
@@ -79,11 +83,12 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
   // States
   const [scheduleInfo, setScheduleInfo] =
     useState<ScheduleInfo>(initialScheduleInfo);
-  const [locationInfo, setLocationInfo] = useState<LocationInfo>(initialLocationInfo);
+  const [locationInfo, setLocationInfo] =
+    useState<LocationInfo>(initialLocationInfo);
 
   // Mutation
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
-    mutationFn: ({scheduleInfo, locationInfo}:MutationType) => {
+    mutationFn: ({ scheduleInfo, locationInfo }: MutationType) => {
       return createSchedule(scheduleInfo, locationInfo);
     },
     onSuccess: (data) => {
@@ -100,6 +105,20 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
       queryClient.invalidateQueries({ queryKey: ["schedules"] });
     },
   });
+
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const formValues: { [key: string]: string } = {};
+
+    // Iterate over form elements and extract their values
+    formData.forEach((value, key) => {
+      formValues[key] = value as string;
+    });
+
+    // Log or use the extracted form values
+    console.log(formValues);
+  };
 
   const hideNotificationTimer = () => {
     const interval = setTimeout(setShowSlideNotification, 5000);
@@ -149,12 +168,13 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
 
   return (
     <Overlay>
-      <motion.div
+      <motion.form
         variants={popUpVariants}
         initial="hidden"
         animate="show"
         exit="hidden"
         className="bg-Primary p-3 phone:w-11/12 rounded-md"
+        onSubmit={handleFormSubmit}
       >
         <div className="flex justify-between items-center">
           <p className="py-0">Schedule Form</p>
@@ -216,7 +236,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             />
           </div>
           <div>
-            <LocationInput locationInfo={locationInfo} setLocationInfo={setLocationInfo} />
+            <LocationInput />
           </div>
           <div>
             <motion.button
@@ -228,12 +248,13 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
                 isPending && "bg-LightPrimaryDisabled text-Disabled"
               }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
               onClick={() => {
-                const mutationData:MutationType = {
+                const mutationData: MutationType = {
                   scheduleInfo: scheduleInfo,
-                  locationInfo: locationInfo
-                }
-                mutate(mutationData);
+                  locationInfo: locationInfo,
+                };
+                // mutate(mutationData);
               }}
+              type="submit"
             >
               {isIdle || isSuccess ? (
                 <>
@@ -257,7 +278,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             </motion.button>
           </div>
         </div>
-      </motion.div>
+      </motion.form>
     </Overlay>
   );
 };
