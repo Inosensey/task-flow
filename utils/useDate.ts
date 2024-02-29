@@ -31,6 +31,27 @@ export const useHours = () => {
   return hours;
 };
 
+export const formatHourTo12 = (hour:string | null) => {
+    // Split the time into hours and minutes
+    if(hour === null) return
+    let timeSplit = hour.split(':');
+    let hours = parseInt(timeSplit[0]);
+    let minutes = timeSplit[1];
+
+    // Determine AM or PM
+    let period = hours >= 12 ? 'PM' : 'AM';
+
+    // Adjust hours to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 should be considered as 12
+
+    // Pad single digit hours with a leading zero
+    hours = hours < 10 ? 0 + hours : hours;
+
+    // Return the formatted time
+    return hours + ':' + minutes + ' ' + period;
+}
+
 export const getCurrentDate = (selectedDate: string | Date = "") => {
   const date =  selectedDate == "" ? new Date() : new Date(selectedDate);
   const year = date.getFullYear();

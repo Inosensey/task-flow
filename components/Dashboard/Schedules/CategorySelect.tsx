@@ -170,15 +170,6 @@ const CategorySelect = ({ place_id }: props) => {
                     - {category.description}
                   </span>
                 )}
-                <Input
-                  state={locationInfo.categoryKeyId.toString()}
-                  type="hidden"
-                  name="categoryKeyId"
-                  placeholder=""
-                  label=""
-                  valid={null}
-                  validationMessage={""}
-                />
               </p>
             </div>
           ))}
@@ -230,15 +221,6 @@ const CategorySelect = ({ place_id }: props) => {
                   >
                     <p className="select-none">
                       {formatLocationName(info.category)}
-                      <Input
-                        state={locationInfo.categoryKey.toString()}
-                        type="hidden"
-                        name="categoryKey"
-                        placeholder=""
-                        label=""
-                        valid={null}
-                        validationMessage={""}
-                      />
                     </p>
                   </div>
                 )
@@ -305,33 +287,6 @@ const CategorySelect = ({ place_id }: props) => {
                 >
                   <p className="select-none">
                     {formatLocationName(place.properties.address_line1)}
-                    <Input
-                      state={locationInfo.namePlace}
-                      type="hidden"
-                      name="namePlace"
-                      placeholder=""
-                      label=""
-                      valid={null}
-                      validationMessage={""}
-                    />
-                    <Input
-                      state={locationInfo.lat.toString()}
-                      type="hidden"
-                      name="lat"
-                      placeholder=""
-                      label=""
-                      valid={null}
-                      validationMessage={""}
-                    />
-                    <Input
-                      state={locationInfo.long.toString()}
-                      type="hidden"
-                      name="long"
-                      placeholder=""
-                      label=""
-                      valid={null}
-                      validationMessage={""}
-                    />
                   </p>
                 </div>
               ))
@@ -342,6 +297,53 @@ const CategorySelect = ({ place_id }: props) => {
                 </p>
               </div>
             )}
+          </div>
+          <div className="hidden">
+            <Input
+              state={locationInfo.categoryKeyId.toString()}
+              type="hidden"
+              name="categoryKeyId"
+              placeholder=""
+              label=""
+              valid={null}
+              validationMessage={""}
+            />
+            <Input
+              state={locationInfo.categoryKey.toString()}
+              type="hidden"
+              name="categoryKey"
+              placeholder=""
+              label=""
+              valid={null}
+              validationMessage={""}
+            />
+            <Input
+              state={locationInfo.namePlace}
+              type="hidden"
+              name="namePlace"
+              placeholder=""
+              label=""
+              valid={null}
+              validationMessage={""}
+            />
+            <Input
+              state={locationInfo.lat.toString()}
+              type="hidden"
+              name="lat"
+              placeholder=""
+              label=""
+              valid={null}
+              validationMessage={""}
+            />
+            <Input
+              state={locationInfo.long.toString()}
+              type="hidden"
+              name="long"
+              placeholder=""
+              label=""
+              valid={null}
+              validationMessage={""}
+            />
           </div>
         </div>
       )}

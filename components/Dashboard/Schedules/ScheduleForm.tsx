@@ -36,23 +36,13 @@ type ScheduleInfo = {
   timeEnd: string;
   title: string;
   description: string;
-  duration: number;
-};
-
-type LocationInfo = {
   city: string;
-  specificPlace: string;
-  categoryKeyId: number;
-  categoryKey: number;
+  categoryKeyId: string;
+  categoryKey: string;
   namePlace: string;
-  lat: number;
-  long: number;
+  lat: string;
+  long: string;
 };
-
-interface MutationType {
-  scheduleInfo: ScheduleInfo;
-  locationInfo: LocationInfo;
-}
 
 // Initial data for state
 const initialScheduleInfo: ScheduleInfo = {
@@ -61,17 +51,12 @@ const initialScheduleInfo: ScheduleInfo = {
   timeEnd: "",
   title: "",
   description: "",
-  duration: 0,
-};
-
-const initialLocationInfo: LocationInfo = {
   city: "",
-  specificPlace: "",
-  categoryKeyId: 0,
-  categoryKey: 0,
+  categoryKeyId: "",
+  categoryKey: "",
   namePlace: "",
-  lat: 0,
-  long: 0,
+  lat: "",
+  long: "",
 };
 
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
@@ -83,13 +68,11 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
   // States
   const [scheduleInfo, setScheduleInfo] =
     useState<ScheduleInfo>(initialScheduleInfo);
-  const [locationInfo, setLocationInfo] =
-    useState<LocationInfo>(initialLocationInfo);
 
   // Mutation
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
-    mutationFn: ({ scheduleInfo, locationInfo }: MutationType) => {
-      return createSchedule(scheduleInfo, locationInfo);
+    mutationFn: (scheduleInfo: ScheduleInfo) => {
+      return createSchedule(scheduleInfo);
     },
     onSuccess: (data) => {
       setScheduleInfo(initialScheduleInfo);
@@ -109,15 +92,20 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const formValues: { [key: string]: string } = {};
-
-    // Iterate over form elements and extract their values
-    formData.forEach((value, key) => {
-      formValues[key] = value as string;
-    });
-
-    // Log or use the extracted form values
-    console.log(formValues);
+    const formValues: ScheduleInfo = {
+      date: formData.get("date") as string,
+      timeStart: formData.get("timeStart") as string,
+      timeEnd: formData.get("timeEnd") as string,
+      title: formData.get("title") as string,
+      description: formData.get("description") as string,
+      city: formData.get("city") as string,
+      categoryKeyId: formData.get("categoryKeyId") as string,
+      categoryKey: formData.get("categoryKey") as string,
+      namePlace: formData.get("namePlace") as string,
+      lat: formData.get("lat") as string,
+      long: formData.get("long") as string,
+    };
+    mutate(formValues);
   };
 
   const hideNotificationTimer = () => {
@@ -247,13 +235,6 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
               } ${
                 isPending && "bg-LightPrimaryDisabled text-Disabled"
               }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
-              onClick={() => {
-                const mutationData: MutationType = {
-                  scheduleInfo: scheduleInfo,
-                  locationInfo: locationInfo,
-                };
-                // mutate(mutationData);
-              }}
               type="submit"
             >
               {isIdle || isSuccess ? (

@@ -6,21 +6,22 @@ import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // Types
 import { TableRow } from "@/Types/database.types";
-type returnType = [
+type returnTypes = [
   TableRow<"Schedules"> & {
-    LocationInfo: [
-      {
-        city: string;
-        LocationCategories: {
-          id: number;
-          category: string;
-        };
-        LocationKeys: {
-          id: number;
-          key: string;
-        };
-      }
-    ];
+    ScheduleLocation: {
+      namePlace: string;
+      city: string;
+      LocationCategories: {
+        id: number;
+        category: string;
+      };
+      LocationKeys: {
+        id: number;
+        key: string;
+      };
+      long: string;
+      lat: string;
+    }[];
   }
 ];
 
@@ -29,7 +30,9 @@ interface props {
 }
 
 const page = async ({ params }: props) => {
-  const scheduleDetails: returnType = await getScheduleDetails(params.scheduleId);
+  const scheduleDetails: returnTypes = await getScheduleDetails(
+    params.scheduleId
+  );
   return (
     <div>
       <DetailedSchedule details={scheduleDetails} />

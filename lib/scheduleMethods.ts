@@ -32,22 +32,23 @@ export const getCurrentDaySchedules = async (selectedDate: string = "") => {
 };
 
 export const getScheduleDetails = async (id: string) => {
-  const scheduleId = {scheduleId: id};
-  type returnType = [
+  const scheduleId = { scheduleId: id };
+  type returnTypes = [
     TableRow<"Schedules"> & {
-      LocationInfo: [
-        {
-          city: string;
-          LocationCategories: {
-            id: number;
-            category: string;
-          };
-          LocationKeys: {
-            id: number;
-            key: string;
-          };
-        }
-      ];
+      ScheduleLocation: {
+        namePlace: string;
+        city: string;
+        LocationCategories: {
+          id: number;
+          category: string;
+        };
+        LocationKeys: {
+          id: number;
+          key: string;
+        };
+        long: string;
+        lat: string;
+      }[];
     }
   ];
 
@@ -60,6 +61,6 @@ export const getScheduleDetails = async (id: string) => {
     }
   );
 
-  const data: returnType = await res.json();
+  const data: returnTypes = await res.json();
   return data;
 };

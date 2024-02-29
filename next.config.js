@@ -8,6 +8,14 @@ const nextConfig = {
 
     return config;
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "maps.geoapify.com",
+      },
+    ],
+  },
   env: {
     NEXT_PUBLIC_SUPABASE_URL: "https://qqwhjzpdlzmhopmrzkvy.supabase.co",
     NEXT_PUBLIC_ANON_KEY:

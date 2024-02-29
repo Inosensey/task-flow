@@ -12,7 +12,7 @@ export default async function handler(
     let { data, error } = await useSupabase
       .from("Schedules")
       .select(
-        `*, ScheduleLocation(city, namePlace, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))`
+        `*, ScheduleLocation(city, namePlace, long, lat, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))`
       )
       .eq("id", scheduleId);
     if (error) {

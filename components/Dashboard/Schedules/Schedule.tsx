@@ -8,7 +8,7 @@ import { faArrowRight, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Utils
-import { useDays, useHours } from "@/utils/useDate";
+import { formatHourTo12, useDays, useHours } from "@/utils/useDate";
 import DetailedSchedule from "./DetailedSchedule";
 import ScheduleForm from "./ScheduleForm";
 
@@ -150,7 +150,7 @@ const Schedule = ({ scheduleData }: props) => {
                   />
                 </span>
                 <div className="flex gap-1 text-sm">
-                  <p>{info.timeStart}</p>
+                  <p>{formatHourTo12(info.timeStart)}</p>
                   {info.timeEnd !== "" && (
                     <span className="w-4">
                       <FontAwesomeIcon
@@ -159,7 +159,7 @@ const Schedule = ({ scheduleData }: props) => {
                       />
                     </span>
                   )}
-                  <p>{info.timeEnd}</p>
+                  <p>{formatHourTo12(info.timeEnd)}</p>
                 </div>
               </div>
               <p className="font-semibold">{info.title}</p>

@@ -13,10 +13,15 @@ type ScheduleInfo = {
   timeEnd: string;
   title: string;
   description: string;
-  duration: number;
+  city: string;
+  categoryKeyId: string;
+  categoryKey: string;
+  namePlace: string;
+  lat: string;
+  long: string;
 };
 
-export const createSchedule = async (scheduleInfo: TableInsert<"Schedules">, locationInfo: TableInsert<"ScheduleLocation">) => {
+export const createSchedule = async (scheduleInfo: ScheduleInfo) => {
   try {
     let { data, error } = await useSupabase
       .from("Schedules")
@@ -26,13 +31,24 @@ export const createSchedule = async (scheduleInfo: TableInsert<"Schedules">, loc
         date: scheduleInfo.date,
         timeStart: scheduleInfo.timeStart,
         timeEnd: scheduleInfo.timeEnd,
-        themeColor: scheduleInfo.themeColor
-      }).select()
-    const schedule:TableRow<"Schedules">[] | null = data;
-    if(error) return error;
-    if(schedule !== null) {
-      revalidateTag("schedules")
-      const AddLocationResult = await createLocationInfo(locationInfo, schedule[0].id)
+        themeColor: "",
+      })
+      .select();
+    const schedule: TableRow<"Schedules">[] | null = data;
+    if (error) return error;
+    if (schedule !== null) {
+      revalidateTag("schedules");
+
+      const locationInfo: TableInsert<"ScheduleLocation"> = {
+        scheduleId: schedule[0].id,
+        categoryKey: parseInt(scheduleInfo.categoryKey),
+        categoryKeyId: parseInt(scheduleInfo.categoryKeyId),
+        city: scheduleInfo.city,
+        namePlace: scheduleInfo.namePlace,
+        lat: parseFloat(scheduleInfo.lat),
+        long: parseFloat(scheduleInfo.long),
+      };
+      const AddLocationResult = await createLocationInfo(locationInfo);
       console.log(AddLocationResult);
       return schedule[0];
     } else {
@@ -43,20 +59,25 @@ export const createSchedule = async (scheduleInfo: TableInsert<"Schedules">, loc
   }
 };
 
-const createLocationInfo = async (locationInfo: TableInsert<"ScheduleLocation">, scheduleId: number) => {
+const createLocationInfo = async (
+  locationInfo: TableInsert<"ScheduleLocation">
+) => {
   try {
-    let {data, error} = await useSupabase.from("ScheduleLocation").insert<TableInsert<"ScheduleLocation">>({
-      scheduleId: scheduleId,
-      city: locationInfo.city,
-      categoryKeyId: locationInfo.categoryKeyId, 
-      categoryKey: locationInfo.categoryKey,
-      namePlace: locationInfo.namePlace,
-      lat: locationInfo.lat,
-      long: locationInfo.long
-    }).select()
-    const location:TableRow<"ScheduleLocation">[] | null = data;
+    let { data, error } = await useSupabase
+      .from("ScheduleLocation")
+      .insert<TableInsert<"ScheduleLocation">>({
+        scheduleId: locationInfo.scheduleId,
+        city: locationInfo.city,
+        categoryKeyId: locationInfo.categoryKeyId,
+        categoryKey: locationInfo.categoryKey,
+        namePlace: locationInfo.namePlace,
+        lat: locationInfo.lat,
+        long: locationInfo.long,
+      })
+      .select();
+    const location: TableRow<"ScheduleLocation">[] | null = data;
     return error ? error : true;
   } catch (e) {
     return `Failed to add Schedule Location: ${e}`;
   }
-}
+};

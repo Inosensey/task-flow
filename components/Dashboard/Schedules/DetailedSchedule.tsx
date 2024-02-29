@@ -1,16 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import {
+  faAngleDoubleLeft,
   faArrowRight,
   faCheck,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-
-import Overlay from "@/components/ReusableComponents/Overlay";
 
 // Import icones
 import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocationCityRounded";
@@ -18,57 +17,55 @@ import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocation
 // Types
 import { TableRow } from "@/Types/database.types";
 import DisplayMap from "@/components/ReusableComponents/DisplayMap";
+import Link from "next/link";
 
-type schedule = {
-  timeStart: string;
-  timeEnd: string;
-  title: string;
-  description: string;
-  duration: number;
-};
-type LocationInfo = [
-  {
-    city: string;
-    LocationCategories: {
-      id: number;
-      category: string;
-    };
-    LocationKeys: {
-      id: number;
-      key: string;
-    };
-  }
-];
+// Utils
+import { formatHourTo12 } from "@/utils/useDate";
 
 type props = {
   scheduleInfo?: TableRow<"Schedules">;
   setShowPopUp?: React.Dispatch<React.SetStateAction<boolean>>;
   details: [
     TableRow<"Schedules"> & {
-      ScheduleLocation: [
-        {
-          city: string;
-          namePlace: string;
-          LocationCategories: {
-            id: number;
-            category: string;
-          };
-          LocationKeys: {
-            id: number;
-            key: string;
-          };
-        }
-      ];
+      ScheduleLocation: {
+        namePlace: string;
+        city: string;
+        LocationCategories: {
+          id: number;
+          category: string;
+        };
+        LocationKeys: {
+          id: number;
+          key: string;
+        };
+        long: string;
+        lat: string;
+      }[];
     }
   ];
+};
+type mapAttrInfo = {
+  width: string;
+  height: string;
+  lon: string;
+  lat: string;
+  iconType: string;
 };
 
 const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
   // State
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [mapToggle, setMapToggle] = useState<boolean>(false);
 
   const locationDetails = details[0].ScheduleLocation[0];
-  console.log(details[0]);
+
+  const mapAttrInfo: mapAttrInfo = {
+    height: "400",
+    width: "600",
+    lon: locationDetails.long,
+    lat: locationDetails.lat,
+    iconType: "landmark",
+  };
 
   // Variants
   const popUpVariants = {
@@ -88,6 +85,20 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
         exit="hidden"
         className="bg-Primary relative p-3 phone:w-full phone:h-full"
       >
+        
+        <Link href={`/dashboard/schedules`}>
+        <motion.button
+          className="text-base text-LightPrimary w-max px-3 py-[0.3rem] rounded-md flex gap-1 items-center"
+          whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <FontAwesomeIcon
+            className="text-sm"
+            icon={faAngleDoubleLeft}
+          />
+          Schedules
+        </motion.button>
+        </Link>
         <div className="mt-2 flex flex-col">
           <div className="bg-Secondary p-2 rounded-md">
             <p className="text-LightPrimary font-semibold text-lg">
@@ -111,18 +122,25 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
                 />
               </span>
               <div className="flex gap-1 text-sm">
-                <p>{details[0].timeStart}</p>
+                <p>{formatHourTo12(details[0].timeStart)}</p>
                 {details[0].timeEnd !== "" && (
                   <span className="w-4">
                     <FontAwesomeIcon className="text-sm" icon={faArrowRight} />
                   </span>
                 )}
-                <p>{details[0].timeEnd}</p>
+                <p>{formatHourTo12(details[0].timeEnd)}</p>
               </div>
             </div>
-            <button className="text-xs bg-LightPrimary w-max px-3 py-[0.2rem] rounded-md flex gap-1 mt-3">
+            <motion.button
+              className="text-xs bg-LightPrimary w-max px-3 py-[0.2rem] rounded-md flex gap-1 mt-3"
+              whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => {
+                setMapToggle((prev) => !prev);
+              }}
+            >
               View Map
-            </button>
+            </motion.button>
           </div>
           <div className="p-2">
             <p className="text-lg font-semibold text-LightPrimary">
@@ -181,7 +199,12 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
           )}
         </div>
       </motion.div>
-      <DisplayMap />
+
+      <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
+        {mapToggle && (
+          <DisplayMap setMapToggle={setMapToggle} mapAttrInfo={mapAttrInfo} />
+        )}
+      </AnimatePresence>
     </>
   );
 };
