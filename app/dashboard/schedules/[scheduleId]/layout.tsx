@@ -1,13 +1,19 @@
 import Loading from "./loading";
 import { Suspense } from "react";
 
+
+interface props {
+  params: { scheduleId: string };
+}
+
 export default function DetailedLayout({
-  children,
+  children, params
 }: {
   children: React.ReactNode;
+  params: { scheduleId: string }
 }) {
   return (
-    <section className="flex bg-Primary">
+    <section className="flex bg-Primary relative">
       <Suspense fallback={<Loading />}>{children}</Suspense>
     </section>
   );

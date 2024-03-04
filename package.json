@@ -24,6 +24,7 @@
     "axios": "^1.5.1",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.13",
+    "formik": "^2.4.5",
     "framer-motion": "^10.16.1",
     "i": "^0.3.7",
     "next": "^13.5.6",

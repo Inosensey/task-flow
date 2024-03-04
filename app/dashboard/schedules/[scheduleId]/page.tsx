@@ -3,7 +3,6 @@
 import DetailedSchedule from "@/components/Dashboard/Schedules/DetailedSchedule";
 // Lib
 import { getScheduleDetails } from "@/lib/scheduleMethods";
-
 // Types
 import { TableRow } from "@/Types/database.types";
 type returnTypes = [
