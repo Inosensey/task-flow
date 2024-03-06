@@ -1,55 +1,58 @@
 type params = {
   value: string;
   stateName: string;
-  confirmPassword?: string,
+  confirmPassword?: string;
 };
 type validationInfo = {
   validationName: string;
   valid: boolean;
   validationMessage: string;
 };
+interface validationResult {
+  validationName: string;
+  valid: null | boolean;
+  validationMessage: string;
+}
+interface validationState {
+  [key: string]: {
+    valid: null | boolean;
+    validationMessage: string;
+  };
+}
 
 const FormValidation = (data: params): validationInfo => {
-  let validationResult = {
-    validationName: "",
-    valid: true,
-    validationMessage: "",
-  };
-  if (data.stateName === "firstName" || data.stateName === "lastName") {
-    return (validationResult = validateName(data));
+  switch (data.stateName) {
+    case "firstName":
+    case "lastName":
+    case "title":
+      return validateName(data);
+    case "age":
+    case "zip":
+    case "contactNumber":
+      return validateNumber(data);
+    case "date":
+    case "timeStart":
+    case "timeEnd":
+      return validateTimeOrDate(data);
+    case "gender":
+    case "country":
+    case "state":
+      return validateString(data);
+    case "username":
+      return validateUsername(data);
+    case "email":
+      return validateEmail(data);
+    case "password":
+      return validatePassword(data);
+    case "confirmPassword":
+      return confirmPassword(data);
+    default:
+      return {
+        validationName: "",
+        valid: false,
+        validationMessage: "State name is undefined",
+      };
   }
-  if (
-    data.stateName === "age" ||
-    data.stateName === "zip" ||
-    data.stateName === "contactNumber"
-  ) {
-    return (validationResult = validateNumber(data));
-  }
-  if (
-    data.stateName === "gender" ||
-    data.stateName === "country" ||
-    data.stateName === "state"
-  ) {
-    return (validationResult = validateString(data));
-  }
-  if (data.stateName === "username") {
-    return (validationResult = validateUsername(data));
-  }
-  if (data.stateName === "email") {
-    return (validationResult = validateEmail(data));
-  }
-  if (data.stateName === "password") {
-    return (validationResult = validatePassword(data));
-  }
-  if (data.stateName === "confirmPassword") {
-    return (validationResult = confirmPassword(data));
-  }
-
-  return (validationResult = {
-    validationName: "",
-    valid: false,
-    validationMessage: "state name is undefined",
-  });
 };
 
 let validationInfo: validationInfo = {
@@ -123,7 +126,8 @@ const validateName = (data: params): validationInfo => {
   return (validationInfo = {
     validationName: data.stateName,
     valid: false,
-    validationMessage: "Invalid Name. (contains numbers / title before space)",
+    validationMessage:
+      "Invalid Input. (contains numbers / title before space / Special Characters)",
   });
 };
 
@@ -197,8 +201,24 @@ const validatePassword = (data: params): validationInfo => {
   });
 };
 
-const confirmPassword = (data:params):validationInfo => {
-  if(data.value !== data.confirmPassword) {
+const validateTimeOrDate = (data: params): validationInfo => {
+  if (data.value.length === 0) {
+    return (validationInfo = {
+      validationName: data.stateName,
+      valid: false,
+      validationMessage: "This field is required",
+    });
+  }
+
+  return (validationInfo = {
+    validationName: data.stateName,
+    valid: true,
+    validationMessage: "",
+  });
+};
+
+const confirmPassword = (data: params): validationInfo => {
+  if (data.value !== data.confirmPassword) {
     return (validationInfo = {
       validationName: data.stateName,
       valid: false,
@@ -210,6 +230,19 @@ const confirmPassword = (data:params):validationInfo => {
     valid: true,
     validationMessage: "",
   });
-}
+};
+
+export const setValidationResult = <T>(
+  validation: validationResult,
+  setValidation: React.Dispatch<React.SetStateAction<validationState>>
+) => {
+  setValidation((prev) => ({
+    ...prev,
+    [validation.validationName]: {
+      valid: validation.valid,
+      validationMessage: validation.validationMessage,
+    },
+  }));
+};
 
 export default FormValidation;

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { FormEvent, useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
+import { useFormik } from "formik";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
@@ -22,12 +23,27 @@ import { TableRow } from "@/Types/database.types";
 
 // store
 import { useNotificationStore } from "@/store/useNotificationStore";
+import FormValidation from "@/utils/validation";
 
-// Utils
-import useDebounce from "@/utils/useDebounce";
+// Validation
+import { setValidationResult } from "@/utils/validation";
+import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 
+// Typescript
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
+}
+interface generalInfoValidation {
+  [key: string]: {
+    valid: null | boolean;
+    validationMessage: string;
+  };
+}
+
+type validation = {
+  validationName: string;
+  valid: null | boolean;
+  validationMessage: string;
 }
 
 type ScheduleInfo = {
@@ -59,11 +75,29 @@ const initialScheduleInfo: ScheduleInfo = {
   long: "",
 };
 
+// Set state initial data
+const initialValidation: generalInfoValidation = {
+  title: {
+    valid: null,
+    validationMessage: "",
+  },
+};
+
 const ScheduleForm = ({ setShowScheduleForm }: props) => {
   // Initial use query
   const queryClient = useQueryClient();
 
+  // Zustand Store
   const { setMessage, setShowSlideNotification } = useNotificationStore();
+  const { setValidation, validations } = useScheduleFormStore();
+
+  const onScheduleAddSuccess = () => {
+    setScheduleInfo(initialScheduleInfo);
+    setMessage("Schedule Successfully Added");
+    setShowSlideNotification();
+    hideNotificationTimer();
+    setShowScheduleForm(false);
+  };
 
   // States
   const [scheduleInfo, setScheduleInfo] =
@@ -75,11 +109,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
       return createSchedule(scheduleInfo);
     },
     onSuccess: (data) => {
-      setScheduleInfo(initialScheduleInfo);
-      setMessage("Schedule Successfully Added");
-      setShowSlideNotification();
-      hideNotificationTimer();
-      setShowScheduleForm(false);
+      onScheduleAddSuccess();
       queryClient.setQueryData(
         ["schedules"],
         (oldData: TableRow<"Schedules">[]) =>
@@ -115,11 +145,19 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+    const validationParams = {
+      value: value,
+      stateName: name,
+    };
 
     setScheduleInfo((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const result:validation = FormValidation(validationParams);
+    setValidation(result);
+    // setValidationResult(result, setGeneralInfoValidation)
   };
 
   const handleTextareaChange = (
@@ -153,7 +191,6 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
       },
     },
   };
-
   return (
     <Overlay>
       <motion.form
@@ -185,8 +222,8 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             label="Title"
             onChange={handleInputChange}
             onBlur={handleInputChange}
-            valid={null}
-            validationMessage={""}
+            valid={validations?.title?.valid}
+            validationMessage={validations?.title?.validationMessage}
           />
           <TextareaInput
             name="description"
@@ -205,6 +242,8 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
               type="date"
               onChange={handleInputChange}
               onBlur={handleInputChange}
+              valid={validations?.date?.valid}
+              validationMessage={validations?.date?.validationMessage}
             />
             <TimeInput
               label="Time Start"
@@ -213,6 +252,8 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
               type="time"
               onChange={handleInputChange}
               onBlur={handleInputChange}
+              valid={validations?.timeStart?.valid}
+              validationMessage={validations?.timeStart?.validationMessage}
             />
             <TimeInput
               label="Time End"
@@ -221,6 +262,8 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
               type="time"
               onChange={handleInputChange}
               onBlur={handleInputChange}
+              valid={validations?.timeEnd?.valid}
+              validationMessage={validations?.timeEnd?.validationMessage}
             />
           </div>
           <div>

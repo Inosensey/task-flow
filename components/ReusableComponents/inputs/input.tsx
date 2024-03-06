@@ -7,7 +7,7 @@ interface inputParams<T> {
   name: string;
   placeholder: string;
   label: string;
-  valid: null | boolean;
+  valid?: null | boolean | undefined;
   validationMessage?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onInput?: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -19,6 +19,8 @@ interface timeInputParams {
   name: string;
   label: string;
   type: string;
+  valid?: null | boolean | undefined;
+  validationMessage?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
@@ -86,6 +88,8 @@ export const TimeInput = ({
   onChange,
   state,
   type,
+  valid,
+  validationMessage,
 }: timeInputParams) => {
   return (
     <div className="flex flex-col phone:text-sm">
@@ -98,6 +102,18 @@ export const TimeInput = ({
         onChange={onChange}
         onBlur={onBlur}
       />
+
+      {valid != null ? (
+        valid === true ? (
+          ""
+        ) : (
+          <span className="text-[0.75rem] text-red-500 font-bold">
+            {validationMessage}
+          </span>
+        )
+      ) : (
+        ""
+      )}
     </div>
   );
 };
