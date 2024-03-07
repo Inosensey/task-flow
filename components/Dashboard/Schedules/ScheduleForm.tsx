@@ -44,7 +44,7 @@ type validation = {
   validationName: string;
   valid: null | boolean;
   validationMessage: string;
-}
+};
 
 type ScheduleInfo = {
   date: string;
@@ -58,6 +58,7 @@ type ScheduleInfo = {
   namePlace: string;
   lat: string;
   long: string;
+  [key: string]: string;
 };
 
 // Initial data for state
@@ -89,7 +90,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
 
   // Zustand Store
   const { setMessage, setShowSlideNotification } = useNotificationStore();
-  const { setValidation, validations } = useScheduleFormStore();
+  const { setValidation, validations, resetValidation } = useScheduleFormStore();
 
   const onScheduleAddSuccess = () => {
     setScheduleInfo(initialScheduleInfo);
@@ -122,6 +123,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    const fieldsToCheck = ["date", "title", "timeStart", "timeEnd", "city"];
     const formValues: ScheduleInfo = {
       date: formData.get("date") as string,
       timeStart: formData.get("timeStart") as string,
@@ -135,12 +137,37 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
       lat: formData.get("lat") as string,
       long: formData.get("long") as string,
     };
-    mutate(formValues);
+    if (scheduleFormValidate(fieldsToCheck, formValues)) {
+      console.log("valid");
+      mutate(formValues);
+    } else {
+      console.log("not valid");
+      return;
+    }
   };
 
   const hideNotificationTimer = () => {
     const interval = setTimeout(setShowSlideNotification, 5000);
     return () => clearTimeout(interval);
+  };
+
+  const scheduleFormValidate = (
+    fieldsToCheck: Array<string>,
+    formValues: ScheduleInfo
+  ) => {
+    let isValid = true;
+    fieldsToCheck.some((field) => {
+      if (formValues[field] === "") {
+        isValid = false;
+        const validationParams = {
+          value: formValues[field],
+          stateName: field,
+        };
+        const result: validation = FormValidation(validationParams);
+        setValidation(result);
+      }
+    });
+    return isValid;
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,7 +182,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
       [name]: value,
     }));
 
-    const result:validation = FormValidation(validationParams);
+    const result: validation = FormValidation(validationParams);
     setValidation(result);
     // setValidationResult(result, setGeneralInfoValidation)
   };
@@ -207,6 +234,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             style={{ height: "max-content" }}
             className="cursor-pointer bg-LightPrimary px-2 py-0 font-bold text-lg rounded-md"
             onClick={() => {
+              resetValidation();
               setShowScheduleForm((prev) => !prev);
             }}
           >

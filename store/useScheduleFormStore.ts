@@ -10,6 +10,7 @@ interface validationTemplate {
 interface StoreType {
   validations: validationTemplate | undefined;
   setValidation: (data: validationParams) => void;
+  resetValidation: () => void;
 }
 
 type validationParams = {
@@ -19,7 +20,28 @@ type validationParams = {
 };
 
 export const useScheduleFormStore = create<StoreType>((set) => ({
-  validations: undefined,
+  validations: {
+    title: {
+      valid: null,
+      validationMessage: "",
+    },
+    data: {
+      valid: null,
+      validationMessage: "",
+    },
+    timeStart: {
+      valid: null,
+      validationMessage: "",
+    },
+    timeEnd: {
+      valid: null,
+      validationMessage: "",
+    },
+    city: {
+      valid: null,
+      validationMessage: "",
+    },
+  },
   setValidation: (data: validationParams) =>
     set((prev) => ({
       validations: {
@@ -27,6 +49,31 @@ export const useScheduleFormStore = create<StoreType>((set) => ({
         [data.validationName]: {
           valid: data.valid,
           validationMessage: data.validationMessage,
+        },
+      },
+    })),
+  resetValidation: () =>
+    set(() => ({
+      validations: {
+        title: {
+          valid: null,
+          validationMessage: "",
+        },
+        data: {
+          valid: null,
+          validationMessage: "",
+        },
+        timeStart: {
+          valid: null,
+          validationMessage: "",
+        },
+        timeEnd: {
+          valid: null,
+          validationMessage: "",
+        },
+        city: {
+          valid: null,
+          validationMessage: "",
         },
       },
     })),

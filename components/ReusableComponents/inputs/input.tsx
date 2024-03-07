@@ -60,7 +60,7 @@ const Input = <T extends string | number>({
           name={name}
           placeholder={placeholder}
           className={`bg-Secondary w-full text-white px-2 py-2 phone:text-sm ${style.input}`}
-          required
+          // required
         />
         <div
           className={`h-[4px] w-full bg-LightPrimary absolute ${style.inputUnderline}`}

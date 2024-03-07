@@ -37,6 +37,7 @@ const FormValidation = (data: params): validationInfo => {
     case "gender":
     case "country":
     case "state":
+    case "city":
       return validateString(data);
     case "username":
       return validateUsername(data);

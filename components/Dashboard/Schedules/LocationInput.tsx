@@ -9,14 +9,24 @@ import debounce from "@/utils/useDebounce";
 // import libs
 import { AutoCompleteLocation } from "@/lib/locationMethods";
 
+// Zustand Store
+import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+
 // Import icones
 import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocationCityRounded";
 import CategorySelect from "./CategorySelect";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
+import FormValidation from "@/utils/validation";
 
 // Types
 type LocationInfoInput = {
   city: string,
+}
+
+type validation = {
+  validationName: string;
+  valid: null | boolean;
+  validationMessage: string;
 }
 type locationInfoType = {
   name: string;
@@ -40,6 +50,10 @@ interface locationListType {
 }
 
 const LocationInput = () => {
+  // Store
+  const { validations, setValidation } = useScheduleFormStore();
+
+  // States
   const [locationInfo, setLocationInfo] = useState<LocationInfoInput>({city: ""})
   const [locationList, setLocationList] = useState<
     locationListType | undefined
@@ -52,8 +66,15 @@ const LocationInput = () => {
 
   const HandleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+    const validationParams = {
+      value: value,
+      stateName: name,
+    };
     setLocationInfo((prev) => ({ ...prev, [name]: value }));
     setRunAutoComplete(true);
+    
+    const result:validation = FormValidation(validationParams);
+    setValidation(result);
   };
 
   useEffect(() => {
@@ -86,8 +107,9 @@ const LocationInput = () => {
             placeholder="Enter the City you are in"
             label="City"
             onChange={HandleInputChange}
-            valid={null}
-            validationMessage={""}
+            onBlur={HandleInputChange}
+            valid={validations?.city?.valid}
+            validationMessage={validations?.city?.validationMessage}
           />
           {autoCompleteRunning && (
             <div className="absolute bottom-[0.6rem] right-10">
