@@ -28,10 +28,12 @@ import FormValidation from "@/utils/validation";
 // Validation
 import { setValidationResult } from "@/utils/validation";
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // Typescript
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
+  scheduleId: string
 }
 interface generalInfoValidation {
   [key: string]: {
@@ -45,13 +47,14 @@ type validation = {
   valid: null | boolean;
   validationMessage: string;
 };
-
-type ScheduleInfo = {
+type GeneralInfo = {
   date: string;
   timeStart: string;
   timeEnd: string;
   title: string;
   description: string;
+}
+interface ScheduleInfo extends GeneralInfo {
   city: string;
   categoryKeyId: string;
   categoryKey: string;
@@ -61,48 +64,39 @@ type ScheduleInfo = {
   [key: string]: string;
 };
 
-// Initial data for state
-const initialScheduleInfo: ScheduleInfo = {
-  date: "",
-  timeStart: "",
-  timeEnd: "",
-  title: "",
-  description: "",
-  city: "",
-  categoryKeyId: "",
-  categoryKey: "",
-  namePlace: "",
-  lat: "",
-  long: "",
-};
-
-// Set state initial data
-const initialValidation: generalInfoValidation = {
-  title: {
-    valid: null,
-    validationMessage: "",
-  },
-};
-
-const ScheduleForm = ({ setShowScheduleForm }: props) => {
+const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
   // Initial use query
   const queryClient = useQueryClient();
 
   // Zustand Store
   const { setMessage, setShowSlideNotification } = useNotificationStore();
-  const { setValidation, validations, resetValidation } = useScheduleFormStore();
+  const { setValidation, validations, resetValidation, formAction } = useScheduleFormStore();
 
-  const onScheduleAddSuccess = () => {
-    setScheduleInfo(initialScheduleInfo);
-    setMessage("Schedule Successfully Added");
-    setShowSlideNotification();
-    hideNotificationTimer();
-    setShowScheduleForm(false);
+  // Use query
+  const {
+    data: scheduleData,
+    error: scheduleError,
+    isFetched: scheduleIsFetched,
+  } = useQuery({
+    queryKey: [`Schedule#${scheduleId}`],
+    queryFn: () => getScheduleDetails(scheduleId),
+    enabled: formAction === "edit"
+  });
+  console.log(scheduleData);
+
+  
+  // Initial Schedule Info
+  const initialGeneralInfo: GeneralInfo = {
+    date:  formAction !== "add" && scheduleData !== undefined ? scheduleData[0].date! : "" ,
+    timeStart: formAction !== "add" && scheduleData !== undefined ? scheduleData[0].timeStart! : "" ,
+    timeEnd: formAction !== "add" && scheduleData !== undefined ? scheduleData[0].timeEnd! : "" ,
+    title: formAction !== "add" && scheduleData !== undefined ? scheduleData[0].title! : "" ,
+    description: formAction !== "add" && scheduleData !== undefined ? scheduleData[0].description! : "" ,
   };
 
   // States
-  const [scheduleInfo, setScheduleInfo] =
-    useState<ScheduleInfo>(initialScheduleInfo);
+  const [generalInfo, setGeneralInfo] =
+    useState<GeneralInfo>(initialGeneralInfo);
 
   // Mutation
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
@@ -119,6 +113,13 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
       queryClient.invalidateQueries({ queryKey: ["schedules"] });
     },
   });
+
+  const onScheduleAddSuccess = () => {
+    setMessage("Schedule Successfully Added");
+    setShowSlideNotification();
+    hideNotificationTimer();
+    setShowScheduleForm(false);
+  };
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -177,7 +178,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
       stateName: name,
     };
 
-    setScheduleInfo((prev) => ({
+    setGeneralInfo((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -192,7 +193,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
   ) => {
     const { name, value } = event.target;
 
-    setScheduleInfo((prev) => ({
+    setGeneralInfo((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -243,7 +244,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
         </div>
         <div className="mt-4 flex flex-col gap-4">
           <Input
-            state={scheduleInfo.title}
+            state={generalInfo.title}
             type="text"
             name="title"
             placeholder="Enter the Title of your schedule"
@@ -256,7 +257,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
           <TextareaInput
             name="description"
             label="Description"
-            state={scheduleInfo.description}
+            state={generalInfo.description}
             cols={30}
             rows={7}
             onChange={handleTextareaChange}
@@ -266,7 +267,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             <TimeInput
               label="Date"
               name="date"
-              state={scheduleInfo.date}
+              state={generalInfo.date}
               type="date"
               onChange={handleInputChange}
               onBlur={handleInputChange}
@@ -276,7 +277,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             <TimeInput
               label="Time Start"
               name="timeStart"
-              state={scheduleInfo.timeStart}
+              state={generalInfo.timeStart}
               type="time"
               onChange={handleInputChange}
               onBlur={handleInputChange}
@@ -286,7 +287,7 @@ const ScheduleForm = ({ setShowScheduleForm }: props) => {
             <TimeInput
               label="Time End"
               name="timeEnd"
-              state={scheduleInfo.timeEnd}
+              state={generalInfo.timeEnd}
               type="time"
               onChange={handleInputChange}
               onBlur={handleInputChange}

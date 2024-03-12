@@ -59,7 +59,6 @@ const Schedule = ({ scheduleData }: props) => {
       setTimeHeightNumber(96);
     }
   }, []);
-  console.log(scheduleData);
   const hours = useHours();
   return (
     <>

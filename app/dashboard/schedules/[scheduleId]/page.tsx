@@ -34,7 +34,7 @@ const page = async ({ params }: props) => {
   );
   return (
     <div>
-      <DetailedSchedule details={scheduleDetails} />
+      <DetailedSchedule details={scheduleDetails} scheduleId={params.scheduleId} />
     </div>
   );
 };

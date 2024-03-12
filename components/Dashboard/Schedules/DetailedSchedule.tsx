@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faPenToSquare } from "@fortawesome/free-regular-svg-icons";
@@ -11,18 +12,26 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
+// Import components
+import ScheduleForm from "./ScheduleForm";
+
 // Import icones
 import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocationCityRounded";
+
+// Utils
+import { formatHourTo12 } from "@/utils/useDate";
+import { getScheduleDetails } from "@/lib/scheduleMethods";
+
+// Store
+import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 
 // Types
 import { TableRow } from "@/Types/database.types";
 import DisplayMap from "@/components/ReusableComponents/DisplayMap";
 import Link from "next/link";
 
-// Utils
-import { formatHourTo12 } from "@/utils/useDate";
-
 type props = {
+  scheduleId: string,
   scheduleInfo?: TableRow<"Schedules">;
   setShowPopUp?: React.Dispatch<React.SetStateAction<boolean>>;
   details: [
@@ -52,12 +61,28 @@ type mapAttrInfo = {
   iconType: string;
 };
 
-const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
+const DetailedSchedule = ({ details, scheduleId }: props) => {
+  
+  // Use query
+  const {
+    data: data,
+    error: error,
+    isFetched: isFetched,
+  } = useQuery({
+    queryKey: [`Schedule#${scheduleId}`],
+    queryFn: () => getScheduleDetails(scheduleId),
+    initialData: details,
+  });
+
+  // Store
+  const {setFormAction} = useScheduleFormStore();
+
   // State
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [mapToggle, setMapToggle] = useState<boolean>(false);
+  const [showScheduleForm, setShowScheduleForm] = useState<boolean>(false);
 
-  const locationDetails = details[0].ScheduleLocation[0];
+  const locationDetails = data[0].ScheduleLocation[0];
 
   const mapAttrInfo: mapAttrInfo = {
     height: "400",
@@ -102,7 +127,7 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
         <div className="mt-2 flex flex-col">
           <div className="bg-Secondary p-2 rounded-md">
             <p className="text-LightPrimary font-semibold text-lg">
-              {details[0].title}
+              {data[0].title}
             </p>
             <div className="font-semibold text-sm text-LightSecondary">
               <p className="flex items-center">
@@ -122,13 +147,13 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
                 />
               </span>
               <div className="flex gap-1 text-sm">
-                <p>{formatHourTo12(details[0].timeStart)}</p>
-                {details[0].timeEnd !== "" && (
+                <p>{formatHourTo12(data[0].timeStart)}</p>
+                {data[0].timeEnd !== "" && (
                   <span className="w-4">
                     <FontAwesomeIcon className="text-sm" icon={faArrowRight} />
                   </span>
                 )}
-                <p>{formatHourTo12(details[0].timeEnd)}</p>
+                <p>{formatHourTo12(data[0].timeEnd)}</p>
               </div>
             </div>
             <motion.button
@@ -146,7 +171,7 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
             <p className="text-lg font-semibold text-LightPrimary">
               Description
             </p>
-            <p className="text-justify leading-6">{details[0].description}</p>
+            <p className="text-justify leading-6">{data[0].description}</p>
           </div>
         </div>
         <div className="flex justify-between">
@@ -185,7 +210,8 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
               whileTap={{ scale: 0.9 }}
               className="bg-LightPrimary w-max px-4 py-[0.1rem] rounded-md flex gap-1 mt-3"
               onClick={() => {
-                setIsEditing((prev) => !prev);
+                setShowScheduleForm((prev) => !prev);
+                setFormAction("edit")
               }}
             >
               <span className="w-4">
@@ -203,6 +229,9 @@ const DetailedSchedule = ({ scheduleInfo, setShowPopUp, details }: props) => {
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
         {mapToggle && (
           <DisplayMap setMapToggle={setMapToggle} mapAttrInfo={mapAttrInfo} />
+        )}
+        {showScheduleForm && (
+          <ScheduleForm setShowScheduleForm={setShowScheduleForm} scheduleId={scheduleId} />
         )}
       </AnimatePresence>
     </>

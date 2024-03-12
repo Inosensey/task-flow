@@ -11,6 +11,8 @@ interface StoreType {
   validations: validationTemplate | undefined;
   setValidation: (data: validationParams) => void;
   resetValidation: () => void;
+  formAction: string;
+  setFormAction: (action: string) => void;
 }
 
 type validationParams = {
@@ -20,6 +22,10 @@ type validationParams = {
 };
 
 export const useScheduleFormStore = create<StoreType>((set) => ({
+  formAction: "add",
+  setFormAction: (action: string) => {
+    set(() => ({ formAction: action }));
+  },
   validations: {
     title: {
       valid: null,
