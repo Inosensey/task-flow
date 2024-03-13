@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 // Import components
 import Input from "@/components/ReusableComponents/inputs/Input";
@@ -8,6 +9,7 @@ import debounce from "@/utils/useDebounce";
 
 // import libs
 import { AutoCompleteLocation } from "@/lib/locationMethods";
+import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // Zustand Store
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
@@ -20,14 +22,15 @@ import FormValidation from "@/utils/validation";
 
 // Types
 type LocationInfoInput = {
-  city: string,
-}
+  city: string;
+  cityId: string;
+};
 
 type validation = {
   validationName: string;
   valid: null | boolean;
   validationMessage: string;
-}
+};
 type locationInfoType = {
   name: string;
   ref: string;
@@ -48,13 +51,33 @@ type locationInfoType = {
 interface locationListType {
   locations: locationInfoType[];
 }
+type params = {
+  scheduleId: string;
+};
 
-const LocationInput = () => {
+const LocationInput = ({ scheduleId }: params) => {
   // Store
-  const { validations, setValidation } = useScheduleFormStore();
+  const { validations, setValidation, formAction } = useScheduleFormStore();
+
+  // Use query
+  const {
+    data: scheduleData,
+    error: scheduleError,
+    isFetched: scheduleIsFetched,
+  } = useQuery({
+    queryKey: [`Schedule#${scheduleId}`],
+    queryFn: () => getScheduleDetails(scheduleId),
+    enabled: formAction === "edit",
+  });
 
   // States
-  const [locationInfo, setLocationInfo] = useState<LocationInfoInput>({city: ""})
+  const [locationInfo, setLocationInfo] = useState<LocationInfoInput>({
+    city:
+      formAction === "edit" && scheduleData !== undefined
+        ? scheduleData[0].ScheduleLocation[0].city!
+        : "",
+    cityId: "",
+  });
   const [locationList, setLocationList] = useState<
     locationListType | undefined
   >(undefined);
@@ -72,8 +95,8 @@ const LocationInput = () => {
     };
     setLocationInfo((prev) => ({ ...prev, [name]: value }));
     setRunAutoComplete(true);
-    
-    const result:validation = FormValidation(validationParams);
+
+    const result: validation = FormValidation(validationParams);
     setValidation(result);
   };
 
@@ -125,7 +148,11 @@ const LocationInput = () => {
                 key={info.place_id}
                 onClick={() => {
                   const city = `${info.city}, ${info.postcode} ${info.state} ${info.country}`;
-                  setLocationInfo((prev) => ({ ...prev, city: city }));
+                  setLocationInfo((prev) => ({
+                    ...prev,
+                    city: city,
+                    cityId: info.place_id,
+                  }));
                   setLocationList(undefined);
                   setRunAutoComplete(false);
                   setShowSupportedCat(true);
@@ -148,6 +175,16 @@ const LocationInput = () => {
           </div>
         )}
       </div>
+
+      <Input
+        state={locationInfo.cityId}
+        type="hidden"
+        name="cityId"
+        placeholder=""
+        label=""
+        valid={null}
+        validationMessage={""}
+      />
     </div>
   );
 };

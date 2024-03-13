@@ -55,7 +55,7 @@ export const getScheduleDetails = async (id: string) => {
   const res = await fetch(
     `http://localhost:3000/api/supabase/getScheduleDetails?scheduleId=${id}`,
     {
-      next: { tags: ["schedule134"], revalidate: 300 },
+      next: { tags: [`schedule${id}`], revalidate: 300 },
       method: "GET",
       headers: { "Content-Type": "application/json" },
     }

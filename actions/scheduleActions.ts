@@ -14,6 +14,7 @@ type ScheduleInfo = {
   title: string;
   description: string;
   city: string;
+  cityId: string,
   categoryKeyId: string;
   categoryKey: string;
   namePlace: string;
@@ -44,6 +45,7 @@ export const createSchedule = async (scheduleInfo: ScheduleInfo) => {
         categoryKey: parseInt(scheduleInfo.categoryKey),
         categoryKeyId: parseInt(scheduleInfo.categoryKeyId),
         city: scheduleInfo.city,
+        cityId: scheduleInfo.cityId,
         namePlace: scheduleInfo.namePlace,
         lat: parseFloat(scheduleInfo.lat),
         long: parseFloat(scheduleInfo.long),
@@ -68,6 +70,7 @@ const createLocationInfo = async (
       .insert<TableInsert<"ScheduleLocation">>({
         scheduleId: locationInfo.scheduleId,
         city: locationInfo.city,
+        cityId: locationInfo.cityId,
         categoryKeyId: locationInfo.categoryKeyId,
         categoryKey: locationInfo.categoryKey,
         namePlace: locationInfo.namePlace,

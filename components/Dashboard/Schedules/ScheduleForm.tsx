@@ -31,9 +31,12 @@ import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // Typescript
+import {GeneralInfo, ScheduleInfo} from "@/Types/scheduleType";
+import { useFormSerialize } from "@/utils/formUtils";
+
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
-  scheduleId: string
+  scheduleId: string;
 }
 interface generalInfoValidation {
   [key: string]: {
@@ -47,22 +50,6 @@ type validation = {
   valid: null | boolean;
   validationMessage: string;
 };
-type GeneralInfo = {
-  date: string;
-  timeStart: string;
-  timeEnd: string;
-  title: string;
-  description: string;
-}
-interface ScheduleInfo extends GeneralInfo {
-  city: string;
-  categoryKeyId: string;
-  categoryKey: string;
-  namePlace: string;
-  lat: string;
-  long: string;
-  [key: string]: string;
-};
 
 const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
   // Initial use query
@@ -70,7 +57,8 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
 
   // Zustand Store
   const { setMessage, setShowSlideNotification } = useNotificationStore();
-  const { setValidation, validations, resetValidation, formAction } = useScheduleFormStore();
+  const { setValidation, validations, resetValidation, formAction } =
+    useScheduleFormStore();
 
   // Use query
   const {
@@ -80,18 +68,32 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
   } = useQuery({
     queryKey: [`Schedule#${scheduleId}`],
     queryFn: () => getScheduleDetails(scheduleId),
-    enabled: formAction === "edit"
+    enabled: formAction === "edit",
   });
   console.log(scheduleData);
 
-  
   // Initial Schedule Info
   const initialGeneralInfo: GeneralInfo = {
-    date:  formAction !== "add" && scheduleData !== undefined ? scheduleData[0].date! : "" ,
-    timeStart: formAction !== "add" && scheduleData !== undefined ? scheduleData[0].timeStart! : "" ,
-    timeEnd: formAction !== "add" && scheduleData !== undefined ? scheduleData[0].timeEnd! : "" ,
-    title: formAction !== "add" && scheduleData !== undefined ? scheduleData[0].title! : "" ,
-    description: formAction !== "add" && scheduleData !== undefined ? scheduleData[0].description! : "" ,
+    date:
+      formAction !== "add" && scheduleData !== undefined
+        ? scheduleData[0].date!
+        : "",
+    timeStart:
+      formAction !== "add" && scheduleData !== undefined
+        ? scheduleData[0].timeStart!
+        : "",
+    timeEnd:
+      formAction !== "add" && scheduleData !== undefined
+        ? scheduleData[0].timeEnd!
+        : "",
+    title:
+      formAction !== "add" && scheduleData !== undefined
+        ? scheduleData[0].title!
+        : "",
+    description:
+      formAction !== "add" && scheduleData !== undefined
+        ? scheduleData[0].description!
+        : "",
   };
 
   // States
@@ -121,23 +123,10 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
     setShowScheduleForm(false);
   };
 
-  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
     const fieldsToCheck = ["date", "title", "timeStart", "timeEnd", "city"];
-    const formValues: ScheduleInfo = {
-      date: formData.get("date") as string,
-      timeStart: formData.get("timeStart") as string,
-      timeEnd: formData.get("timeEnd") as string,
-      title: formData.get("title") as string,
-      description: formData.get("description") as string,
-      city: formData.get("city") as string,
-      categoryKeyId: formData.get("categoryKeyId") as string,
-      categoryKey: formData.get("categoryKey") as string,
-      namePlace: formData.get("namePlace") as string,
-      lat: formData.get("lat") as string,
-      long: formData.get("long") as string,
-    };
+    const formValues: ScheduleInfo = useFormSerialize(event);
     if (scheduleFormValidate(fieldsToCheck, formValues)) {
       console.log("valid");
       mutate(formValues);
@@ -227,7 +216,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
         animate="show"
         exit="hidden"
         className="bg-Primary p-3 phone:w-11/12 rounded-md"
-        onSubmit={handleFormSubmit}
+        onSubmit={useHandleFormSubmit}
       >
         <div className="flex justify-between items-center">
           <p className="py-0">Schedule Form</p>
@@ -296,7 +285,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
             />
           </div>
           <div>
-            <LocationInput />
+            <LocationInput scheduleId={scheduleId} />
           </div>
           <div>
             <motion.button
