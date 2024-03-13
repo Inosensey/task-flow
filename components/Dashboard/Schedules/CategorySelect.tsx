@@ -21,6 +21,10 @@ import { TableRow } from "@/Types/database.types";
 
 // Components
 import Input from "@/components/ReusableComponents/inputs/Input";
+import { getScheduleDetails } from "@/lib/scheduleMethods";
+
+//Store
+import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 
 // Types
 type LocationInfoInput = {
@@ -60,20 +64,15 @@ interface PlaceList {
 }
 interface props {
   place_id: string;
+  scheduleId: string | null;
 }
 
-// Initial data
-const locationInfoInitial: LocationInfoInput = {
-  categoryKeyId: 0,
-  categoryKey: 0,
-  namePlace: "",
-  lat: 0,
-  long: 0,
-};
-
-const CategorySelect = ({ place_id }: props) => {
+const CategorySelect = ({ place_id, scheduleId }: props) => {
   // Initialize query client
   const queryClient = useQueryClient();
+
+  // Store
+  const { formAction } = useScheduleFormStore();
 
   // Use Query
   const { data: locationKeyData } = useQuery({
@@ -84,6 +83,26 @@ const CategorySelect = ({ place_id }: props) => {
     queryKey: ["locationCategories"],
     queryFn: getLocationCategories,
   });
+  const {
+    data: scheduleData,
+    error: scheduleError,
+    isFetched: scheduleIsFetched,
+  } = useQuery({
+    queryKey: [`Schedule#${scheduleId}`],
+    queryFn: () => getScheduleDetails(scheduleId!),
+    enabled: formAction === "edit",
+  });
+
+  console.log(scheduleData);
+
+  // Initial data
+  const locationInfoInitial: LocationInfoInput = {
+    categoryKeyId: 0,
+    categoryKey: 0,
+    namePlace: "",
+    lat: 0,
+    long: 0,
+  };
 
   // State
   const [locationInfo, setLocationInfo] =

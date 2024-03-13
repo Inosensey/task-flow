@@ -15,6 +15,9 @@ import ScheduleForm from "./ScheduleForm";
 //types
 import { TableRow } from "@/Types/database.types";
 
+// Stpre
+import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+
 // Props
 type props = {
   scheduleData: TableRow<"Schedules">[] | null;
@@ -30,6 +33,9 @@ type schedule = {
 const Schedule = ({ scheduleData }: props) => {
   const date = new Date();
   const days = useDays();
+
+  // Store
+  const {setFormAction} = useScheduleFormStore();
 
   // States
   const [timeHeightNumber, setTimeHeightNumber] = useState<number>(0);
@@ -70,6 +76,7 @@ const Schedule = ({ scheduleData }: props) => {
             whileTap={{ scale: 0.95 }}
             onClick={() => {
               setShowScheduleForm((prev) => !prev);
+              setFormAction("add");
             }}
             className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1"
           >
@@ -195,7 +202,7 @@ const Schedule = ({ scheduleData }: props) => {
       {/* Schedule form */}
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
         {showScheduleForm && (
-          <ScheduleForm setShowScheduleForm={setShowScheduleForm} />
+          <ScheduleForm setShowScheduleForm={setShowScheduleForm} scheduleId={null}/>
         )}
       </AnimatePresence>
     </>

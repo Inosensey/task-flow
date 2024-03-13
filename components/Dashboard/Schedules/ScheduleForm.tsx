@@ -36,7 +36,7 @@ import { useFormSerialize } from "@/utils/formUtils";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
-  scheduleId: string;
+  scheduleId: string | null;
 }
 interface generalInfoValidation {
   [key: string]: {
@@ -67,7 +67,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
     isFetched: scheduleIsFetched,
   } = useQuery({
     queryKey: [`Schedule#${scheduleId}`],
-    queryFn: () => getScheduleDetails(scheduleId),
+    queryFn: () => getScheduleDetails(scheduleId!),
     enabled: formAction === "edit",
   });
   console.log(scheduleData);

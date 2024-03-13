@@ -52,7 +52,7 @@ interface locationListType {
   locations: locationInfoType[];
 }
 type params = {
-  scheduleId: string;
+  scheduleId: string | null;
 };
 
 const LocationInput = ({ scheduleId }: params) => {
@@ -66,7 +66,7 @@ const LocationInput = ({ scheduleId }: params) => {
     isFetched: scheduleIsFetched,
   } = useQuery({
     queryKey: [`Schedule#${scheduleId}`],
-    queryFn: () => getScheduleDetails(scheduleId),
+    queryFn: () => getScheduleDetails(scheduleId!),
     enabled: formAction === "edit",
   });
 
@@ -171,7 +171,10 @@ const LocationInput = ({ scheduleId }: params) => {
         {showSupportedCat && (
           <div>
             <p className="phone:text-sm">Place Information</p>
-            <CategorySelect place_id={placeId} />
+            <CategorySelect
+              place_id={placeId}
+              scheduleId={formAction === "add" ? null : scheduleId}
+            />
           </div>
         )}
       </div>
