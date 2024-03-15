@@ -33,6 +33,12 @@ type LocationInfoInput = {
   namePlace: string;
   lat: number;
   long: number;
+  selectedChoice: {
+    key: string | null;
+    id: number;
+  };
+  selectedTypeOfPlace: string | null;
+  selectedPlace: string;
 };
 
 interface Feature {
@@ -97,27 +103,63 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
 
   // Initial data
   const locationInfoInitial: LocationInfoInput = {
-    categoryKeyId: 0,
-    categoryKey: 0,
-    namePlace: "",
-    lat: 0,
-    long: 0,
+    categoryKeyId:
+      formAction !== "add" && scheduleData !== undefined
+        ? scheduleData[0].ScheduleLocation[0].LocationCategories.id!
+        : 0,
+    categoryKey:
+      formAction !== "add" && scheduleData !== undefined
+        ? scheduleData[0].ScheduleLocation[0].LocationKeys.id!
+        : 0,
+    namePlace:
+      formAction !== "add" && scheduleData !== undefined
+        ? scheduleData[0].ScheduleLocation[0].namePlace!
+        : "",
+    lat:
+      formAction !== "add" && scheduleData !== undefined
+        ? parseInt(scheduleData[0].ScheduleLocation[0].lat!)
+        : 0,
+    long:
+      formAction !== "add" && scheduleData !== undefined
+        ? parseInt(scheduleData[0].ScheduleLocation[0].long!)
+        : 0,
+    selectedChoice: {
+      id:
+        formAction !== "add" && scheduleData !== undefined
+          ? scheduleData[0].ScheduleLocation[0].LocationKeys.id!
+          : 0,
+      key:
+        formAction !== "add" && scheduleData !== undefined
+          ? scheduleData[0].ScheduleLocation[0].LocationKeys.key!
+          : "Places",
+    },
+    selectedTypeOfPlace:
+      formAction !== "add" && scheduleData !== undefined
+        ? scheduleData[0].ScheduleLocation[0].LocationCategories.category!
+        : "Type of Place",
+    selectedPlace:
+      formAction !== "add" && scheduleData !== undefined
+        ? scheduleData[0].ScheduleLocation[0].namePlace!
+        : "Place List",
   };
 
   // State
   const [locationInfo, setLocationInfo] =
     useState<LocationInfoInput>(locationInfoInitial);
+  console.log("Location State", locationInfo)
   const [showChoices, setShowChoices] = useState<boolean>(false);
   const [showPlacesType, setShowPlacesType] = useState<boolean>(false);
   const [showPlaceList, setShowPlaceList] = useState<boolean>(false);
-  const [selectedChoice, setSelectedChoice] = useState<{
-    key: string | null;
-    id: number;
-  } | null>({ key: "Places", id: 0 });
-  const [selectedTypeOfPlace, setSelectedTypeOfPlace] = useState<string | null>(
-    "Type of Place"
-  );
-  const [selectedPlace, setSelectedPlace] = useState<string>("Place List");
+
+  // const [selectedChoice, setSelectedChoice] = useState<{
+  //   key: string | null;
+  //   id: number;
+  // } | null>({ key: "Places", id: 0 });
+  // const [selectedTypeOfPlace, setSelectedTypeOfPlace] = useState<string | null>(
+  //   "Type of Place"
+  // );
+  // const [selectedPlace, setSelectedPlace] = useState<string>("Place List");
+
   const [listPlace, setListPlace] = useState<PlaceList | undefined>(undefined);
   const [isGettingListPlaces, setIsGettingListPlaces] =
     useState<boolean>(false);
@@ -148,7 +190,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
           className="rounded-md bg-Secondary flex justify-between px-2 items-center cursor-pointer phone:h-9 "
         >
           <p className="select-none text-sm">
-            {formatLocationName(selectedChoice?.key)}
+            {formatLocationName(locationInfo.selectedChoice?.key)}
           </p>
           <span
             className="transition-all"
@@ -167,10 +209,12 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             <div
               onClick={() => {
                 // setSelectedChoice(category.key);
-                setSelectedChoice((selectedChoicePrev) => ({
-                  ...selectedChoicePrev,
-                  key: category.key,
-                  id: category.id,
+                setLocationInfo((locationInfo) => ({
+                  ...locationInfo,
+                  selectedChoice: {
+                    key: category.key,
+                    id: category.id,
+                  },
                 }));
                 setShowChoices((prev) => !prev);
                 setLocationInfo((locationInfoPrev) => ({
@@ -197,7 +241,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
       {/* Categories Select code end */}
 
       {/* Places type select code */}
-      {selectedChoice?.key !== "Places" && (
+      {locationInfo.selectedChoice?.key !== "Places" && (
         <div className="relative phone:w-11/12">
           <div
             onClick={() => {
@@ -206,7 +250,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             className="rounded-md bg-Secondary flex justify-between px-2 items-center cursor-pointer phone:h-9 "
           >
             <p className="select-none text-sm">
-              {formatLocationName(selectedTypeOfPlace)}
+              {formatLocationName(locationInfo.selectedTypeOfPlace)}
             </p>
             <span
               className="transition-all"
@@ -223,11 +267,15 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
           >
             {locationCategoriesData?.map(
               (info: TableRow<"LocationCategories">) =>
-                selectedChoice?.id === info.keyId && (
+                locationInfo.selectedChoice?.id === info.keyId && (
                   <div
                     onClick={() => {
-                      const SelectedPlaceType = `${selectedChoice.key}.${info.category}`;
-                      setSelectedTypeOfPlace(info.category);
+                      const SelectedPlaceType = `${locationInfo.selectedChoice.key}.${info.category}`;
+                      // setSelectedTypeOfPlace(info.category);
+                      setLocationInfo((locationInfo) => ({
+                        ...locationInfo,
+                        selectedTypeOfPlace: info.category,
+                      }));
                       setShowPlacesType((prev) => !prev);
                       handlePlaceTypeChange(place_id, SelectedPlaceType);
                       setLocationInfo((locationInfoPrev) => ({
@@ -250,7 +298,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
       {/* Places type select code end */}
 
       {/* Places list select code */}
-      {selectedTypeOfPlace !== "Type of Place" && (
+      {locationInfo.selectedTypeOfPlace !== "Type of Place" && (
         <div className="relative phone:w-11/12">
           <div
             onClick={() => {
@@ -269,7 +317,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
               </div>
             ) : (
               <p className="select-none text-sm">
-                {formatLocationName(selectedPlace)}
+                {formatLocationName(locationInfo.selectedPlace)}
               </p>
             )}
             {!isGettingListPlaces && (
@@ -293,7 +341,11 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
                   key={place.properties.place_id}
                   onClick={() => {
                     console.log(place);
-                    setSelectedPlace(place.properties.address_line1);
+                    // setSelectedPlace(place.properties.address_line1);
+                    setLocationInfo((locationInfo) => ({
+                      ...locationInfo,
+                      selectedPlace: place.properties.address_line1,
+                    }));
                     setLocationInfo((locationInfoPrev) => ({
                       ...locationInfoPrev,
                       namePlace: place.properties.address_line1,

@@ -82,7 +82,7 @@ const LocationInput = ({ scheduleId }: params) => {
     locationListType | undefined
   >(undefined);
   const [runAutoComplete, setRunAutoComplete] = useState<boolean>(false);
-  const [showSupportedCat, setShowSupportedCat] = useState<boolean>(false);
+  const [showSupportedCat, setShowSupportedCat] = useState<boolean>(formAction !== "add" ? true :  false);
   const [autoCompleteRunning, setAutoCompleteRunning] =
     useState<boolean>(false);
   const [placeId, setPlaceId] = useState<string>("");
