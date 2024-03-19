@@ -29,29 +29,13 @@ import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 import { TableRow } from "@/Types/database.types";
 import DisplayMap from "@/components/ReusableComponents/DisplayMap";
 import Link from "next/link";
+import { ScheduleDetails } from "@/Types/scheduleType";
 
 type props = {
-  scheduleId: string,
+  scheduleId: string;
   scheduleInfo?: TableRow<"Schedules">;
   setShowPopUp?: React.Dispatch<React.SetStateAction<boolean>>;
-  details: [
-    TableRow<"Schedules"> & {
-      ScheduleLocation: {
-        namePlace: string;
-        city: string;
-        LocationCategories: {
-          id: number;
-          category: string;
-        };
-        LocationKeys: {
-          id: number;
-          key: string;
-        };
-        long: string;
-        lat: string;
-      }[];
-    }
-  ];
+  details: ScheduleDetails;
 };
 type mapAttrInfo = {
   width: string;
@@ -62,7 +46,6 @@ type mapAttrInfo = {
 };
 
 const DetailedSchedule = ({ details, scheduleId }: props) => {
-  
   // Use query
   const {
     data: data,
@@ -75,7 +58,7 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
   });
 
   // Store
-  const {setFormAction} = useScheduleFormStore();
+  const { setFormAction } = useScheduleFormStore();
 
   // State
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -110,19 +93,15 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
         exit="hidden"
         className="bg-Primary relative p-3 phone:w-full phone:h-full"
       >
-        
         <Link href={`/dashboard/schedules`}>
-        <motion.button
-          className="text-base text-LightPrimary w-max px-3 py-[0.3rem] rounded-md flex gap-1 items-center"
-          whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <FontAwesomeIcon
-            className="text-sm"
-            icon={faAngleDoubleLeft}
-          />
-          Schedules
-        </motion.button>
+          <motion.button
+            className="text-base text-LightPrimary w-max px-3 py-[0.3rem] rounded-md flex gap-1 items-center"
+            whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <FontAwesomeIcon className="text-sm" icon={faAngleDoubleLeft} />
+            Schedules
+          </motion.button>
         </Link>
         <div className="mt-2 flex flex-col">
           <div className="bg-Secondary p-2 rounded-md">
@@ -211,7 +190,7 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
               className="bg-LightPrimary w-max px-4 py-[0.1rem] rounded-md flex gap-1 mt-3"
               onClick={() => {
                 setShowScheduleForm((prev) => !prev);
-                setFormAction("edit")
+                setFormAction("edit");
               }}
             >
               <span className="w-4">
@@ -231,7 +210,10 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
           <DisplayMap setMapToggle={setMapToggle} mapAttrInfo={mapAttrInfo} />
         )}
         {showScheduleForm && (
-          <ScheduleForm setShowScheduleForm={setShowScheduleForm} scheduleId={scheduleId} />
+          <ScheduleForm
+            setShowScheduleForm={setShowScheduleForm}
+            scheduleId={scheduleId}
+          />
         )}
       </AnimatePresence>
     </>

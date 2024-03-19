@@ -40,8 +40,8 @@ type locationInfoType = {
   state: string;
   city: string;
   postcode: string;
-  lon: Number;
-  lat: Number;
+  lon: string;
+  lat: string;
   formatted: string;
   address_line1: string;
   address_line2: string;
@@ -69,20 +69,24 @@ const LocationInput = ({ scheduleId }: params) => {
     queryFn: () => getScheduleDetails(scheduleId!),
     enabled: formAction === "edit",
   });
-
   // States
   const [locationInfo, setLocationInfo] = useState<LocationInfoInput>({
     city:
       formAction === "edit" && scheduleData !== undefined
         ? scheduleData[0].ScheduleLocation[0].city!
         : "",
-    cityId: "",
+    cityId:
+      formAction === "edit" && scheduleData !== undefined
+        ? scheduleData[0].ScheduleLocation[0].cityId!
+        : "",
   });
   const [locationList, setLocationList] = useState<
     locationListType | undefined
   >(undefined);
   const [runAutoComplete, setRunAutoComplete] = useState<boolean>(false);
-  const [showSupportedCat, setShowSupportedCat] = useState<boolean>(formAction !== "add" ? true :  false);
+  const [showSupportedCat, setShowSupportedCat] = useState<boolean>(
+    formAction !== "add" ? true : false
+  );
   const [autoCompleteRunning, setAutoCompleteRunning] =
     useState<boolean>(false);
   const [placeId, setPlaceId] = useState<string>("");
@@ -110,7 +114,6 @@ const LocationInput = ({ scheduleId }: params) => {
         setAutoCompleteRunning(true);
         const response = await AutoCompleteLocation(place);
         setAutoCompleteRunning(false);
-        // console.log(response.results)
         setShowSupportedCat(false);
         setLocationList({ locations: response.results });
       }, 1000);

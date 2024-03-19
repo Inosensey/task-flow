@@ -31,8 +31,8 @@ type LocationInfoInput = {
   categoryKeyId: number;
   categoryKey: number;
   namePlace: string;
-  lat: number;
-  long: number;
+  lat: string;
+  long: string;
   selectedChoice: {
     key: string | null;
     id: number;
@@ -43,7 +43,7 @@ type LocationInfoInput = {
 
 interface Feature {
   geometry: {
-    coordinates: [number, number];
+    coordinates: [string, string];
     type: string;
   };
   properties: {
@@ -55,8 +55,8 @@ interface Feature {
     country_code: string;
     distance: number;
     formatted: string;
-    lat: number;
-    lon: number;
+    lat: string;
+    lon: string;
     name: string;
     place_id: string;
     postcode: string;
@@ -99,8 +99,6 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
     enabled: formAction === "edit",
   });
 
-  console.log(scheduleData);
-
   // Initial data
   const locationInfoInitial: LocationInfoInput = {
     categoryKeyId:
@@ -117,12 +115,12 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
         : "",
     lat:
       formAction !== "add" && scheduleData !== undefined
-        ? parseInt(scheduleData[0].ScheduleLocation[0].lat!)
-        : 0,
+        ? scheduleData[0].ScheduleLocation[0].lat!
+        : "",
     long:
       formAction !== "add" && scheduleData !== undefined
-        ? parseInt(scheduleData[0].ScheduleLocation[0].long!)
-        : 0,
+        ? scheduleData[0].ScheduleLocation[0].long!
+        : "",
     selectedChoice: {
       id:
         formAction !== "add" && scheduleData !== undefined
@@ -146,20 +144,9 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
   // State
   const [locationInfo, setLocationInfo] =
     useState<LocationInfoInput>(locationInfoInitial);
-  console.log("Location State", locationInfo)
   const [showChoices, setShowChoices] = useState<boolean>(false);
   const [showPlacesType, setShowPlacesType] = useState<boolean>(false);
   const [showPlaceList, setShowPlaceList] = useState<boolean>(false);
-
-  // const [selectedChoice, setSelectedChoice] = useState<{
-  //   key: string | null;
-  //   id: number;
-  // } | null>({ key: "Places", id: 0 });
-  // const [selectedTypeOfPlace, setSelectedTypeOfPlace] = useState<string | null>(
-  //   "Type of Place"
-  // );
-  // const [selectedPlace, setSelectedPlace] = useState<string>("Place List");
-
   const [listPlace, setListPlace] = useState<PlaceList | undefined>(undefined);
   const [isGettingListPlaces, setIsGettingListPlaces] =
     useState<boolean>(false);
@@ -340,7 +327,6 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
                 <div
                   key={place.properties.place_id}
                   onClick={() => {
-                    console.log(place);
                     // setSelectedPlace(place.properties.address_line1);
                     setLocationInfo((locationInfo) => ({
                       ...locationInfo,

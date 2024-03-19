@@ -16,10 +16,7 @@ import LocationInput from "@/components/Dashboard/Schedules/LocationInput";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
 // Actions
-import { createSchedule } from "@/actions/scheduleActions";
-
-// Types
-import { TableRow } from "@/Types/database.types";
+import { mutateSchedule } from "@/actions/scheduleActions";
 
 // store
 import { useNotificationStore } from "@/store/useNotificationStore";
@@ -31,7 +28,10 @@ import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // Typescript
-import {GeneralInfo, ScheduleInfo} from "@/Types/scheduleType";
+import { GeneralInfo, ScheduleInfo } from "@/Types/scheduleType";
+import { TableRow } from "@/Types/database.types";
+
+// Utils
 import { useFormSerialize } from "@/utils/formUtils";
 
 interface props {
@@ -70,7 +70,6 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
     queryFn: () => getScheduleDetails(scheduleId!),
     enabled: formAction === "edit",
   });
-  console.log(scheduleData);
 
   // Initial Schedule Info
   const initialGeneralInfo: GeneralInfo = {
@@ -103,21 +102,44 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
   // Mutation
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
     mutationFn: (scheduleInfo: ScheduleInfo) => {
-      return createSchedule(scheduleInfo);
+      if (formAction === "edit" && scheduleData !== undefined) {
+        const ids = {
+          scheduleId: scheduleData[0].id,
+          scheduleLocationId: scheduleData[0].ScheduleLocation[0].id,
+        };
+        return mutateSchedule(
+          scheduleInfo,
+          formAction,
+          ids.scheduleId,
+          ids.scheduleLocationId
+        );
+      }
+      return mutateSchedule(scheduleInfo, formAction);
     },
     onSuccess: (data) => {
       onScheduleAddSuccess();
-      queryClient.setQueryData(
-        ["schedules"],
-        (oldData: TableRow<"Schedules">[]) =>
-          oldData ? [...oldData, data] : oldData
-      );
+      if (formAction === "edit" && scheduleData !== undefined) {
+        // queryClient.setQueryData([`Schedule#${scheduleData[0].id}`], () => [
+        //   data,
+        // ]);
+        console.log(data);
+      } else {
+        queryClient.setQueryData(
+          ["schedules"],
+          (oldData: TableRow<"Schedules">[]) =>
+            oldData ? [...oldData, data] : oldData
+        );
+      }
       queryClient.invalidateQueries({ queryKey: ["schedules"] });
     },
   });
 
   const onScheduleAddSuccess = () => {
-    setMessage("Schedule Successfully Added");
+    const notifMessage =
+      formAction === "add"
+        ? "Schedule Successfully Added"
+        : "Schedule Successfully Updated";
+    setMessage(notifMessage);
     setShowSlideNotification();
     hideNotificationTimer();
     setShowScheduleForm(false);
@@ -127,6 +149,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
     event.preventDefault();
     const fieldsToCheck = ["date", "title", "timeStart", "timeEnd", "city"];
     const formValues: ScheduleInfo = useFormSerialize(event);
+    console.log(formValues);
     if (scheduleFormValidate(fieldsToCheck, formValues)) {
       console.log("valid");
       mutate(formValues);

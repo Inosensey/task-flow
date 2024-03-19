@@ -3,6 +3,7 @@
 
 // Types
 import { TableRow } from "@/Types/database.types";
+import { ScheduleDetails } from "@/Types/scheduleType";
 
 // Utils
 import { getCurrentDate } from "@/utils/useDate";
@@ -32,25 +33,6 @@ export const getCurrentDaySchedules = async (selectedDate: string = "") => {
 };
 
 export const getScheduleDetails = async (id: string) => {
-  const scheduleId = { scheduleId: id };
-  type details = [
-    TableRow<"Schedules"> & {
-      ScheduleLocation: {
-        namePlace: string;
-        city: string;
-        LocationCategories: {
-          id: number;
-          category: string;
-        };
-        LocationKeys: {
-          id: number;
-          key: string;
-        };
-        long: string;
-        lat: string;
-      }[];
-    }
-  ];
 
   const res = await fetch(
     `http://localhost:3000/api/supabase/getScheduleDetails?scheduleId=${id}`,
@@ -61,6 +43,6 @@ export const getScheduleDetails = async (id: string) => {
     }
   );
 
-  const data: details = await res.json();
+  const data: ScheduleDetails = await res.json();
   return data;
 };

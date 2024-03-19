@@ -6,6 +6,10 @@ import { useSupabase } from "@/utils/useSupabaseClient";
 
 // Types
 import { TableInsert, TableRow } from "@/Types/database.types";
+import { ScheduleDetails } from "@/Types/scheduleType";
+
+// Lib
+import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 type ScheduleInfo = {
   date: string;
@@ -14,7 +18,7 @@ type ScheduleInfo = {
   title: string;
   description: string;
   city: string;
-  cityId: string,
+  cityId: string;
   categoryKeyId: string;
   categoryKey: string;
   namePlace: string;
@@ -22,64 +26,89 @@ type ScheduleInfo = {
   long: string;
 };
 
-export const createSchedule = async (scheduleInfo: ScheduleInfo) => {
+export const mutateSchedule = async (
+  scheduleInfo: ScheduleInfo,
+  formAction: string,
+  scheduleId?: number,
+  scheduleLocationId?: number
+) => {
+  const date = new Date();
   try {
     let { data, error } = await useSupabase
       .from("Schedules")
-      .insert<TableInsert<"Schedules">>({
-        title: scheduleInfo.title,
-        description: scheduleInfo.description,
-        date: scheduleInfo.date,
-        timeStart: scheduleInfo.timeStart,
-        timeEnd: scheduleInfo.timeEnd,
-        themeColor: "",
-      })
+      .upsert<TableInsert<"Schedules">>(
+        {
+          id: scheduleId,
+          title: scheduleInfo.title,
+          description: scheduleInfo.description,
+          date: scheduleInfo.date,
+          timeStart: scheduleInfo.timeStart,
+          timeEnd: scheduleInfo.timeEnd,
+          themeColor: "",
+          userId: null,
+        },
+        { onConflict: "id" }
+      )
       .select();
-    const schedule: TableRow<"Schedules">[] | null = data;
+      console.log(data);
+      console.log(error);
     if (error) return error;
-    if (schedule !== null) {
-      revalidateTag("schedules");
+    if (data === null) return null;
 
-      const locationInfo: TableInsert<"ScheduleLocation"> = {
-        scheduleId: schedule[0].id,
-        categoryKey: parseInt(scheduleInfo.categoryKey),
-        categoryKeyId: parseInt(scheduleInfo.categoryKeyId),
-        city: scheduleInfo.city,
-        cityId: scheduleInfo.cityId,
-        namePlace: scheduleInfo.namePlace,
-        lat: parseFloat(scheduleInfo.lat),
-        long: parseFloat(scheduleInfo.long),
-      };
-      const AddLocationResult = await createLocationInfo(locationInfo);
-      console.log(AddLocationResult);
+    const schedule: TableRow<"Schedules">[] = data!;
+    revalidateTag("schedules");
+    const locationResult = await mutateLocationInfo(scheduleInfo, schedule[0].id, scheduleLocationId);
+    console.log(locationResult);
+    if (formAction === "add") {
       return schedule[0];
     } else {
-      return null;
+      revalidateTag(`schedule${scheduleId}`);
+      const scheduleDetails: ScheduleDetails = await getScheduleDetails(
+        schedule[0].id.toString()
+      );
+      return scheduleDetails;
     }
   } catch (e) {
     return `Failed to add Schedule: ${e}`;
   }
 };
 
-const createLocationInfo = async (
-  locationInfo: TableInsert<"ScheduleLocation">
+const mutateLocationInfo = async (
+  scheduleInfo: ScheduleInfo,
+  scheduleId: number,
+  scheduleLocationId?: number
 ) => {
+  const locationInfo: TableInsert<"ScheduleLocation"> = {
+    scheduleId: scheduleId,
+    categoryKey: parseInt(scheduleInfo.categoryKey),
+    categoryKeyId: parseInt(scheduleInfo.categoryKeyId),
+    city: scheduleInfo.city,
+    cityId: scheduleInfo.cityId,
+    namePlace: scheduleInfo.namePlace,
+    lat: parseFloat(scheduleInfo.lat),
+    long: parseFloat(scheduleInfo.long),
+  };
   try {
     let { data, error } = await useSupabase
       .from("ScheduleLocation")
-      .insert<TableInsert<"ScheduleLocation">>({
-        scheduleId: locationInfo.scheduleId,
-        city: locationInfo.city,
-        cityId: locationInfo.cityId,
-        categoryKeyId: locationInfo.categoryKeyId,
-        categoryKey: locationInfo.categoryKey,
-        namePlace: locationInfo.namePlace,
-        lat: locationInfo.lat,
-        long: locationInfo.long,
-      })
+      .upsert<TableInsert<"ScheduleLocation">>(
+        {
+          id: scheduleLocationId,
+          scheduleId: scheduleId,
+          city: locationInfo.city,
+          cityId: locationInfo.cityId,
+          categoryKeyId: locationInfo.categoryKeyId,
+          categoryKey: locationInfo.categoryKey,
+          namePlace: locationInfo.namePlace,
+          lat: locationInfo.lat,
+          long: locationInfo.long,
+        },
+        { onConflict: "id" }
+      )
       .select();
+    console.log(error);
     const location: TableRow<"ScheduleLocation">[] | null = data;
-    return error ? error : true;
+    return error ? error : data;
   } catch (e) {
     return `Failed to add Schedule Location: ${e}`;
   }
