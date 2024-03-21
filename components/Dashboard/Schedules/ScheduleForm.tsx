@@ -107,28 +107,26 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
           scheduleId: scheduleData[0].id,
           scheduleLocationId: scheduleData[0].ScheduleLocation[0].id,
         };
-        return mutateSchedule(
-          scheduleInfo,
-          formAction,
-          ids.scheduleId,
-          ids.scheduleLocationId
-        );
+        return mutateSchedule(scheduleInfo, formAction, ids.scheduleId);
       }
       return mutateSchedule(scheduleInfo, formAction);
     },
     onSuccess: (data) => {
       onScheduleAddSuccess();
+      console.log(data);
       if (formAction === "edit" && scheduleData !== undefined) {
-        // queryClient.setQueryData([`Schedule#${scheduleData[0].id}`], () => [
+        // queryClient.setQueryData([`Schedule#${scheduleData[0].id}`], () =>
         //   data,
-        // ]);
-        console.log(data);
+        // );
+        queryClient.invalidateQueries({
+          queryKey: [`Schedule#${scheduleData[0].id}`],
+        });
       } else {
-        queryClient.setQueryData(
-          ["schedules"],
-          (oldData: TableRow<"Schedules">[]) =>
-            oldData ? [...oldData, data] : oldData
-        );
+        // queryClient.setQueryData(
+        //   ["schedules"],
+        //   (oldData: TableRow<"Schedules">[]) =>
+        //     oldData ? [...oldData, data] : oldData
+        // );
       }
       queryClient.invalidateQueries({ queryKey: ["schedules"] });
     },
