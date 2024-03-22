@@ -113,10 +113,9 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
     },
     onSuccess: (data) => {
       onScheduleAddSuccess();
-      console.log(data);
       if (formAction === "edit" && scheduleData !== undefined) {
         // queryClient.setQueryData([`Schedule#${scheduleData[0].id}`], () =>
-        //   data,
+        //   data.Response,
         // );
         queryClient.invalidateQueries({
           queryKey: [`Schedule#${scheduleData[0].id}`],
@@ -125,7 +124,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
         // queryClient.setQueryData(
         //   ["schedules"],
         //   (oldData: TableRow<"Schedules">[]) =>
-        //     oldData ? [...oldData, data] : oldData
+        //     oldData ? [...oldData, data.Response] : oldData
         // );
       }
       queryClient.invalidateQueries({ queryKey: ["schedules"] });

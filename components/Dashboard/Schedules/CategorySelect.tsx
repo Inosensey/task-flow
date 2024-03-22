@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 // Libs
@@ -140,6 +140,21 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
         ? scheduleData[0].ScheduleLocation[0].namePlace!
         : "Place List",
   };
+  useEffect(() => {
+    if (formAction !== "add" && scheduleData !== undefined) {
+      const setPlacesList = async () => {
+        const data: PlaceList | undefined = await getPlaces(
+          scheduleData[0].ScheduleLocation[0].namePlace!,
+          scheduleData[0].ScheduleLocation[0].LocationCategories.category!
+        );
+
+        if (data !== undefined)
+          setListPlace((prev) => ({ ...prev, features: data.features }));
+      };
+      setPlacesList();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // State
   const [locationInfo, setLocationInfo] =
@@ -151,19 +166,25 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
   const [isGettingListPlaces, setIsGettingListPlaces] =
     useState<boolean>(false);
 
-  const handlePlaceTypeChange = async (
-    place: string,
-    categories: string | null
-  ) => {
+  async function getPlaces(place: string, categories: string | null) {
     if (!categories) return;
-    queryClient.invalidateQueries({ queryKey: ["placesList"] });
-    setIsGettingListPlaces(true);
     const data: PlaceList = await queryClient.fetchQuery({
       queryKey: ["placesList"],
       queryFn: () => GetListOfPlaces(place, categories),
     });
+    queryClient.invalidateQueries({ queryKey: ["placesList"] });
+    return data;
+  }
+
+  const handlePlaceTypeChange = async (
+    place: string,
+    categories: string | null
+  ) => {
+    setIsGettingListPlaces(true);
+    const data: PlaceList | undefined = await getPlaces(place, categories);
+    if (data !== undefined)
+      setListPlace((prev) => ({ ...prev, features: data.features }));
     setIsGettingListPlaces(false);
-    setListPlace((prev) => ({ ...prev, features: data.features }));
   };
 
   return (

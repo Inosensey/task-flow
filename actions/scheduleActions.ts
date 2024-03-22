@@ -40,13 +40,14 @@ export const mutateSchedule = async (
   try {
     let result;
     if (formAction === "add") {
+      revalidateTag("schedules");
       result = await insertSchedule(scheduleInfo);
     } else {
       result = await updateSchedule(scheduleId!, scheduleInfo);
       revalidateTag("schedules");
       revalidateTag(`schedule${scheduleId}`);
     }
-
+    console.log(result);
     if (result.Status === "Success") {
       const responseData = result.Response as TableRow<"Schedules">[];
       await mutateLocationInfo(

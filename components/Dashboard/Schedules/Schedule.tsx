@@ -35,7 +35,9 @@ const Schedule = ({ scheduleData }: props) => {
   const days = useDays();
 
   // Store
-  const {setFormAction} = useScheduleFormStore();
+  const { setFormAction } = useScheduleFormStore();
+
+  console.log(scheduleData);
 
   // States
   const [timeHeightNumber, setTimeHeightNumber] = useState<number>(0);
@@ -202,7 +204,10 @@ const Schedule = ({ scheduleData }: props) => {
       {/* Schedule form */}
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
         {showScheduleForm && (
-          <ScheduleForm setShowScheduleForm={setShowScheduleForm} scheduleId={null}/>
+          <ScheduleForm
+            setShowScheduleForm={setShowScheduleForm}
+            scheduleId={null}
+          />
         )}
       </AnimatePresence>
     </>
