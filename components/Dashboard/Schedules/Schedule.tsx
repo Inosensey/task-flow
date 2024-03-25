@@ -37,8 +37,6 @@ const Schedule = ({ scheduleData }: props) => {
   // Store
   const { setFormAction } = useScheduleFormStore();
 
-  console.log(scheduleData);
-
   // States
   const [timeHeightNumber, setTimeHeightNumber] = useState<number>(0);
   const [showDetailedSchedule, setShowDetailedSchedule] =

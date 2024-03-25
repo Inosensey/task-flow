@@ -41,20 +41,6 @@ const Schedules = ({ schedules, locationCategories, locationKeys }: props) => {
     queryFn: getSchedules,
     initialData: schedules,
   });
-  // const {
-  //   data: locationKeyData,
-  // } = useQuery({
-  //   queryKey: ["locationKeys"],
-  //   queryFn: getLocationKeys,
-  //   initialData: locationKeys,
-  // });
-  // const {
-  //   data: locationCategoriesData,
-  // } = useQuery({
-  //   queryKey: ["locationCategories"],
-  //   queryFn: getLocationCategories,
-  //   initialData: locationCategories,
-  // });
 
   const currentDaySchedules = getCurrentDaySchedules(schedules, dateSelected);
   const hours = useHours();

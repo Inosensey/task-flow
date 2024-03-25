@@ -4,27 +4,95 @@ import { useState } from "react";
 
 // icones
 import MaterialSymbolsArrowBackIosNewRounded from "@/Icones/MaterialSymbolsArrowBackIosNewRounded";
+import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
+// Utils
+import { formatLocationName } from "@/utils/supportedCatList";
+
+// Types
 interface props {
-  onClickFunc: (selected: string) => void;
   placeHolder: string;
-  choices: Array<string>;
+  children: React.ReactNode;
+  selected: string;
+  showChoices: boolean;
+  setShowChoices: React.Dispatch<React.SetStateAction<boolean>>;
+  dynamic?: boolean;
+  fetching?: boolean;
 }
 
-const CustomSelect = ({ onClickFunc, placeHolder, choices }: props) => {
-  // State
-  const [showChoices, setShowChoices] = useState<boolean>(false);
-  const [selectedChoice, setSelectedChoice] = useState<string>(placeHolder);
-
+const CustomSelect = ({
+  placeHolder,
+  selected,
+  children,
+  showChoices,
+  setShowChoices,
+  dynamic = false,
+  fetching = false,
+}: props) => {
   return (
-    <div className="relative">
+    <div className="relative phone:w-11/12">
       <div
         onClick={() => {
           setShowChoices((prev) => !prev);
         }}
-        className="rounded-md bg-SmoothDark flex justify-between px-2 items-center cursor-pointer phone:w-40 phone:h-9 mdphone:w-44"
+        className="rounded-md bg-Secondary flex justify-between px-2 items-center cursor-pointer phone:h-9 "
       >
-        <p className="select-none text-sm">{selectedChoice}</p>
+        {CheckSelectType(dynamic, fetching, selected, placeHolder, showChoices)}
+      </div>
+      <div
+        style={{ maxHeight: showChoices ? "224px" : "0px" }}
+        className="phone:text-sm transition-all rounded-md absolute top-10 bg-Secondary overflow-auto z-[100] w-full"
+      >
+        {children}
+      </div>
+    </div>
+  );
+};
+
+function CheckSelectType(
+  dynamic: boolean,
+  fetching: boolean,
+  selected: string,
+  placeHolder: string,
+  showChoices: boolean
+) {
+  if (dynamic) {
+    return (
+      <>
+        {fetching ? (
+          <div className="flex gap-4">
+            <p className="select-none text-sm text-Disabled">Loading Places</p>
+            <span>
+              <SvgSpinnersBlocksShuffle3 color="#00ADB5" />
+            </span>
+          </div>
+        ) : (
+          <>
+            <p className="select-none text-sm">
+              {formatLocationName(
+                selected === placeHolder ? placeHolder : selected
+              )}
+            </p>
+            <span
+              className="transition-all"
+              style={{
+                transform: showChoices ? "rotate(-90deg)" : "rotate(0deg)",
+              }}
+            >
+              <MaterialSymbolsArrowBackIosNewRounded color="#fff" />
+            </span>
+          </>
+        )}
+      </>
+    );
+  } else {
+    return (
+      <>
+        <p className="select-none text-sm">
+          {formatLocationName(
+            selected === placeHolder ? placeHolder : selected
+          )}
+        </p>
         <span
           className="transition-all"
           style={{
@@ -33,26 +101,9 @@ const CustomSelect = ({ onClickFunc, placeHolder, choices }: props) => {
         >
           <MaterialSymbolsArrowBackIosNewRounded color="#fff" />
         </span>
-      </div>
-      <div
-        style={{ maxHeight: showChoices ? "224px" : "0px" }}
-        className="phone:text-sm transition-all rounded-md absolute top-10 bg-SmoothDark overflow-auto z-[100] phone:w-40 mdphone:w-44"
-      >
-        {choices.map((choice: string) => (
-          <div
-            onClick={() => {
-              onClickFunc(choice);
-              setSelectedChoice(choice);
-            }}
-            key={Math.random() * 1000}
-            className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer"
-          >
-            <p className="select-none">{choice}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+      </>
+    );
+  }
+}
 
 export default CustomSelect;
