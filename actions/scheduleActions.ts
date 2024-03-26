@@ -4,12 +4,11 @@ import { revalidateTag } from "next/cache";
 // Supabase
 import { useSupabase } from "@/utils/useSupabaseClient";
 
-// Lib
-import { getScheduleDetails } from "@/lib/scheduleMethods";
-
 // Types
 import { TableInsert, TableRow } from "@/Types/database.types";
-import { ScheduleDetails } from "@/Types/scheduleType";
+
+// Utils
+import { returnError, returnSuccess } from "@/utils/formUtils";
 
 interface ReturnInterface<T> {
   Status: string;
@@ -58,7 +57,7 @@ export const mutateSchedule = async (
     }
     return result;
   } catch (e) {
-    return returnError("There is an error inserting the schedule", e);;
+    return returnError("There is an error inserting the schedule", e);
   }
 };
 
@@ -230,19 +229,4 @@ const updateScheduleLocation = async (
       error
     );
   }
-};
-
-const returnError = <T>(message: string, errorInfo: T): ReturnInterface<T> => {
-  return {
-    Status: "Error",
-    Message: message,
-    Response: errorInfo,
-  };
-};
-const returnSuccess = <T>(message: string, data: T): ReturnInterface<T> => {
-  return {
-    Status: "Success",
-    Message: message,
-    Response: data,
-  };
 };

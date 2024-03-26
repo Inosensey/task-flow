@@ -1,7 +1,16 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Playfair_Display, Roboto, Poppins } from "next/font/google";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+
+// Icons
 import SolarChecklistMinimalisticBroken from "@/Icones/SolarChecklistMinimalisticBroken";
+
+// Actions
+import { loginAuthWithEmailPass } from "@/actions/authActions";
+
+// Utils
+import { useFormSerialize } from "@/utils/formUtils";
 
 // Import fonts
 const playFairDisplay = Playfair_Display({
@@ -23,12 +32,37 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
+// Types
 // Set prop types
 type props = {
-    setCurrentForm: React.Dispatch<React.SetStateAction<string>>
-}
+  setCurrentForm: React.Dispatch<React.SetStateAction<string>>;
+};
+type credentials = {
+  email: string;
+  password: string;
+};
 
-const SignIn = ({setCurrentForm}: props) => {
+const SignIn = ({ setCurrentForm }: props) => {
+  // Initial use query
+  const queryClient = useQueryClient();
+
+  // Mutation
+  const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
+    mutationFn: (credentials: credentials) => {
+      return loginAuthWithEmailPass(credentials);
+    },
+    onSuccess: (data) => {
+      console.log(data);
+      // queryClient.invalidateQueries({ queryKey: ["schedules"] });
+    },
+  });
+
+  const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formValues: credentials = useFormSerialize(event);
+    console.log(formValues);
+    mutate(formValues);
+  };
   return (
     <section className="bg-white rounded-2xl text-black p-3 relative phone:h-[390px] phone:w-11/12">
       <div className="flex items-center gap-2">
@@ -40,7 +74,7 @@ const SignIn = ({setCurrentForm}: props) => {
         <SolarChecklistMinimalisticBroken />
       </div>
       <small className="text-Secondary">Your Personal Task Manager</small>
-      <div className="flex flex-col phone:py-4 phone:px-2 gap-3">
+      <form className="flex flex-col phone:py-4 phone:px-2 gap-3" onSubmit={useHandleFormSubmit}>
         <div className="flex flex-col">
           <label>Email</label>
           <input
@@ -71,11 +105,14 @@ const SignIn = ({setCurrentForm}: props) => {
             Sign In
           </motion.button>
         </div>
-      </div>
+      </form>
       <div className="text-center absolute bottom-1 left-[50%] -translate-x-[50%] w-52">
         <p>
           Don&apos;t have an account yet?{" "}
-          <span onClick={() => setCurrentForm("Sign Up")} className="cursor-pointer underline text-LightPrimary">
+          <span
+            onClick={() => setCurrentForm("Sign Up")}
+            className="cursor-pointer underline text-LightPrimary"
+          >
             Sign Up
           </span>
         </p>

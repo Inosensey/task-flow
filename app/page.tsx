@@ -1,9 +1,10 @@
 "use client";
 
+import { getAuthenticatedUser } from "@/actions/authActions";
 import SignIn from "@/components/HomeComponents/SignIn";
 import SignUp from "@/components/HomeComponents/SignUp";
 import { Playfair_Display, Roboto, Poppins } from "next/font/google";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Import fonts
 const playFairDisplay = Playfair_Display({
@@ -28,7 +29,15 @@ const poppins = Poppins({
 
 export default function Home() {
   // States
-  const [currentForm, setCurrentForm] = useState<string>("Sign Up")
+  const [currentForm, setCurrentForm] = useState<string>("Sign In")
+
+  useEffect(() => {
+    const test = async () => {
+      const test = await getAuthenticatedUser();
+      console.log(test);
+    }
+    test();
+  },[])
 
   return (
     <main className="bg-Primary flex h-screen items-center justify-center">

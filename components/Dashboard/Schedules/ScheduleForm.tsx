@@ -1,19 +1,22 @@
 "use client";
 
+// Core
 import React, { useState } from "react";
-import { useFormik } from "formik";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 
+// Components
 import Overlay from "@/components/ReusableComponents/Overlay";
 import Input, {
   TextareaInput,
   TimeInput,
 } from "@/components/ReusableComponents/inputs/Input";
+
+// Icons
 import LocationInput from "@/components/Dashboard/Schedules/LocationInput";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
+import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 
 // Actions
 import { mutateSchedule } from "@/actions/scheduleActions";
