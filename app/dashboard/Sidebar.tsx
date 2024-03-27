@@ -3,6 +3,10 @@
 import React, { useState } from "react";
 import TaskIcon from "@/svg/SimpleIconsTask.svg";
 import { useAnimation, motion } from "framer-motion";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+
+// Actions
+import { signOut } from "@/actions/authActions";
 
 // CSS modules
 import styles from "@/css/SidebarComponent/sidebar.module.css";
@@ -15,11 +19,23 @@ import GgNotes from "@/Icones/GgNotes";
 import IconamoonModeDark from "@/Icones/IconamoonModeDark";
 import PhSealQuestionDuotone from "@/Icones/PhSealQuestionDuotone";
 import MaterialSymbolsSettingsOutlineRounded from "@/Icones/MaterialSymbolsSettingsOutlineRounded";
-import MaterialSymbolsMenuRounded from "@/Icones/MaterialSymbolsMenuRounded";
 
 const Sidebar = () => {
+  // Initial use query
+  const queryClient = useQueryClient();
+
+  // Mutation
+  const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
+    mutationFn: () => {
+      return signOut();
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["user-session"], '');
+    },
+  });
+
   // states
-  const [showSideBar, setShowSideBar] = useState<boolean>(false);
+  const [showSideBar, setShowSideBar] = useState<boolean>(true);
 
   // Framer motion logics
 
@@ -49,6 +65,10 @@ const Sidebar = () => {
       sidebarAnimation.start("hidden");
     }
   };
+
+  const handleSignOut = () => {
+    mutate()
+  }
 
   return (
     <>
@@ -97,6 +117,15 @@ const Sidebar = () => {
                 Help Center
               </li>
             </ul>
+          </div>
+          <div className="px-3">
+            <form onSubmit={handleSignOut}>
+              <ul className={`flex flex-col gap-2 ${styles.utilsList}`}>
+                <li className="select-none">
+                  <button type="submit">Sign Out</button>
+                </li>
+              </ul>
+            </form>
           </div>
         </div>
       </motion.div>

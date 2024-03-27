@@ -53,7 +53,7 @@ const SignIn = ({ setCurrentForm }: props) => {
     },
     onSuccess: (data) => {
       console.log(data);
-      // queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      queryClient.setQueryData(["user-session"], data);
     },
   });
 
@@ -74,7 +74,10 @@ const SignIn = ({ setCurrentForm }: props) => {
         <SolarChecklistMinimalisticBroken />
       </div>
       <small className="text-Secondary">Your Personal Task Manager</small>
-      <form className="flex flex-col phone:py-4 phone:px-2 gap-3" onSubmit={useHandleFormSubmit}>
+      <form
+        className="flex flex-col phone:py-4 phone:px-2 gap-3"
+        onSubmit={useHandleFormSubmit}
+      >
         <div className="flex flex-col">
           <label>Email</label>
           <input
