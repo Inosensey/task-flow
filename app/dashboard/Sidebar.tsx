@@ -1,9 +1,11 @@
 "use client";
 
+// Cores
 import React, { useState } from "react";
 import TaskIcon from "@/svg/SimpleIconsTask.svg";
 import { useAnimation, motion } from "framer-motion";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 // Actions
 import { signOut } from "@/actions/authActions";
@@ -21,6 +23,9 @@ import PhSealQuestionDuotone from "@/Icones/PhSealQuestionDuotone";
 import MaterialSymbolsSettingsOutlineRounded from "@/Icones/MaterialSymbolsSettingsOutlineRounded";
 
 const Sidebar = () => {
+  // Initialize useRouter
+  const router = useRouter();
+
   // Initial use query
   const queryClient = useQueryClient();
 
@@ -30,12 +35,14 @@ const Sidebar = () => {
       return signOut();
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(["user-session"], '');
+      console.log(data);
+      queryClient.setQueryData(["user-session"], "");
+      router.push("");
     },
   });
 
   // states
-  const [showSideBar, setShowSideBar] = useState<boolean>(true);
+  const [showSideBar, setShowSideBar] = useState<boolean>(false);
 
   // Framer motion logics
 
@@ -65,10 +72,6 @@ const Sidebar = () => {
       sidebarAnimation.start("hidden");
     }
   };
-
-  const handleSignOut = () => {
-    mutate()
-  }
 
   return (
     <>
@@ -119,13 +122,16 @@ const Sidebar = () => {
             </ul>
           </div>
           <div className="px-3">
-            <form onSubmit={handleSignOut}>
-              <ul className={`flex flex-col gap-2 ${styles.utilsList}`}>
-                <li className="select-none">
-                  <button type="submit">Sign Out</button>
-                </li>
-              </ul>
-            </form>
+            <ul className={`flex flex-col gap-2 ${styles.utilsList}`}>
+              <li
+                onClick={() => {
+                  mutate();
+                }}
+                className="select-none"
+              >
+                <button>Sign Out</button>
+              </li>
+            </ul>
           </div>
         </div>
       </motion.div>

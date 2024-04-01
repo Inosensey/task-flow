@@ -18,7 +18,7 @@ export const loginAuthWithEmailPass = async (credentials: credentials) => {
       email: credentials.email,
       password: credentials.password,
     });
-    if (result.error) return returnError("Login Failed", result.error);
+    if (result.error) return returnError("Login Failed", result.error.message);
     
     cookies().set({name: 'access-token', value: result.data.session.access_token})
     cookies().set({name: 'refresh-token', value: result.data.session.refresh_token})
@@ -33,7 +33,7 @@ export const loginAuthWithEmailPass = async (credentials: credentials) => {
 
 export const signOut = async () => {  try {
   let result = await useSupabase.auth.signOut();
-  if (result.error) return returnError("Sign out Failed:", result.error);
+  if (result.error) return returnError("Sign out Failed:", result.error.message);
   
   cookies().delete('access-token');
   cookies().delete('refresh-token');
@@ -52,7 +52,7 @@ export const getAuthenticatedUser = async () => {
     if (error)
       return returnError(
         "An error occurred when getting the authenticated user",
-        error
+        error.message
       );
     return returnSuccess("Authenticated User", data);
   } catch (e) {

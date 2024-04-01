@@ -31,7 +31,8 @@ module.exports = {
         TextDisabled: '#cccccc',
         SmoothDark: '#1a1a1a',
         Success: '#248f24',
-        Error: '#ff4d4d'
+        Error: '#ff4d4d',
+        SmoothError: '#ffcccc'
       },
       fontFamily: {
         Roboto: ['var(--font-roboto)'],

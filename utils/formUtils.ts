@@ -2,7 +2,7 @@
 interface ReturnInterface<T> {
   Status: string;
   Message: string;
-  Response: T;
+  Response: T | string;
 }
 
 export const useFormSerialize = <T>(event: React.FormEvent<HTMLFormElement>): T => {

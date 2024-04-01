@@ -7,6 +7,7 @@ import { cookies } from "next/headers";
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const accessToken = cookies().get("access-token");
+  // Protected routes
   if (request.nextUrl.pathname.startsWith("/dashboard")) {
     if (accessToken === undefined) {
       return NextResponse.rewrite(new URL("/", request.url));
@@ -14,7 +15,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (request.nextUrl.pathname.startsWith("/")) {
-    if (accessToken !== undefined || accessToken !== "") {
+    if (accessToken !== undefined) {
       return NextResponse.rewrite(new URL("/dashboard/schedules", request.url));
     }
   }
