@@ -11,15 +11,18 @@ interface props {
   params: { scheduleId: string };
 }
 
-const page = async ({ params }: props) => {
+const Page = async ({ params }: props) => {
   const scheduleDetails: ScheduleDetails = await getScheduleDetails(
     params.scheduleId
   );
   return (
     <div>
-      <DetailedSchedule details={scheduleDetails} scheduleId={params.scheduleId} />
+      <DetailedSchedule
+        details={scheduleDetails}
+        scheduleId={params.scheduleId}
+      />
     </div>
   );
 };
 
-export default page;
+export default Page;

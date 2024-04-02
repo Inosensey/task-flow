@@ -13,6 +13,9 @@ import { signOut } from "@/actions/authActions";
 // CSS modules
 import styles from "@/css/SidebarComponent/sidebar.module.css";
 
+// Components
+import Loading from "@/components/ReusableComponents/Loading/Loading";
+
 // Icones
 import MaterialSymbolsCalendarMonthOutlineRounded from "@/Icones/MaterialSymbolsCalendarMonthOutlineRounded";
 import MaterialSymbolsOverviewOutline from "@/Icones/MaterialSymbolsOverviewOutline";
@@ -21,6 +24,7 @@ import GgNotes from "@/Icones/GgNotes";
 import IconamoonModeDark from "@/Icones/IconamoonModeDark";
 import PhSealQuestionDuotone from "@/Icones/PhSealQuestionDuotone";
 import MaterialSymbolsSettingsOutlineRounded from "@/Icones/MaterialSymbolsSettingsOutlineRounded";
+import CarbonLogin from "@/Icones/CarbonLogin";
 
 const Sidebar = () => {
   // Initialize useRouter
@@ -29,20 +33,35 @@ const Sidebar = () => {
   // Initial use query
   const queryClient = useQueryClient();
 
+  // states
+  const [showSideBar, setShowSideBar] = useState<boolean>(false);
+  const [logoutProcessInfo, setLogoutProcessInfo] = useState<{
+    isLoading: boolean;
+    message: string;
+  }>({
+    isLoading: false,
+    message: "",
+  });
+
   // Mutation
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
     mutationFn: () => {
+      setLogoutProcessInfo({
+        isLoading: true,
+        message: "Signing Out. Please Wait! ⏳",
+      });
       return signOut();
     },
     onSuccess: (data) => {
       console.log(data);
+      setLogoutProcessInfo({
+        isLoading: true,
+        message: "Success! See You Soon! 👋",
+      });
       queryClient.setQueryData(["user-session"], "");
       router.push("");
     },
   });
-
-  // states
-  const [showSideBar, setShowSideBar] = useState<boolean>(false);
 
   // Framer motion logics
 
@@ -75,6 +94,10 @@ const Sidebar = () => {
 
   return (
     <>
+      <Loading
+        isLoading={logoutProcessInfo.isLoading}
+        message={logoutProcessInfo.message}
+      />
       <motion.div
         variants={sidebarVariant}
         animate={sidebarAnimation}
@@ -129,6 +152,7 @@ const Sidebar = () => {
                 }}
                 className="select-none"
               >
+                <CarbonLogin color="#00ADB5" />
                 <button>Sign Out</button>
               </li>
             </ul>

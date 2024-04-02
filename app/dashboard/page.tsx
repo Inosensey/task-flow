@@ -1,7 +1,11 @@
-import Calendar from "@/components/Dashboard/Schedules/CalendarNav";
+"use server";
 
-const Dashboard = async () => {
-  return <div className="flex flex-col w-full bg-Primary"></div>;
+const Page = () => {
+  return (
+    <div className="flex flex-col w-full bg-Primary">
+      <p className="text-white">hello world</p>
+    </div>
+  );
 };
 
-export default Dashboard;
+export default Page;

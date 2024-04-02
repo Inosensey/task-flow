@@ -22,7 +22,7 @@ interface locationProps {
 // Utils
 import { getCurrentDate } from "@/utils/useDate";
 
-const SchedulesPage = async () => {
+const Page = async () => {
   let schedulePropData: scheduleProps = {
     schedules: await getSchedules(),
   };
@@ -48,4 +48,4 @@ const SchedulesPage = async () => {
   );
 };
 
-export default SchedulesPage;
+export default Page;
