@@ -14,11 +14,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (request.nextUrl.pathname.startsWith("/")) {
-    if (accessToken !== undefined) {
-      return NextResponse.rewrite(new URL("/dashboard/schedules", request.url));
-    }
-  }
+  // if (request.nextUrl.pathname.startsWith("/")) {
+  //   if (accessToken !== undefined) {
+  //     return NextResponse.rewrite(new URL("/dashboard/", request.url));
+  //   }
+  // }
 }
 
 // See "Matching Paths" below to learn more
