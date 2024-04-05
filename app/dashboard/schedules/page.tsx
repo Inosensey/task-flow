@@ -2,7 +2,7 @@
 
 // Components
 import CalendarNav from "@/components/Dashboard/Schedules/CalendarNav";
-import Header from "@/components/Dashboard/Schedules/Header";
+import Header from "@/components/Dashboard/Header";
 import Schedules from "@/components/Dashboard/Schedules/Schedules";
 
 // Lib
@@ -15,26 +15,29 @@ interface scheduleProps {
   schedules: TableRow<"Schedules">[] | null;
 }
 interface locationProps {
-  locationKeys: TableRow<"LocationKeys">[] | null,
-  locationCategories: TableRow<"LocationCategories">[] | null
+  locationKeys: TableRow<"LocationKeys">[] | null;
+  locationCategories: TableRow<"LocationCategories">[] | null;
 }
 
 // Utils
 import { getCurrentDate } from "@/utils/useDate";
 
+// Icons
+import MaterialSymbolsCalendarMonthOutlineRounded from "@/Icones/MaterialSymbolsCalendarMonthOutlineRounded";
+
 const Page = async () => {
   let schedulePropData: scheduleProps = {
     schedules: await getSchedules(),
   };
-  let locationData:locationProps = {
-    locationCategories : await getLocationCategories(),
-    locationKeys: await getLocationKeys()
-  }
+  let locationData: locationProps = {
+    locationCategories: await getLocationCategories(),
+    locationKeys: await getLocationKeys(),
+  };
 
   return (
     <div className="w-full">
       <div className="flex flex-col w-full bg-Primary">
-        <Header headerName="Calendar" />
+        <Header headerName="Calendar" Icon={MaterialSymbolsCalendarMonthOutlineRounded} />
         <CalendarNav />
         <div className="w-full relative">
           <Schedules

@@ -8,9 +8,6 @@ const OverviewChildren = ({ children }: props) => {
   return (
     <div className="flex flex-col gap-1">
       {children}
-      <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
-        View
-      </button>
     </div>
   );
 };

@@ -98,7 +98,7 @@ const SignIn = ({ setCurrentForm }: props) => {
         message: "Success! Redirecting to Your Workspace 🛠️",
       });
       queryClient.setQueryData(["user-session"], data);
-      router.push("/dashboard/schedule");
+      router.push("/dashboard");
     },
   });
 

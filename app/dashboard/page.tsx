@@ -1,35 +1,74 @@
 "use server";
 
+import { cookies } from "next/headers";
+
 // Components
 import OverviewSection from "@/components/Dashboard/OverviewSection";
 import OverviewChildren from "@/components/Dashboard/OverviewChildren";
-import Header from "@/components/Dashboard/Schedules/Header";
+import Header from "@/components/Dashboard/Header";
 
 // Icons
 import MaterialSymbolsCalendarMonthOutlineRounded from "@/Icones/MaterialSymbolsCalendarMonthOutlineRounded";
 import IonTodayOutline from "@/Icones/IonTodayOutline";
 import GgNotes from "@/Icones/GgNotes";
+import MaterialSymbolsOverviewOutline from "@/Icones/MaterialSymbolsOverviewOutline";
 
-const Page = () => {
+// lib
+import { getAuthSession } from "@/lib/AuthMethods";
+import { createClient } from "@/utils/supabaseSSR";
+
+const Page = async () => {
+
   return (
     <div className="flex flex-col w-full bg-Primary">
       <div className="max-w-[900px] w-full">
-        <Header headerName="Overview" />
+        <Header headerName="Overview" Icon={MaterialSymbolsOverviewOutline} />
         <div className="flex gap-4 phone:flex-col mx-auto phone:w-10/12">
           <OverviewSection
-            OverviewTitle="Schedules"
+            OverviewTitle="Today's Schedules"
             Icon={MaterialSymbolsCalendarMonthOutlineRounded}
           >
             <div className="flex gap-2">
               <OverviewChildren>
-                <small className="text-Disabled">Today&apos;s schedules</small>
-                <p>5</p>
+                <small className="text-Disabled">Schedules</small>
+                <div className="flex flex-col gap-2  text-sm">
+                  <div className="flex gap-2">
+                    <p>Schedule title</p>
+                    <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
+                      View
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <p>Schedule title2</p>
+                    <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
+                      View
+                    </button>
+                  </div>
+                </div>
               </OverviewChildren>
+            </div>
+          </OverviewSection>
+          <OverviewSection
+            OverviewTitle="Remaining schedules this week"
+            Icon={MaterialSymbolsCalendarMonthOutlineRounded}
+          >
+            <div className="flex gap-2">
               <OverviewChildren>
-                <small className="text-Disabled">
-                  Remaining schedules this week
-                </small>
-                <p>2</p>
+                <small className="text-Disabled">Schedules</small>
+                <div className="flex flex-col gap-2  text-sm">
+                  <div className="flex gap-2">
+                    <p>Schedule title</p>
+                    <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
+                      View
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <p>Schedule title2</p>
+                    <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
+                      View
+                    </button>
+                  </div>
+                </div>
               </OverviewChildren>
             </div>
           </OverviewSection>
