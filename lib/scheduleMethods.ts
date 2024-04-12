@@ -1,12 +1,25 @@
 // getSchedules
 // getCurrentDaySchedules
 
+"use server";
+
 // Types
 import { TableRow } from "@/Types/database.types";
 import { ScheduleDetails } from "@/Types/scheduleType";
 
 // Utils
 import { getCurrentDate } from "@/utils/useDate";
+import { headers } from "next/headers";
+
+export const test = async () => {
+  const res = await fetch("http://localhost:3000/api/supabase/test", {
+    next: { tags: ["test"], revalidate: 300 },
+    headers: headers(),
+    method: "GET"
+  });
+  const schedules: TableRow<"Schedules">[] = await res.json();
+  return schedules;
+};
 
 export const getSchedules = async () => {
   const res = await fetch("http://localhost:3000/api/supabase/getSchedules", {
@@ -33,7 +46,6 @@ export const getCurrentDaySchedules = async (selectedDate: string = "") => {
 };
 
 export const getScheduleDetails = async (id: string) => {
-
   const res = await fetch(
     `http://localhost:3000/api/supabase/getScheduleDetails?scheduleId=${id}`,
     {

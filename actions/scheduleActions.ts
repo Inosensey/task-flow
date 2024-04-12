@@ -9,6 +9,8 @@ import { TableInsert, TableRow } from "@/Types/database.types";
 
 // Utils
 import { returnError, returnSuccess } from "@/utils/formUtils";
+import { createClient } from "@/utils/supabaseSSR";
+import { getCookieAuth } from "@/utils/cookiesUtils";
 
 interface ReturnInterface<T> {
   Status: string;
@@ -31,6 +33,27 @@ type ScheduleInfo = {
   long: string;
 };
 
+export const getSchedules = async (): Promise<TableRow<"Schedules">[] | any> => {
+  let result;
+  const supabase = createClient();
+  const auth: any = getCookieAuth();
+  try {
+    result = await supabase
+      .from("Schedules")
+      .select("*")
+      .eq("userId", `${auth.user.id}`);
+    // console.log(auth)
+    if (result.error) {
+      console.log(result.error);
+    }
+    const schedules: TableRow<"Schedules">[] | null = result.data;
+    // Respond with JSON data
+    return schedules;
+  } catch (error) {
+    return returnError("There is an error inserting the schedule", error);
+  }
+};
+
 export const mutateSchedule = async (
   scheduleInfo: ScheduleInfo,
   formAction: string,
@@ -46,14 +69,9 @@ export const mutateSchedule = async (
       revalidateTag("schedules");
       revalidateTag(`schedule${scheduleId}`);
     }
-    console.log(result);
     if (result.Status === "Success") {
       const responseData = result.Response as TableRow<"Schedules">[];
-      await mutateLocationInfo(
-        scheduleInfo,
-        responseData[0].id,
-        formAction
-      );
+      await mutateLocationInfo(scheduleInfo, responseData[0].id, formAction);
     }
     return result;
   } catch (e) {
@@ -83,7 +101,9 @@ const insertSchedule = async (
   scheduleInfo: ScheduleInfo
 ): Promise<ReturnInterface<TableRow<"Schedules">> | ReturnInterface<any>> => {
   try {
-    let result = await useSupabase
+    const supabase = createClient();
+    const auth: any = getCookieAuth();
+    let result = await supabase
       .from("Schedules")
       .insert<TableInsert<"Schedules">>({
         title: scheduleInfo.title,
@@ -92,10 +112,11 @@ const insertSchedule = async (
         timeStart: scheduleInfo.timeStart,
         timeEnd: scheduleInfo.timeEnd,
         themeColor: "",
-        userId: null,
+        userId: auth.user.id,
       })
       .select();
-
+    console.log(auth.user.id);
+    console.log(result);
     if (result.error)
       return returnError(
         "There is an error inserting the schedule",
@@ -157,7 +178,8 @@ const insertScheduleLocation = async (
     long: parseFloat(scheduleInfo.long),
   };
   try {
-    let result = await useSupabase
+    const supabase = createClient();
+    let result = await supabase
       .from("ScheduleLocation")
       .insert<TableInsert<"ScheduleLocation">>({
         scheduleId: scheduleId,

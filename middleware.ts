@@ -1,9 +1,12 @@
-"use server";
+
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { updateSession } from "./utils/refreshSupbaseAuth";
+
+// Utils
+import { getCookieAuth } from "./utils/cookiesUtils";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
@@ -24,16 +27,6 @@ export async function middleware(request: NextRequest) {
   // }
 }
 
-
-const getCookieAuth = () => {
-  const cookieStore = cookies();
-  const cookieList = cookieStore.getAll();
-  let auth;
-  cookieList.map((cookie) => {
-    auth = JSON.parse(cookie.value);
-  })
-  return auth;
-}
 // See "Matching Paths" below to learn more
 export const config = {
   matcher: ["/", "/dashboard/:path*"],

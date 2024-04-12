@@ -6,6 +6,7 @@ import TaskIcon from "@/svg/SimpleIconsTask.svg";
 import { useAnimation, motion } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 // Actions
 import { signOut } from "@/actions/authActions";
@@ -116,10 +117,15 @@ const Sidebar = () => {
               <li className="select-none">
                 <MaterialSymbolsOverviewOutline color="#00ADB5" /> Overview
               </li>
-              <li className="select-none">
-                <MaterialSymbolsCalendarMonthOutlineRounded color="#00ADB5" />{" "}
-                Calendar
-              </li>
+              <Link href={"/dashboard/schedules"}>
+                <li
+                  onClick={() => sidebarAnimation.start("hidden")}
+                  className="select-none"
+                >
+                  <MaterialSymbolsCalendarMonthOutlineRounded color="#00ADB5" />{" "}
+                  Calendar
+                </li>
+              </Link>
               <li className="select-none">
                 <IonTodayOutline color="#00ADB5" /> To Do List
               </li>

@@ -6,7 +6,7 @@ import Header from "@/components/Dashboard/Header";
 import Schedules from "@/components/Dashboard/Schedules/Schedules";
 
 // Lib
-import { getCurrentDaySchedules, getSchedules } from "@/lib/scheduleMethods";
+import { getCurrentDaySchedules, test } from "@/lib/scheduleMethods";
 import { getLocationCategories, getLocationKeys } from "@/lib/locationMethods";
 
 // Types
@@ -18,6 +18,9 @@ interface locationProps {
   locationKeys: TableRow<"LocationKeys">[] | null;
   locationCategories: TableRow<"LocationCategories">[] | null;
 }
+
+// actions
+import { getSchedules } from "@/actions/scheduleActions";
 
 // Utils
 import { getCurrentDate } from "@/utils/useDate";
