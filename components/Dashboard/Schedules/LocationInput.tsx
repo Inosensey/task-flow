@@ -9,7 +9,6 @@ import debounce from "@/utils/useDebounce";
 
 // import libs
 import { AutoCompleteLocation } from "@/lib/locationMethods";
-import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // Zustand Store
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
@@ -19,6 +18,9 @@ import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocation
 import CategorySelect from "./CategorySelect";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 import FormValidation from "@/utils/validation";
+
+// Actions
+import { getScheduleDetails } from "@/actions/scheduleActions";
 
 // Types
 type LocationInfoInput = {
@@ -66,18 +68,21 @@ const LocationInput = ({ scheduleId }: params) => {
     isFetched: scheduleIsFetched,
   } = useQuery({
     queryKey: [`Schedule#${scheduleId}`],
-    queryFn: () => getScheduleDetails(scheduleId!),
+    queryFn: () => getScheduleDetails(parseInt(scheduleId!)),
     enabled: formAction === "edit",
   });
+  
+  const detailsData = scheduleData !== undefined ? scheduleData.Response[0] : ""
+
   // States
   const [locationInfo, setLocationInfo] = useState<LocationInfoInput>({
     city:
       formAction === "edit" && scheduleData !== undefined
-        ? scheduleData[0].ScheduleLocation[0].city!
+        ? detailsData.ScheduleLocation[0].city!
         : "",
     cityId:
       formAction === "edit" && scheduleData !== undefined
-        ? scheduleData[0].ScheduleLocation[0].cityId!
+        ? detailsData.ScheduleLocation[0].cityId!
         : "",
   });
   const [locationList, setLocationList] = useState<

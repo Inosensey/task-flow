@@ -4,8 +4,10 @@ import React, { useEffect, useState } from "react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 // Libs
-import { getLocationCategories, getLocationKeys } from "@/lib/locationMethods";
 import { GetListOfPlaces } from "@/lib/locationMethods";
+
+// actions
+import { getLocationCategories, getLocationKeys, getScheduleDetails } from "@/actions/scheduleActions";
 
 // Utils
 import {
@@ -18,7 +20,6 @@ import { TableRow } from "@/Types/database.types";
 
 // Components
 import Input from "@/components/ReusableComponents/inputs/Input";
-import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 //Store
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
@@ -93,16 +94,18 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
     isFetched: scheduleIsFetched,
   } = useQuery({
     queryKey: [`Schedule#${scheduleId}`],
-    queryFn: () => getScheduleDetails(scheduleId!),
+    queryFn: () => getScheduleDetails(parseInt(scheduleId!)),
     enabled: formAction === "edit",
   });
 
+  const detailsData = scheduleData !== undefined ? scheduleData.Response[0] : ""
+
   useEffect(() => {
     if (formAction !== "add" && scheduleData !== undefined) {
-      const SelectedPlaceType = `${scheduleData[0].ScheduleLocation[0].LocationKeys.key}.${scheduleData[0].ScheduleLocation[0].LocationCategories.category}`;
+      const SelectedPlaceType = `${detailsData.ScheduleLocation[0].LocationKeys.key}.${detailsData.ScheduleLocation[0].LocationCategories.category}`;
       const setPlacesList = async () => {
         const data: PlaceList | undefined = await getPlaces(
-          scheduleData[0].ScheduleLocation[0].cityId!,
+          detailsData.ScheduleLocation[0].cityId!,
           SelectedPlaceType
         );
 
@@ -116,7 +119,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
 
   // State
   const [locationInfo, setLocationInfo] = useState<LocationInfoInput>(
-    getLocationInfoInitial(formAction, scheduleData)
+    getLocationInfoInitial(formAction, scheduleData?.Response)
   );
   const [showChoices, setShowChoices] = useState<boolean>(false);
   const [showPlacesType, setShowPlacesType] = useState<boolean>(false);

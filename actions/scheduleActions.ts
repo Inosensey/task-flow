@@ -6,17 +6,13 @@ import { useSupabase } from "@/utils/useSupabaseClient";
 
 // Types
 import { TableInsert, TableRow } from "@/Types/database.types";
+import { ScheduleDetails } from "@/Types/scheduleType";
+import { ReturnInterface } from "@/Types/generalTypes";
 
 // Utils
 import { returnError, returnSuccess } from "@/utils/formUtils";
 import { createClient } from "@/utils/supabaseSSR";
 import { getCookieAuth } from "@/utils/cookiesUtils";
-
-interface ReturnInterface<T> {
-  Status: string;
-  Message: string;
-  Response: T;
-}
 
 type ScheduleInfo = {
   date: string;
@@ -33,7 +29,9 @@ type ScheduleInfo = {
   long: string;
 };
 
-export const getSchedules = async (): Promise<TableRow<"Schedules">[] | any> => {
+export const getSchedules = async (): Promise<
+  TableRow<"Schedules">[] | any
+> => {
   let result;
   const supabase = createClient();
   const auth: any = getCookieAuth();
@@ -51,6 +49,63 @@ export const getSchedules = async (): Promise<TableRow<"Schedules">[] | any> => 
     return schedules;
   } catch (error) {
     return returnError("There is an error inserting the schedule", error);
+  }
+};
+
+export const getScheduleDetails = async (
+  scheduleId: number
+): Promise<ReturnInterface<ScheduleDetails> | ReturnInterface<any>> => {
+  //   city, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category)
+  try {
+    const supabase = createClient();
+    let { data, error } = await supabase
+      .from("Schedules")
+      .select(
+        `*, ScheduleLocation(id, city, cityId, namePlace, long, lat, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))`
+      )
+      .eq("id", scheduleId);
+    if (error) {
+      console.log(error);
+    }
+    return returnSuccess("Schedule Successfully Added", data);
+  } catch (error) {
+    return returnError("There is an error inserting the schedule", error);
+  }
+};
+
+export const getLocationCategories = async () => {
+  try {
+    const supabase = createClient();
+    let { data, error } = await supabase.from("LocationCategories").select(`*`);
+    if (error) {
+      console.log(error);
+    }
+    const LocationCategories = data;
+    if(LocationCategories !== null) {
+      return LocationCategories
+    } else {
+      return []
+    }
+  } catch (error) {
+    return [error];
+  }
+};
+
+export const getLocationKeys = async () => {
+  try {
+    const supabase = createClient();
+    let { data, error } = await supabase.from("LocationKeys").select("*");
+    if (error) {
+      console.log(error);
+    }
+    const LocationKeys = data;
+    if(LocationKeys !== null) {
+      return LocationKeys
+    } else {
+      return []
+    }
+  } catch (error) {
+    return [error];
   }
 };
 
@@ -135,7 +190,8 @@ const updateSchedule = async (
   ReturnInterface<TableRow<"ScheduleLocation">> | ReturnInterface<any>
 > => {
   try {
-    let result = await useSupabase
+    const supabase = createClient();
+    let result = await supabase
       .from("Schedules")
       .update<TableInsert<"Schedules">>({
         id: scheduleId,
@@ -226,7 +282,8 @@ const updateScheduleLocation = async (
     long: parseFloat(scheduleInfo.long),
   };
   try {
-    let result = await useSupabase
+    const supabase = createClient();
+    let result = await supabase
       .from("ScheduleLocation")
       .update<TableInsert<"ScheduleLocation">>({
         city: locationInfo.city,

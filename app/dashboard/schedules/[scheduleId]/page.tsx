@@ -1,20 +1,16 @@
 "use server";
 
 import DetailedSchedule from "@/components/Dashboard/Schedules/DetailedSchedule";
-// Lib
-import { getScheduleDetails } from "@/lib/scheduleMethods";
-// Types
-import { TableRow } from "@/Types/database.types";
-import { ScheduleDetails } from "@/Types/scheduleType";
+
+// Action
+import { getScheduleDetails } from "@/actions/scheduleActions";
 
 interface props {
   params: { scheduleId: string };
 }
 
 const Page = async ({ params }: props) => {
-  const scheduleDetails: ScheduleDetails = await getScheduleDetails(
-    params.scheduleId
-  );
+  const scheduleDetails = await getScheduleDetails(parseInt(params.scheduleId));
   return (
     <div>
       <DetailedSchedule

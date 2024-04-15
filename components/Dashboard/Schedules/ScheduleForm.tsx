@@ -19,7 +19,7 @@ import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 
 // Actions
-import { mutateSchedule } from "@/actions/scheduleActions";
+import { mutateSchedule, getScheduleDetails } from "@/actions/scheduleActions";
 
 // store
 import { useNotificationStore } from "@/store/useNotificationStore";
@@ -28,7 +28,6 @@ import FormValidation from "@/utils/validation";
 // Validation
 import { setValidationResult } from "@/utils/validation";
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
-import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // Typescript
 import { GeneralInfo, ScheduleInfo } from "@/Types/scheduleType";
@@ -70,31 +69,33 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
     isFetched: scheduleIsFetched,
   } = useQuery({
     queryKey: [`Schedule#${scheduleId}`],
-    queryFn: () => getScheduleDetails(scheduleId!),
+    queryFn: () => getScheduleDetails(parseInt(scheduleId!)),
     enabled: formAction === "edit",
   });
+  
 
   // Initial Schedule Info
+  const detailsData = scheduleData !== undefined ? scheduleData.Response[0] : ""
   const initialGeneralInfo: GeneralInfo = {
     date:
       formAction !== "add" && scheduleData !== undefined
-        ? scheduleData[0].date!
+        ? detailsData.date!
         : "",
     timeStart:
       formAction !== "add" && scheduleData !== undefined
-        ? scheduleData[0].timeStart!
+        ? detailsData.timeStart!
         : "",
     timeEnd:
       formAction !== "add" && scheduleData !== undefined
-        ? scheduleData[0].timeEnd!
+        ? detailsData.timeEnd!
         : "",
     title:
       formAction !== "add" && scheduleData !== undefined
-        ? scheduleData[0].title!
+        ? detailsData.title!
         : "",
     description:
       formAction !== "add" && scheduleData !== undefined
-        ? scheduleData[0].description!
+        ? detailsData.description!
         : "",
   };
 
@@ -107,8 +108,8 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
     mutationFn: (scheduleInfo: ScheduleInfo) => {
       if (formAction === "edit" && scheduleData !== undefined) {
         const ids = {
-          scheduleId: scheduleData[0].id,
-          scheduleLocationId: scheduleData[0].ScheduleLocation[0].id,
+          scheduleId: detailsData.id,
+          scheduleLocationId: detailsData.ScheduleLocation[0].id,
         };
         return mutateSchedule(scheduleInfo, formAction, ids.scheduleId);
       }
@@ -118,11 +119,11 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
       console.log(data)
       onScheduleAddSuccess();
       if (formAction === "edit" && scheduleData !== undefined) {
-        // queryClient.setQueryData([`Schedule#${scheduleData[0].id}`], () =>
+        // queryClient.setQueryData([`Schedule#${detailsData.id}`], () =>
         //   data.Response,
         // );
         queryClient.invalidateQueries({
-          queryKey: [`Schedule#${scheduleData[0].id}`],
+          queryKey: [`Schedule#${detailsData.id}`],
         });
       }
       queryClient.invalidateQueries({ queryKey: ["schedules"] });

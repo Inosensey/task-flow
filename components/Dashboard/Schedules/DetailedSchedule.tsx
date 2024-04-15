@@ -11,31 +11,36 @@ import {
   faCheck,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
 
 // Import components
 import ScheduleForm from "./ScheduleForm";
+import DisplayMap from "@/components/ReusableComponents/DisplayMap";
 
 // Import icones
 import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocationCityRounded";
 
 // Utils
 import { formatHourTo12 } from "@/utils/useDate";
-import { getScheduleDetails } from "@/lib/scheduleMethods";
+// import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // Store
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 
 // Types
 import { TableRow } from "@/Types/database.types";
-import DisplayMap from "@/components/ReusableComponents/DisplayMap";
-import Link from "next/link";
 import { ScheduleDetails } from "@/Types/scheduleType";
+import { ReturnInterface } from "@/Types/generalTypes";
+
+// Action
+import { getScheduleDetails } from "@/actions/scheduleActions";
+
 
 type props = {
   scheduleId: string;
   scheduleInfo?: TableRow<"Schedules">;
   setShowPopUp?: React.Dispatch<React.SetStateAction<boolean>>;
-  details: ScheduleDetails;
+  details: ReturnInterface<ScheduleDetails>;
 };
 type mapAttrInfo = {
   width: string;
@@ -53,7 +58,7 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
     isFetched: isFetched,
   } = useQuery({
     queryKey: [`Schedule#${scheduleId}`],
-    queryFn: () => getScheduleDetails(scheduleId),
+    queryFn: () => getScheduleDetails(parseInt(scheduleId)),
     initialData: details,
   });
 
@@ -65,7 +70,8 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
   const [mapToggle, setMapToggle] = useState<boolean>(false);
   const [showScheduleForm, setShowScheduleForm] = useState<boolean>(false);
 
-  const locationDetails = data[0].ScheduleLocation[0];
+  const detailsData = data.Response[0]
+  const locationDetails = detailsData.ScheduleLocation[0];
 
   const mapAttrInfo: mapAttrInfo = {
     height: "400",
@@ -106,7 +112,7 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
         <div className="mt-2 flex flex-col">
           <div className="bg-Secondary p-2 rounded-md">
             <p className="text-LightPrimary font-semibold text-lg">
-              {data[0].title}
+              {detailsData.title}
             </p>
             <div className="font-semibold text-sm text-LightSecondary">
               <p className="flex items-center">
@@ -126,13 +132,13 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
                 />
               </span>
               <div className="flex gap-1 text-sm">
-                <p>{formatHourTo12(data[0].timeStart)}</p>
-                {data[0].timeEnd !== "" && (
+                <p>{formatHourTo12(detailsData.timeStart)}</p>
+                {detailsData.timeEnd !== "" && (
                   <span className="w-4">
                     <FontAwesomeIcon className="text-sm" icon={faArrowRight} />
                   </span>
                 )}
-                <p>{formatHourTo12(data[0].timeEnd)}</p>
+                <p>{formatHourTo12(detailsData.timeEnd)}</p>
               </div>
             </div>
             <motion.button
@@ -150,7 +156,7 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
             <p className="text-lg font-semibold text-LightPrimary">
               Description
             </p>
-            <p className="text-justify leading-6">{data[0].description}</p>
+            <p className="text-justify leading-6">{detailsData.description}</p>
           </div>
         </div>
         <div className="flex justify-between">
