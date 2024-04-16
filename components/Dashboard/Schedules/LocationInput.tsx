@@ -19,8 +19,8 @@ import CategorySelect from "./CategorySelect";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 import FormValidation from "@/utils/validation";
 
-// Actions
-import { getScheduleDetails } from "@/actions/scheduleActions";
+// lib
+import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // Types
 type LocationInfoInput = {

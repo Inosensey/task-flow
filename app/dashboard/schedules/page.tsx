@@ -1,12 +1,12 @@
 "use server";
 
+import { createClient } from "@/utils/supabaseSSR";
 // Components
 import CalendarNav from "@/components/Dashboard/Schedules/CalendarNav";
 import Header from "@/components/Dashboard/Header";
 import Schedules from "@/components/Dashboard/Schedules/Schedules";
 
 // Lib
-import { getCurrentDaySchedules, test } from "@/lib/scheduleMethods";
 import { getLocationCategories, getLocationKeys } from "@/lib/locationMethods";
 
 // Types
@@ -19,11 +19,9 @@ interface locationProps {
   locationCategories: TableRow<"LocationCategories">[] | null;
 }
 
-// actions
-import { getSchedules } from "@/actions/scheduleActions";
-
 // Utils
 import { getCurrentDate } from "@/utils/useDate";
+import { getSchedules } from "@/lib/scheduleMethods";
 
 // Icons
 import MaterialSymbolsCalendarMonthOutlineRounded from "@/Icones/MaterialSymbolsCalendarMonthOutlineRounded";
@@ -40,13 +38,14 @@ const Page = async () => {
   return (
     <div className="w-full">
       <div className="flex flex-col w-full bg-Primary">
-        <Header headerName="Calendar" Icon={MaterialSymbolsCalendarMonthOutlineRounded} />
+        <Header
+          headerName="Calendar"
+          Icon={MaterialSymbolsCalendarMonthOutlineRounded}
+        />
         <CalendarNav />
         <div className="w-full relative">
           <Schedules
             schedules={schedulePropData.schedules}
-            locationKeys={locationData.locationKeys}
-            locationCategories={locationData.locationCategories}
           />
         </div>
       </div>

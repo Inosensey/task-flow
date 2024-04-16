@@ -6,7 +6,6 @@ import { useSupabase } from "@/utils/useSupabaseClient";
 
 // Types
 import { TableInsert, TableRow } from "@/Types/database.types";
-import { ScheduleDetails } from "@/Types/scheduleType";
 import { ReturnInterface } from "@/Types/generalTypes";
 
 // Utils
@@ -27,68 +26,6 @@ type ScheduleInfo = {
   namePlace: string;
   lat: string;
   long: string;
-};
-
-export const getSchedules = async (): Promise<
-  TableRow<"Schedules">[] | any
-> => {
-  let result;
-  const supabase = createClient();
-  const auth: any = getCookieAuth();
-  try {
-    result = await supabase
-      .from("Schedules")
-      .select("*")
-      .eq("userId", `${auth.user.id}`);
-    // console.log(auth)
-    if (result.error) {
-      console.log(result.error);
-    }
-    const schedules: TableRow<"Schedules">[] | null = result.data;
-    // Respond with JSON data
-    return schedules;
-  } catch (error) {
-    return returnError("There is an error inserting the schedule", error);
-  }
-};
-
-export const getScheduleDetails = async (
-  scheduleId: number
-): Promise<ReturnInterface<ScheduleDetails> | ReturnInterface<any>> => {
-  //   city, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category)
-  try {
-    const supabase = createClient();
-    let { data, error } = await supabase
-      .from("Schedules")
-      .select(
-        `*, ScheduleLocation(id, city, cityId, namePlace, long, lat, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))`
-      )
-      .eq("id", scheduleId);
-    if (error) {
-      console.log(error);
-    }
-    return returnSuccess("Schedule Successfully Added", data);
-  } catch (error) {
-    return returnError("There is an error inserting the schedule", error);
-  }
-};
-
-export const getLocationCategories = async () => {
-  try {
-    const supabase = createClient();
-    let { data, error } = await supabase.from("LocationCategories").select(`*`);
-    if (error) {
-      console.log(error);
-    }
-    const LocationCategories = data;
-    if(LocationCategories !== null) {
-      return LocationCategories
-    } else {
-      return []
-    }
-  } catch (error) {
-    return [error];
-  }
 };
 
 export const getLocationKeys = async () => {
@@ -201,7 +138,6 @@ const updateSchedule = async (
         timeStart: scheduleInfo.timeStart,
         timeEnd: scheduleInfo.timeEnd,
         themeColor: "",
-        userId: null,
       })
       .eq("id", scheduleId)
       .select();

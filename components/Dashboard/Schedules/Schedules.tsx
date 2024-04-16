@@ -15,20 +15,15 @@ import { useHours } from "@/utils/useDate";
 
 // Libs
 import { getSchedules } from "@/lib/scheduleMethods";
-import { getLocationCategories, getLocationKeys } from "@/lib/locationMethods";
 
 // Store
 import { useDateStore } from "@/store/useDateStore";
 
 interface props {
   schedules: TableRow<"Schedules">[] | null;
-  locationKeys: TableRow<"LocationKeys">[] | null;
-  locationCategories: TableRow<"LocationCategories">[] | null;
 }
 
-type ScheduleInfo = TableRow<"Schedules">;
-
-const Schedules = ({ schedules, locationCategories, locationKeys }: props) => {
+const Schedules = ({ schedules }: props) => {
   const { dateSelected } = useDateStore();
 
   // Use query

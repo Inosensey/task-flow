@@ -2,8 +2,8 @@
 
 import DetailedSchedule from "@/components/Dashboard/Schedules/DetailedSchedule";
 
-// Action
-import { getScheduleDetails } from "@/actions/scheduleActions";
+// lib
+import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 interface props {
   params: { scheduleId: string };

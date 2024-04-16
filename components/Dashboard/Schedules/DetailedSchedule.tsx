@@ -32,8 +32,8 @@ import { TableRow } from "@/Types/database.types";
 import { ScheduleDetails } from "@/Types/scheduleType";
 import { ReturnInterface } from "@/Types/generalTypes";
 
-// Action
-import { getScheduleDetails } from "@/actions/scheduleActions";
+// lib
+import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 
 type props = {

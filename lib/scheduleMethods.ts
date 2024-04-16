@@ -1,32 +1,94 @@
-// getSchedules
-// getCurrentDaySchedules
-
 "use server";
 
 // Types
 import { TableRow } from "@/Types/database.types";
 import { ScheduleDetails } from "@/Types/scheduleType";
+import { ReturnInterface } from "@/Types/generalTypes";
 
 // Utils
+import { returnError, returnSuccess } from "@/utils/formUtils";
 import { getCurrentDate } from "@/utils/useDate";
-import { headers } from "next/headers";
+import { createClient } from "@/utils/supabaseSSR";
+import { getCookieAuth } from "@/utils/cookiesUtils";
 
-export const test = async () => {
-  const res = await fetch("http://localhost:3000/api/supabase/test", {
-    next: { tags: ["test"], revalidate: 300 },
-    headers: headers(),
-    method: "GET"
-  });
-  const schedules: TableRow<"Schedules">[] = await res.json();
-  return schedules;
+export const getSchedules = async (): Promise<
+  TableRow<"Schedules">[] | any
+> => {
+  let result;
+  const supabase = createClient();
+  const auth: any = getCookieAuth();
+  try {
+    result = await supabase
+      .from("Schedules")
+      .select("*")
+      .eq("userId", `${auth.user.id}`);
+    // console.log(auth)
+    if (result.error) {
+      console.log(result.error);
+    }
+    const schedules: TableRow<"Schedules">[] | null = result.data;
+    // Respond with JSON data
+    return schedules;
+  } catch (error) {
+    return returnError("There is an error inserting the schedule", error);
+  }
 };
 
-export const getSchedules = async () => {
-  const res = await fetch("http://localhost:3000/api/supabase/getSchedules", {
-    next: { tags: ["schedules"], revalidate: 300 },
-  });
-  const schedules: TableRow<"Schedules">[] = await res.json();
-  return schedules;
+export const getScheduleDetails = async (
+  scheduleId: number
+): Promise<ReturnInterface<ScheduleDetails> | ReturnInterface<any>> => {
+  //   city, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category)
+  try {
+    const supabase = createClient();
+    let { data, error } = await supabase
+      .from("Schedules")
+      .select(
+        `*, ScheduleLocation(id, city, cityId, namePlace, long, lat, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))`
+      )
+      .eq("id", scheduleId);
+    if (error) {
+      console.log(error);
+    }
+    return returnSuccess("Schedule Successfully Added", data);
+  } catch (error) {
+    return returnError("There is an error inserting the schedule", error);
+  }
+};
+
+export const getLocationCategories = async () => {
+  try {
+    const supabase = createClient();
+    let { data, error } = await supabase.from("LocationCategories").select(`*`);
+    if (error) {
+      console.log(error);
+    }
+    const LocationCategories = data;
+    if(LocationCategories !== null) {
+      return LocationCategories
+    } else {
+      return []
+    }
+  } catch (error) {
+    return [error];
+  }
+};
+
+export const getLocationKeys = async () => {
+  try {
+    const supabase = createClient();
+    let { data, error } = await supabase.from("LocationKeys").select("*");
+    if (error) {
+      console.log(error);
+    }
+    const LocationKeys = data;
+    if(LocationKeys !== null) {
+      return LocationKeys
+    } else {
+      return []
+    }
+  } catch (error) {
+    return [error];
+  }
 };
 
 export const getCurrentDaySchedules = async (selectedDate: string = "") => {
@@ -42,19 +104,5 @@ export const getCurrentDaySchedules = async (selectedDate: string = "") => {
     }
   );
   const data: TableRow<"Schedules">[] = await res.json();
-  return data;
-};
-
-export const getScheduleDetails = async (id: string) => {
-  const res = await fetch(
-    `http://localhost:3000/api/supabase/getScheduleDetails?scheduleId=${id}`,
-    {
-      next: { tags: [`schedule${id}`], revalidate: 300 },
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    }
-  );
-
-  const data: ScheduleDetails = await res.json();
   return data;
 };

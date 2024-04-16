@@ -31,14 +31,6 @@ export default function Home() {
   // States
   const [currentForm, setCurrentForm] = useState<string>("Sign In")
 
-  useEffect(() => {
-    const test = async () => {
-      const test = await getAuthenticatedUser();
-      console.log(test);
-    }
-    test();
-  },[])
-
   return (
     <main className="bg-Primary flex h-screen items-center justify-center">
       {currentForm === "Sign In" && <SignIn setCurrentForm={setCurrentForm} />}

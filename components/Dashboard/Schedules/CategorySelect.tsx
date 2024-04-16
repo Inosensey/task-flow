@@ -6,14 +6,12 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 // Libs
 import { GetListOfPlaces } from "@/lib/locationMethods";
 
-// actions
-import { getLocationCategories, getLocationKeys, getScheduleDetails } from "@/actions/scheduleActions";
-
 // Utils
 import {
   formatLocationName,
 } from "@/utils/supportedCatList";
 import getLocationInfoInitial from "@/utils/getLocationInitialInfo";
+import { getLocationCategories, getLocationKeys, getScheduleDetails } from "@/lib/scheduleMethods"
 
 // Type
 import { TableRow } from "@/Types/database.types";

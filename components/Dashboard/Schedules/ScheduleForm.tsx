@@ -19,7 +19,10 @@ import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 
 // Actions
-import { mutateSchedule, getScheduleDetails } from "@/actions/scheduleActions";
+import { mutateSchedule } from "@/actions/scheduleActions";
+
+// lib
+import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // store
 import { useNotificationStore } from "@/store/useNotificationStore";
