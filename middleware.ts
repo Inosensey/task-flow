@@ -17,7 +17,9 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return await updateSession(request);
+  const response = createCSP(request);
+  await updateSession(request);
+  return response;
 
   // if (request.nextUrl.pathname.startsWith("/")) {
   //   if (accessToken !== undefined) {
@@ -30,8 +32,12 @@ const createCSP = (request: NextRequest) => {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
-    style-src 'self' 'nonce-${nonce}';
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https: http: 'unsafe-inline' ${
+    process.env.NODE_ENV === "production" ? "" : `'unsafe-eval'`
+  };
+    style-src 'self' ${
+      process.env.NODE_ENV === "production" ? `'nonce-${nonce}'` : `'unsafe-inline'`
+    };
     img-src 'self' blob: data:;
     font-src 'self';
     object-src 'none';
@@ -47,7 +53,6 @@ const createCSP = (request: NextRequest) => {
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
-
   requestHeaders.set(
     "Content-Security-Policy",
     contentSecurityPolicyHeaderValue
