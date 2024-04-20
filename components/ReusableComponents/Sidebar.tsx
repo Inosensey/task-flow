@@ -8,7 +8,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-
 // Actions
 import { signOut } from "@/actions/authActions";
 
@@ -115,12 +114,23 @@ const Sidebar = () => {
         <div className="flex flex-col mt-6">
           <div className="px-3">
             <ul className={`flex flex-col gap-2 ${styles.navList}`}>
-              <li className="select-none">
-                <MaterialSymbolsOverviewOutline color="#00ADB5" /> Overview
-              </li>
+              <Link href={"/dashboard"}>
+                <li
+                  className="select-none"
+                  onClick={() => {
+                    sidebarAnimation.start("hidden");
+                    setShowSideBar(false);
+                  }}
+                >
+                  <MaterialSymbolsOverviewOutline color="#00ADB5" /> Overview
+                </li>
+              </Link>
               <Link href={"/dashboard/schedules"}>
                 <li
-                  onClick={() => sidebarAnimation.start("hidden")}
+                  onClick={() => {
+                    sidebarAnimation.start("hidden");
+                    setShowSideBar(false);
+                  }}
                   className="select-none"
                 >
                   <MaterialSymbolsCalendarMonthOutlineRounded color="#00ADB5" />{" "}

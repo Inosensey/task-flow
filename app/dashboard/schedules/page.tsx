@@ -1,13 +1,9 @@
 "use server";
 
-import { createClient } from "@/utils/supabaseSSR";
 // Components
 import CalendarNav from "@/components/Dashboard/Schedules/CalendarNav";
 import Header from "@/components/Dashboard/Header";
 import Schedules from "@/components/Dashboard/Schedules/Schedules";
-
-// Lib
-import { getLocationCategories, getLocationKeys } from "@/lib/locationMethods";
 
 // Types
 import { TableInsert, TableRow, TableUpdate } from "@/Types/database.types";
@@ -20,7 +16,6 @@ interface locationProps {
 }
 
 // Utils
-import { getCurrentDate } from "@/utils/useDate";
 import { getSchedules } from "@/lib/scheduleMethods";
 
 // Icons
@@ -29,10 +24,6 @@ import MaterialSymbolsCalendarMonthOutlineRounded from "@/Icones/MaterialSymbols
 const Page = async () => {
   let schedulePropData: scheduleProps = {
     schedules: await getSchedules(),
-  };
-  let locationData: locationProps = {
-    locationCategories: await getLocationCategories(),
-    locationKeys: await getLocationKeys(),
   };
 
   return (

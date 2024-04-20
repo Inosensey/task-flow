@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import Link from "next/link";
 
 // Components
 import OverviewSection from "@/components/Dashboard/OverviewSection";
@@ -12,12 +13,33 @@ import MaterialSymbolsCalendarMonthOutlineRounded from "@/Icones/MaterialSymbols
 import IonTodayOutline from "@/Icones/IonTodayOutline";
 import GgNotes from "@/Icones/GgNotes";
 import MaterialSymbolsOverviewOutline from "@/Icones/MaterialSymbolsOverviewOutline";
+// libs
+import { getSchedules } from "@/lib/scheduleMethods";
 
-// lib
-import { getAuthSession } from "@/lib/AuthMethods";
-import { createClient } from "@/utils/supabaseSSR";
+// Utils
+import {
+  getCurrentDaySchedules,
+  getCurrentWeekSchedules,
+} from "@/utils/getCurrentDaySchedules";
+
+// Types
+import { TableRow } from "@/Types/database.types";
+interface schedulesInterface {
+  schedules: TableRow<"Schedules">[] | null;
+}
 
 const Page = async () => {
+  let schedulesData: schedulesInterface = {
+    schedules: await getSchedules(),
+  };
+
+  const date = new Date();
+  const currentDaySchedules = getCurrentDaySchedules(
+    schedulesData.schedules,
+    ""
+  );
+  const currentWeekSchedules = getCurrentWeekSchedules(schedulesData.schedules);
+  console.log(currentWeekSchedules);
 
   return (
     <div className="flex flex-col w-full bg-Primary">
@@ -32,18 +54,18 @@ const Page = async () => {
               <OverviewChildren>
                 <small className="text-Disabled">Schedules</small>
                 <div className="flex flex-col gap-2  text-sm">
-                  <div className="flex gap-2">
-                    <p>Schedule title</p>
-                    <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
-                      View
-                    </button>
-                  </div>
-                  <div className="flex gap-2">
-                    <p>Schedule title2</p>
-                    <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
-                      View
-                    </button>
-                  </div>
+                  {currentDaySchedules.map(
+                    (schedules: TableRow<"Schedules">) => (
+                      <div key={schedules.id} className="flex gap-2">
+                        <p>{schedules.title}</p>
+                        <Link href={`/dashboard/schedules/${schedules.id}`}>
+                          <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
+                            View
+                          </button>
+                        </Link>
+                      </div>
+                    )
+                  )}
                 </div>
               </OverviewChildren>
             </div>
@@ -56,18 +78,18 @@ const Page = async () => {
               <OverviewChildren>
                 <small className="text-Disabled">Schedules</small>
                 <div className="flex flex-col gap-2  text-sm">
-                  <div className="flex gap-2">
-                    <p>Schedule title</p>
-                    <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
-                      View
-                    </button>
-                  </div>
-                  <div className="flex gap-2">
-                    <p>Schedule title2</p>
-                    <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
-                      View
-                    </button>
-                  </div>
+                  {currentWeekSchedules.map(
+                    (schedules: TableRow<"Schedules">) => (
+                      <div key={schedules.id} className="flex gap-2">
+                        <p>{schedules.title}</p>
+                        <Link href={`/dashboard/schedules/${schedules.id}`}>
+                          <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
+                            View
+                          </button>
+                        </Link>
+                      </div>
+                    )
+                  )}
                 </div>
               </OverviewChildren>
             </div>
