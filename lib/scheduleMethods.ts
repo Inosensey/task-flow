@@ -30,7 +30,7 @@ export const getSchedules = async (): Promise<
     // Respond with JSON data
     return schedules;
   } catch (error) {
-    return returnError("There is an error inserting the schedule", error);
+    return returnError("There is an error getting the schedule", error);
   }
 };
 
@@ -51,7 +51,7 @@ export const getScheduleDetails = async (
     }
     return returnSuccess("Schedule Successfully Added", data);
   } catch (error) {
-    return returnError("There is an error inserting the schedule", error);
+    return returnError("There is an error getting the schedule", error);
   }
 };
 

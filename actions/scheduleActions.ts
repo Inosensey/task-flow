@@ -124,7 +124,7 @@ const updateSchedule = async (
   scheduleId: number,
   scheduleInfo: ScheduleInfo
 ): Promise<
-  ReturnInterface<TableRow<"ScheduleLocation">> | ReturnInterface<any>
+  ReturnInterface<TableRow<"Schedules">> | ReturnInterface<any>
 > => {
   try {
     const supabase = createClient();
