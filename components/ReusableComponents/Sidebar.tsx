@@ -137,9 +137,18 @@ const Sidebar = () => {
                   Calendar
                 </li>
               </Link>
-              <li className="select-none">
-                <IonTodayOutline color="#00ADB5" /> To Do List
-              </li>
+
+              <Link href={"/dashboard/todolist"}>
+                <li
+                  onClick={() => {
+                    sidebarAnimation.start("hidden");
+                    setShowSideBar(false);
+                  }}
+                  className="select-none"
+                >
+                  <IonTodayOutline color="#00ADB5" /> To Do List
+                </li>
+              </Link>
               <li className="select-none">
                 <GgNotes color="#00ADB5" />
                 Notes

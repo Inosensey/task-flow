@@ -39,7 +39,6 @@ const Page = async () => {
     ""
   );
   const currentWeekSchedules = getCurrentWeekSchedules(schedulesData.schedules);
-  console.log(currentWeekSchedules);
 
   return (
     <div className="flex flex-col w-full bg-Primary">
