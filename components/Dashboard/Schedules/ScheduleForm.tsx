@@ -29,12 +29,10 @@ import { useNotificationStore } from "@/store/useNotificationStore";
 import FormValidation from "@/utils/validation";
 
 // Validation
-import { setValidationResult } from "@/utils/validation";
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 
 // Typescript
 import { GeneralInfo, ScheduleInfo } from "@/Types/scheduleType";
-import { TableRow } from "@/Types/database.types";
 
 // Utils
 import { useFormSerialize } from "@/utils/formUtils";
@@ -42,12 +40,6 @@ import { useFormSerialize } from "@/utils/formUtils";
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
   scheduleId: string | null;
-}
-interface generalInfoValidation {
-  [key: string]: {
-    valid: null | boolean;
-    validationMessage: string;
-  };
 }
 
 type validation = {

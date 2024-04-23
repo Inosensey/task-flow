@@ -141,8 +141,6 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
     categories: string | null
   ) => {
     setIsGettingListPlaces(true);
-    console.log(place);
-    console.log(categories);
     const data: PlaceList | undefined = await getPlaces(place, categories);
     if (data !== undefined)
       setListPlace((prev) => ({ ...prev, features: data.features }));
