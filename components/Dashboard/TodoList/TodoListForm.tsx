@@ -28,9 +28,33 @@ const todoListInputInitials: TableInsert<"TodoList"> = {
 };
 
 const TodoListForm = ({ setShowTodoListForm }: props) => {
+    // States
   const [todoListInput, setTodoListInput] = useState<TableInsert<"TodoList">>(
     todoListInputInitials
   );
+
+  // Events
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    const validationParams = {
+      value: value,
+      stateName: name,
+    };
+    setTodoListInput((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+ }
+ const handleTextareaChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+
+    setTodoListInput((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   return (
     <Overlay>
@@ -45,7 +69,26 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
             X
           </p>
         </div>
-        <div className="mt-4 flex flex-col gap-4"></div>
+        <div className="mt-4 flex flex-col gap-4">
+          <Input
+            state={todoListInput.title!}
+            type="text"
+            name="title"
+            placeholder="Enter the Title of your Todo"
+            label="Title"
+            onChange={handleInputChange}
+            onBlur={handleInputChange}
+            valid={null}
+          />
+          <TextareaInput
+            name="description"
+            label="Description"
+            state={todoListInput.description!}
+            cols={30}
+            rows={7}
+            onChange={handleTextareaChange}
+            onBlur={handleTextareaChange}
+          /></div>
       </motion.form>
     </Overlay>
   );
