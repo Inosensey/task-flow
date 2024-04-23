@@ -53,17 +53,28 @@ const Page = async () => {
               <OverviewChildren>
                 <small className="text-Disabled">Schedules</small>
                 <div className="flex flex-col gap-2  text-sm">
-                  {currentDaySchedules.map(
-                    (schedules: TableRow<"Schedules">) => (
-                      <div key={schedules.id} className="flex gap-2">
-                        <p>{schedules.title}</p>
-                        <Link href={`/dashboard/schedules/${schedules.id}`}>
-                          <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
-                            View
-                          </button>
-                        </Link>
-                      </div>
+                  {currentDaySchedules.length !== 0 ? (
+                    currentDaySchedules.map(
+                      (schedules: TableRow<"Schedules">) => (
+                        <div key={schedules.id} className="flex gap-2">
+                          <p>{schedules.title}</p>
+                          <Link href={`/dashboard/schedules/${schedules.id}`}>
+                            <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
+                              View
+                            </button>
+                          </Link>
+                        </div>
+                      )
                     )
+                  ) : (
+                    <p className="phone:text-xs">
+                      Today&apos;s schedule is empty.{" "}
+                      <Link href={`/dashboard/schedules`}>
+                        <span className="text-LightPrimary underline">
+                          Would you like to create one?
+                        </span>
+                      </Link>
+                    </p>
                   )}
                 </div>
               </OverviewChildren>
@@ -77,17 +88,23 @@ const Page = async () => {
               <OverviewChildren>
                 <small className="text-Disabled">Schedules</small>
                 <div className="flex flex-col gap-2  text-sm">
-                  {currentWeekSchedules.map(
-                    (schedules: TableRow<"Schedules">) => (
-                      <div key={schedules.id} className="flex gap-2">
-                        <p>{schedules.title}</p>
-                        <Link href={`/dashboard/schedules/${schedules.id}`}>
-                          <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
-                            View
-                          </button>
-                        </Link>
-                      </div>
+                  {currentWeekSchedules.length !== 0 ? (
+                    currentWeekSchedules.map(
+                      (schedules: TableRow<"Schedules">) => (
+                        <div key={schedules.id} className="flex gap-2">
+                          <p>{schedules.title}</p>
+                          <Link href={`/dashboard/schedules/${schedules.id}`}>
+                            <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
+                              View
+                            </button>
+                          </Link>
+                        </div>
+                      )
                     )
+                  ) : (
+                    <p className="phone:text-xs">
+                      No schedules this week.
+                    </p>
                   )}
                 </div>
               </OverviewChildren>

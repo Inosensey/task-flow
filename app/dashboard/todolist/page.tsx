@@ -1,18 +1,17 @@
 "use server"
 
-import React from 'react'
-
 // Components
 import Header from '@/components/Dashboard/Header'
+import TodoLists from '@/components/Dashboard/TodoList/TodoLists'
 
 // Icones
 import IonTodayOutline from '@/Icones/IonTodayOutline'
 
-// types
-import { TableRow } from '@/Types/database.types'
-
 // Libs
 import { getTodoLists } from '@/lib/todolistMethods'
+
+// types
+import { TableRow } from '@/Types/database.types'
 
 const Page = async () => {
   const todoLists: TableRow<"TodoList">[] = await getTodoLists();
@@ -25,6 +24,7 @@ const Page = async () => {
           headerName="Todo-List"
           Icon={IonTodayOutline}
         />
+        <TodoLists TodoLists={todoLists} />
       </div>
     </div>
   )

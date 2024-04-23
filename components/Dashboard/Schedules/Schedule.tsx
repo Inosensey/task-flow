@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
@@ -10,6 +10,8 @@ import { AnimatePresence, motion } from "framer-motion";
 // Utils
 import { formatHourTo12, useDays, useHours } from "@/utils/useDate";
 import DetailedSchedule from "./DetailedSchedule";
+
+// Components
 import ScheduleForm from "./ScheduleForm";
 
 //types
