@@ -10,13 +10,15 @@ import { faArrowRight, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 
 // libs
 import { getTodoLists } from "@/lib/todolistMethods";
+import { getFrequencies, getPriorityLevel } from "@/lib/todolistMethods";
 
 // types
-import { TableRow } from "@/Types/database.types";
 import TodoListForm from "./TodoListForm";
+import { ReturnInterface } from "@/Types/generalTypes";
+import { todoListDetails } from "@/Types/todoListTypes";
 
 interface props {
-  TodoLists: TableRow<"TodoList">[];
+  TodoLists: ReturnInterface<todoListDetails[]>;
 }
 
 const TodoLists = ({ TodoLists }: props) => {
@@ -30,8 +32,16 @@ const TodoLists = ({ TodoLists }: props) => {
     queryFn: getTodoLists,
     initialData: TodoLists,
   });
+  const todoLists = todoListsData.Response
 
-  console.log(todoListsData);
+  useQuery({
+    queryKey: ["priorityLevel"],
+    queryFn: () => getPriorityLevel(),
+  });
+  useQuery({
+    queryKey: ["frequencies"],
+    queryFn: () => getFrequencies()
+  })
 
   //States
   const [showTodoListForm, setShowTodoListForm] = useState<boolean>(false);
@@ -53,6 +63,13 @@ const TodoLists = ({ TodoLists }: props) => {
               <FontAwesomeIcon className="text-sm" icon={faCirclePlus} />
             </span>
           </motion.button>
+        </div>
+        <div>
+          {todoLists.map((details: todoListDetails) => (
+            <div key={details.id}>
+              <p>{details.title}</p>
+            </div>
+          ))}
         </div>
       </div>
 

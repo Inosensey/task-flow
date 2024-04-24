@@ -19,12 +19,9 @@ import { mutateTodoList } from "@/actions/todolistActions";
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 
-// utils
-import { useDays } from "@/utils/useDate";
-
 // types
 import { TableInsert, TableRow } from "@/Types/database.types";
-import { getPriorityLevel } from "@/lib/todolistMethods";
+import { getFrequencies, getPriorityLevel } from "@/lib/todolistMethods";
 import CustomSelect from "@/components/ReusableComponents/inputs/CustomSelect";
 
 // Icons
@@ -49,7 +46,7 @@ const todoListInputInitials: TableInsert<"TodoList"> = {
   description: "",
   priorityLevel: 0,
   userId: "",
-  frequency: "",
+  frequency: 0,
 };
 
 const TodoListForm = ({ setShowTodoListForm }: props) => {
@@ -72,8 +69,6 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
     useState<boolean>(false);
   const [selectedFrequent, setSelectedFrequent] = useState<string>("");
 
-  const days: Array<string> = useDays();
-
   // Use Query
   const {
     data: priorityLevels,
@@ -83,6 +78,15 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
     queryKey: ["priorityLevel"],
     queryFn: () => getPriorityLevel(),
   });
+  const {
+    data: frequencies,
+    error: frequenciesError,
+    isFetched: frequenciesIsFetched,
+  } = useQuery({
+    queryKey: ["frequencies"],
+    queryFn: () => getFrequencies(),
+  });
+
   // Mutation
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
     mutationFn: (todoListInfo: TableInsert<"TodoList">) => {
@@ -261,41 +265,26 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
             </label>
             <CustomSelect
               selected={
-                selectedFrequent === ""
-                  ? "Frequencies"
-                  : selectedFrequent
+                selectedFrequent === "" ? "Frequencies" : selectedFrequent
               }
               placeHolder={"Frequencies"}
               showChoices={toggleFrequentSelect}
               setShowChoices={setToggleFrequentSelect}
             >
-              <div
-                onClick={() => {
-                  setSelectedFrequent("Everyday");
-                  setTodoListInput((prev) => ({
-                    ...prev,
-                    frequency: "Everyday",
-                  }));
-                  setToggleFrequentSelect(false);
-                }}
-                className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
-              >
-                <p className="select-none">Everyday</p>
-              </div>
-              {days?.map((frequency: string) => (
+              {frequencies?.map((frequency: TableRow<"Frequencies">) => (
                 <div
                   onClick={() => {
                     setTodoListInput((prev) => ({
                       ...prev,
-                      frequency: frequency,
+                      frequency: frequency.id,
                     }));
-                    setSelectedFrequent(frequency);
+                    setSelectedFrequent(frequency.frequency!);
                     setToggleFrequentSelect(false);
                   }}
-                  key={frequency}
+                  key={frequency.frequency}
                   className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
                 >
-                  <p className="select-none">{frequency}</p>
+                  <p className="select-none">{frequency.frequency}</p>
                 </div>
               ))}
             </CustomSelect>
@@ -320,7 +309,7 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
               validationMessage={""}
             />
             <Input
-              state={todoListInput.frequency!}
+              state={todoListInput.frequency?.toString()!}
               type="hidden"
               name="frequency"
               placeholder=""
@@ -333,13 +322,32 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
             <motion.button
               whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.95 }}
-              className={`bg-LightPrimary text-LightSecondary  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
+              className={`${
+                isIdle || isSuccess ? "bg-LightPrimary text-LightSecondary" : ""
+              } ${
+                isPending && "bg-LightPrimaryDisabled text-Disabled"
+              }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
               type="submit"
             >
-              <span className="w-4">
-                <FontAwesomeIcon className="text-sm" icon={faClipboardCheck} />
-              </span>
-              Save Todo
+              {isIdle || isSuccess ? (
+                <>
+                  <span className="w-4">
+                    <FontAwesomeIcon
+                      className="text-sm"
+                      icon={faClipboardCheck}
+                    />
+                  </span>
+                  Save Todo List
+                </>
+              ) : (
+                ""
+              )}
+              {isPending && (
+                <>
+                  <SvgSpinnersBlocksShuffle3 color="#00ADB5" />
+                  Saving Todo List
+                </>
+              )}
             </motion.button>
           </div>
         </div>

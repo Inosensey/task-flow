@@ -49,7 +49,7 @@ export const getScheduleDetails = async (
     if (error) {
       console.log(error);
     }
-    return returnSuccess("Schedule Successfully Added", data);
+    return returnSuccess("Schedule Successfully Fetched", data);
   } catch (error) {
     return returnError("There is an error getting the schedule", error);
   }
