@@ -14,9 +14,9 @@ import { createClient } from "@/utils/supabaseSSR";
 import { getCookieAuth } from "@/utils/cookiesUtils";
 
 export const mutateTodoList = async (
-  todoListInfo: TableRow<"TodoList">,
-  todoListId: number,
-  formAction: string
+  todoListInfo: TableInsert<"TodoList">,
+  formAction: string,
+  todoListId?: number
 ): Promise<ReturnInterface<TableRow<"TodoList">[]> | ReturnInterface<any>> => {
   try {
     let result;
@@ -28,6 +28,7 @@ export const mutateTodoList = async (
       revalidateTag("todoList");
       revalidateTag(`todoList${todoListId}`);
     }
+    console.log(result);
     return result;
   } catch (e) {
     return returnError("There is an error inserting the schedule", e);
@@ -35,7 +36,7 @@ export const mutateTodoList = async (
 };
 
 const insertTodoList = async (
-  todoListInfo: TableRow<"TodoList">
+  todoListInfo: TableInsert<"TodoList">
 ): Promise<ReturnInterface<TableRow<"TodoList">> | ReturnInterface<any>> => {
   try {
     const supabase = createClient();
@@ -46,9 +47,11 @@ const insertTodoList = async (
         userId: auth.user.id,
         title: todoListInfo.title,
         description: todoListInfo.description,
-        priorityLevel: todoListInfo.priorityLevel,
+        priorityLevel: parseInt(todoListInfo.priorityLevel!.toString()),
+        frequency: todoListInfo.frequency
       })
       .select();
+    
     if (result.error)
       return returnError(
         "There is an error inserting the Todo-List",
@@ -62,7 +65,7 @@ const insertTodoList = async (
 
 const updateTodoList = async (
   todoListId: number,
-  todoListInfo: TableRow<"TodoList">
+  todoListInfo: TableInsert<"TodoList">
 ): Promise<ReturnInterface<TableRow<"TodoList">> | ReturnInterface<any>> => {
   try {
     const supabase = createClient();

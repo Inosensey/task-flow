@@ -12,6 +12,13 @@ import Input, {
   TextareaInput,
 } from "@/components/ReusableComponents/inputs/Input";
 
+// Actions
+import { mutateTodoList } from "@/actions/todolistActions";
+
+// store
+import { useNotificationStore } from "@/store/useNotificationStore";
+import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+
 // utils
 import { useDays } from "@/utils/useDate";
 
@@ -23,19 +30,37 @@ import CustomSelect from "@/components/ReusableComponents/inputs/CustomSelect";
 // Icons
 import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
+import { useFormSerialize } from "@/utils/formUtils";
+import FormValidation from "@/utils/validation";
 
+// Types
 interface props {
   setShowTodoListForm: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+type validation = {
+  validationName: string;
+  valid: null | boolean;
+  validationMessage: string;
+};
 
 const todoListInputInitials: TableInsert<"TodoList"> = {
   title: "",
   description: "",
   priorityLevel: 0,
   userId: "",
+  frequency: "",
 };
 
 const TodoListForm = ({ setShowTodoListForm }: props) => {
+  // Initial use query
+  const queryClient = useQueryClient();
+
+  // Zustand Store
+  const { setMessage, setShowSlideNotification } = useNotificationStore();
+  const { setValidation, validations, resetValidation, formAction } =
+    useScheduleFormStore();
+
   // States
   const [todoListInput, setTodoListInput] = useState<TableInsert<"TodoList">>(
     todoListInputInitials
@@ -58,9 +83,69 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
     queryKey: ["priorityLevel"],
     queryFn: () => getPriorityLevel(),
   });
+  // Mutation
+  const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
+    mutationFn: (todoListInfo: TableInsert<"TodoList">) => {
+      return mutateTodoList(todoListInfo, "add");
+    },
+    onSuccess: (data) => {
+      console.log(data);
+      onTodoListAddSuccess();
+      queryClient.invalidateQueries({ queryKey: ["todolists"] });
+    },
+    onError: (data) => {
+      console.log(data);
+    },
+  });
 
-  console.log(priorityLevels);
+  const onTodoListAddSuccess = () => {
+    const notifMessage = "TodoList Successfully Added";
+    setMessage(notifMessage);
+    setShowSlideNotification();
+    hideNotificationTimer();
+    setShowTodoListForm(false);
+  };
+
+  const hideNotificationTimer = () => {
+    const interval = setTimeout(setShowSlideNotification, 5000);
+    return () => clearTimeout(interval);
+  };
+
   // Events
+  const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const fieldsToCheck = ["date", "title", "timeStart", "timeEnd", "city"];
+    const formValues: TableInsert<"TodoList"> & { [key: string]: string } =
+      useFormSerialize(event);
+    console.log(formValues);
+    if (scheduleFormValidate(fieldsToCheck, formValues)) {
+      console.log("valid");
+      mutate(formValues);
+    } else {
+      console.log("not valid");
+      return;
+    }
+  };
+
+  const scheduleFormValidate = (
+    fieldsToCheck: Array<string>,
+    formValues: TableInsert<"TodoList"> & { [key: string]: string }
+  ) => {
+    let isValid = true;
+    fieldsToCheck.some((field) => {
+      if (formValues[field] === "") {
+        isValid = false;
+        const validationParams = {
+          value: formValues[field],
+          stateName: field,
+        };
+        const result: validation = FormValidation(validationParams);
+        setValidation(result);
+      }
+    });
+    return isValid;
+  };
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     const validationParams = {
@@ -83,9 +168,38 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
     }));
   };
 
+  // Variants
+  const popUpVariants = {
+    hidden: {
+      scale: 0,
+      opacity: 0,
+      transition: {
+        type: "tween",
+        ease: "easeOut",
+        duration: 0.25,
+      },
+    },
+    show: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        type: "tween",
+        ease: "easeIn",
+        duration: 0.25,
+      },
+    },
+  };
+
   return (
     <Overlay>
-      <motion.form className="bg-Primary p-3 phone:w-11/12 rounded-md">
+      <motion.form
+        variants={popUpVariants}
+        initial="hidden"
+        animate="show"
+        exit="hidden"
+        onSubmit={useHandleFormSubmit}
+        className="bg-Primary p-3 phone:w-11/12 rounded-md"
+      >
         <div className="flex justify-between items-center">
           <p className="py-0">TodoList Form</p>
           <p
@@ -147,9 +261,9 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
             </label>
             <CustomSelect
               selected={
-                todoListInput.priorityLevel == 0
+                selectedFrequent === ""
                   ? "Frequencies"
-                  : selectedPriority
+                  : selectedFrequent
               }
               placeHolder={"Frequencies"}
               showChoices={toggleFrequentSelect}
@@ -158,6 +272,10 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
               <div
                 onClick={() => {
                   setSelectedFrequent("Everyday");
+                  setTodoListInput((prev) => ({
+                    ...prev,
+                    frequency: "Everyday",
+                  }));
                   setToggleFrequentSelect(false);
                 }}
                 className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -167,6 +285,10 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
               {days?.map((frequency: string) => (
                 <div
                   onClick={() => {
+                    setTodoListInput((prev) => ({
+                      ...prev,
+                      frequency: frequency,
+                    }));
                     setSelectedFrequent(frequency);
                     setToggleFrequentSelect(false);
                   }}
@@ -187,7 +309,26 @@ const TodoListForm = ({ setShowTodoListForm }: props) => {
             onChange={handleTextareaChange}
             onBlur={handleTextareaChange}
           />
-
+          <div className="hidden">
+            <Input
+              state={todoListInput.priorityLevel?.toString()!}
+              type="hidden"
+              name="priorityLevel"
+              placeholder=""
+              label=""
+              valid={null}
+              validationMessage={""}
+            />
+            <Input
+              state={todoListInput.frequency!}
+              type="hidden"
+              name="frequency"
+              placeholder=""
+              label=""
+              valid={null}
+              validationMessage={""}
+            />
+          </div>
           <div>
             <motion.button
               whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}

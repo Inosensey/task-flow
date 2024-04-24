@@ -26,7 +26,6 @@ import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // store
 import { useNotificationStore } from "@/store/useNotificationStore";
-import FormValidation from "@/utils/validation";
 
 // Validation
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
@@ -36,6 +35,7 @@ import { GeneralInfo, ScheduleInfo } from "@/Types/scheduleType";
 
 // Utils
 import { useFormSerialize } from "@/utils/formUtils";
+import FormValidation from "@/utils/validation";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -201,6 +201,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
       [name]: value,
     }));
   };
+  
   // Variants
   const popUpVariants = {
     hidden: {
