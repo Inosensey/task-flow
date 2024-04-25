@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import style from "@/css/ReusableComponent/Input.module.css";
 
 interface inputParams<T> {
@@ -33,6 +33,10 @@ interface textareaInputParam {
   rows: number;
   onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onBlur?: (event: React.FocusEvent<HTMLTextAreaElement>) => void;
+}
+
+interface checkboxInputParam {
+  
 }
 
 const Input = <T extends string | number>({
@@ -139,6 +143,28 @@ export const TextareaInput = ({
         onChange={onChange}
         onBlur={onBlur}
       ></textarea>
+    </div>
+  );
+};
+
+export const CheckBoxInput = () => {
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+
+  return (
+    <div className="flex items-center gap-1">
+      <div
+        style={{ background: isChecked ? "#00ADB5" : "none" }}
+        onClick={() => setIsChecked((prev) => !prev)}
+        className="cursor-pointer outline outline-2 outline-LightPrimary w-3 h-3"
+      ></div>
+      <label>This is a check box</label>
+      <input
+        className="text-lg"
+        type="checkbox"
+        checked={isChecked && true}
+        name="4"
+        id=""
+      />
     </div>
   );
 };

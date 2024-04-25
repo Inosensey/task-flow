@@ -16,6 +16,7 @@ import { getFrequencies, getPriorityLevel } from "@/lib/todolistMethods";
 import TodoListForm from "./TodoListForm";
 import { ReturnInterface } from "@/Types/generalTypes";
 import { todoListDetails } from "@/Types/todoListTypes";
+import { CheckBoxInput } from "@/components/ReusableComponents/inputs/Input";
 
 interface props {
   TodoLists: ReturnInterface<todoListDetails[]>;
@@ -63,6 +64,9 @@ const TodoLists = ({ TodoLists }: props) => {
               <FontAwesomeIcon className="text-sm" icon={faCirclePlus} />
             </span>
           </motion.button>
+        </div>
+        <div>
+          <CheckBoxInput />
         </div>
         <div>
           {todoLists.map((details: todoListDetails) => (
