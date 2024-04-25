@@ -32,7 +32,14 @@ module.exports = {
         SmoothDark: '#1a1a1a',
         Success: '#248f24',
         Error: '#ff4d4d',
-        SmoothError: '#ffcccc'
+        SmoothError: '#ffcccc',
+
+        // TodoList PrIorities
+        Urgent: "#ff6666",
+        HighPriority: "#FFA500",
+        MediumPriority: "#b3b300",
+        LowPriority: "#009900"
+
       },
       fontFamily: {
         Roboto: ['var(--font-roboto)'],

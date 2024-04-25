@@ -27,12 +27,15 @@ import CustomSelect from "@/components/ReusableComponents/inputs/CustomSelect";
 // Icons
 import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
+
+// Utils
 import { useFormSerialize } from "@/utils/formUtils";
 import FormValidation from "@/utils/validation";
 
 // Types
 interface props {
   setShowTodoListForm: React.Dispatch<React.SetStateAction<boolean>>;
+  action: string
 }
 
 type validation = {
@@ -49,7 +52,7 @@ const todoListInputInitials: TableInsert<"TodoList"> = {
   frequency: 0,
 };
 
-const TodoListForm = ({ setShowTodoListForm }: props) => {
+const TodoListForm = ({ setShowTodoListForm, action }: props) => {
   // Initial use query
   const queryClient = useQueryClient();
 

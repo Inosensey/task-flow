@@ -36,7 +36,11 @@ interface textareaInputParam {
 }
 
 interface checkboxInputParam {
-  
+  name: string;
+  label: string;
+  selected?: string;
+  setSelected?: React.Dispatch<React.SetStateAction<string>>;
+  onChange?: (val: any) => void;
 }
 
 const Input = <T extends string | number>({
@@ -97,7 +101,7 @@ export const TimeInput = ({
 }: timeInputParams) => {
   return (
     <div className="flex flex-col phone:text-sm">
-      <label>{label}</label>
+      <label className="phone:text-sm">{label}</label>
       <input
         className="bg-Secondary p-2 w-max description-time-input"
         type={type}
@@ -133,7 +137,7 @@ export const TextareaInput = ({
 }: textareaInputParam) => {
   return (
     <div className="flex flex-col phone:text-sm phone:w-11/12">
-      <label>{label}</label>
+      <label className="phone:text-sm">{label}</label>
       <textarea
         className="bg-Secondary px-2"
         name={name}
@@ -147,23 +151,29 @@ export const TextareaInput = ({
   );
 };
 
-export const CheckBoxInput = () => {
-  const [isChecked, setIsChecked] = useState<boolean>(false);
-
+export const CheckBoxInput = ({
+  label,
+  name,
+  setSelected,
+  selected,
+  onChange,
+}: checkboxInputParam) => {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
       <div
-        style={{ background: isChecked ? "#00ADB5" : "none" }}
-        onClick={() => setIsChecked((prev) => !prev)}
-        className="cursor-pointer outline outline-2 outline-LightPrimary w-3 h-3"
+        style={{ background: selected === label ? "#00ADB5" : "none" }}
+        onClick={() => {
+          setSelected!(label)
+        }}
+        className="cursor-pointer outline outline-2 outline-LightPrimaryDisabled phone:w-5 phone:h-5"
       ></div>
-      <label>This is a check box</label>
+      <label className="phone:text-sm">{label}</label>
       <input
-        className="text-lg"
+        className="text-lg hidden"
         type="checkbox"
-        checked={isChecked && true}
-        name="4"
-        id=""
+        checked={selected === label ? true : false}
+        name={name}
+        onChange={onChange}
       />
     </div>
   );
