@@ -7,11 +7,11 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { GetListOfPlaces } from "@/lib/locationMethods";
 
 // Utils
-import {
-  formatLocationName,
-} from "@/utils/supportedCatList";
 import getLocationInfoInitial from "@/utils/getLocationInitialInfo";
 import { getLocationCategories, getLocationKeys, getScheduleDetails } from "@/lib/scheduleMethods"
+
+// Helpers
+import { formatStringName } from "@/helpers/GeneralHelpers";
 
 // Type
 import { TableRow } from "@/Types/database.types";
@@ -176,7 +176,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
           >
             <p className="select-none">
-              {formatLocationName(category.key)}
+              {formatStringName(category.key)}
               {category.description !== null && (
                 <span className="text-xs text-[#ccc]">
                   {" "}
@@ -219,7 +219,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
                   className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
                 >
                   <p className="select-none">
-                    {formatLocationName(info.category)}
+                    {formatStringName(info.category)}
                   </p>
                 </div>
               )
@@ -259,7 +259,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
                 className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
               >
                 <p className="select-none">
-                  {formatLocationName(place.properties.address_line1)}
+                  {formatStringName(place.properties.address_line1)}
                 </p>
               </div>
             ))
