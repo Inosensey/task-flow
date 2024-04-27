@@ -7,7 +7,7 @@ import MaterialSymbolsArrowBackIosNewRounded from "@/Icones/MaterialSymbolsArrow
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
 // Utils
-import { formatLocationName } from "@/utils/supportedCatList";
+import { formatStringName } from "@/helpers/GeneralHelpers";
 
 // Types
 interface props {
@@ -69,7 +69,7 @@ function CheckSelectType(
         ) : (
           <>
             <p className="select-none text-sm">
-              {formatLocationName(
+              {formatStringName(
                 selected === placeHolder ? placeHolder : selected
               )}
             </p>
@@ -89,7 +89,7 @@ function CheckSelectType(
     return (
       <>
         <p className="select-none text-sm">
-          {formatLocationName(
+          {formatStringName(
             selected === placeHolder ? placeHolder : selected
           )}
         </p>

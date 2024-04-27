@@ -15,10 +15,26 @@ import { TableRow } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
 import { todoListDetails } from "@/Types/todoListTypes";
 
+type sortedTodoListType = {
+  todoList: todoListDetails[];
+  color: string;
+};
+interface sortedTodoListInterface {
+  Urgent: sortedTodoListType;
+  HighPriority: sortedTodoListType;
+  MedPriority: sortedTodoListType;
+  LowPriority: sortedTodoListType;
+}
+interface todoListResponseInterface {
+  unsortedTodoList: todoListDetails[];
+  sortedTodoList: sortedTodoListInterface;
+}
+
 const Page = async () => {
-  const todoLists: ReturnInterface<todoListDetails[]> | ReturnInterface<any> =
+  const todoLists: ReturnInterface<todoListResponseInterface> | ReturnInterface<any> =
     await getTodoLists();
-  console.log(todoLists);
+    
+
 
   return (
     <div className="w-full">

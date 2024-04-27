@@ -9,11 +9,78 @@ import { returnError, returnSuccess } from "@/utils/formUtils";
 import { createClient } from "@/utils/supabaseSSR";
 import { getCookieAuth } from "@/utils/cookiesUtils";
 
-//
+// types
 import { todoListDetails } from "@/Types/todoListTypes";
 
+type sortedTodoListType = {
+  todoList: todoListDetails[];
+  color: string;
+};
+
+interface sortedTodoListInterface {
+  Urgent: sortedTodoListType;
+  HighPriority: sortedTodoListType;
+  MedPriority: sortedTodoListType;
+  LowPriority: sortedTodoListType;
+}
+
+interface todoListResponseInterface {
+  unsortedTodoList: todoListDetails[];
+  sortedTodoList: sortedTodoListInterface;
+}
+
+const handleTodoListSort = (todoLists: todoListDetails[]) => {
+  const initialSortedTodoListValues: sortedTodoListInterface = {
+    Urgent: {
+      color: "",
+      todoList: [],
+    },
+    HighPriority: {
+      color: "",
+      todoList: [],
+    },
+    MedPriority: {
+      color: "",
+      todoList: [],
+    },
+    LowPriority: {
+      color: "",
+      todoList: [],
+    },
+  };
+  // Initialize sorted todo list
+  let newSortedTodoList: sortedTodoListInterface = initialSortedTodoListValues;
+
+  // Map priority descriptions to keys in sortedTodoListInterface
+  const priorityMapping: Record<string, keyof sortedTodoListInterface> = {
+    Urgent: "Urgent",
+    "High Priority": "HighPriority",
+    "Medium Priority": "MedPriority",
+    "Low Priority": "LowPriority",
+  };
+
+  todoLists.forEach((details: todoListDetails) => {
+    const priorityDescription: string = details.PriorityLevel.description;
+    const color: string = details.PriorityLevel.color;
+    const todo: todoListDetails = details;
+
+    if (priorityMapping.hasOwnProperty(priorityDescription)) {
+      const priorityKey: keyof sortedTodoListInterface =
+        priorityMapping[priorityDescription];
+
+      newSortedTodoList[priorityKey].color = color;
+      if (newSortedTodoList[priorityKey].todoList)
+        newSortedTodoList[priorityKey].todoList.push(todo);
+    } else {
+      // Handle the case where the priorityDescription doesn't have a corresponding key
+      console.error(`Invalid priority description: ${priorityDescription}`);
+    }
+  });
+  return newSortedTodoList;
+};
+
 export const getTodoLists = async (): Promise<
-  ReturnInterface<todoListDetails[]> | ReturnInterface<any>
+  ReturnInterface<todoListResponseInterface> | ReturnInterface<any>
 > => {
   let result;
   const supabase = createClient();
@@ -22,7 +89,7 @@ export const getTodoLists = async (): Promise<
     result = await supabase
       .from("TodoList")
       .select(
-        "id, title, description, PriorityLevel(level, description), Frequencies(frequency)"
+        "id, title, description, PriorityLevel(level, description, color), Frequencies(frequency), TodoListStatus(id, status)"
       )
       .eq("userId", `${auth.user.id}`);
     // console.log(auth)
@@ -32,7 +99,14 @@ export const getTodoLists = async (): Promise<
         result.error
       );
     }
-    return returnSuccess("Schedule Successfully Todo-Lists", result.data);
+    const resData: any = result.data;
+    const unsortedTodoList = resData as todoListDetails[];
+    const sortedTodoList = handleTodoListSort(unsortedTodoList);
+    const response: todoListResponseInterface = {
+      unsortedTodoList: unsortedTodoList,
+      sortedTodoList: sortedTodoList,
+    };
+    return returnSuccess("Schedule Successfully Todo-Lists", response);
   } catch (error) {
     return returnError("There is an error getting the Todo-Lists", error);
   }

@@ -4,9 +4,14 @@ export interface todoListDetails {
     description: string,
     PriorityLevel: {
         level: number,
-        description: string
+        description: string,
+        color: string
     },
     Frequencies : {
         frequency: string
+    }
+    TodoListStatus: {
+        id: number,
+        status: string,
     }
 }

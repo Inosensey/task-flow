@@ -4,13 +4,13 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 
+// Components
+import { CheckBoxInput } from "@/components/ReusableComponents/inputs/Input";
+import PriorityBasedTodoList from "./PriorityBasedTodoList";
+
 // Icon
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCircleCheck,
-  faCircleXmark,
-} from "@fortawesome/free-regular-svg-icons";
-import { faArrowRight, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 
 // libs
 import { getTodoLists } from "@/lib/todolistMethods";
@@ -20,10 +20,24 @@ import { getFrequencies, getPriorityLevel } from "@/lib/todolistMethods";
 import TodoListForm from "./TodoListForm";
 import { ReturnInterface } from "@/Types/generalTypes";
 import { todoListDetails } from "@/Types/todoListTypes";
-import { CheckBoxInput } from "@/components/ReusableComponents/inputs/Input";
+
+interface todoListResponseInterface {
+  unsortedTodoList: todoListDetails[];
+  sortedTodoList: sortedTodoListInterface;
+}
+type sortedTodoListType = {
+  todoList: todoListDetails[];
+  color: string;
+};
+interface sortedTodoListInterface {
+  Urgent: sortedTodoListType;
+  HighPriority: sortedTodoListType;
+  MedPriority: sortedTodoListType;
+  LowPriority: sortedTodoListType;
+}
 
 interface props {
-  TodoLists: ReturnInterface<todoListDetails[]>;
+  TodoLists: ReturnInterface<todoListResponseInterface>;
 }
 
 const TodoLists = ({ TodoLists }: props) => {
@@ -37,11 +51,12 @@ const TodoLists = ({ TodoLists }: props) => {
     queryFn: getTodoLists,
     initialData: TodoLists,
   });
-  const todoLists = todoListsData.Response;
+  const unSortedTodoList = todoListsData.Response.unsortedTodoList as todoListDetails[];
+  const sortedTodoList = todoListsData.Response.sortedTodoList as sortedTodoListInterface;
 
   useQuery({
     queryKey: ["priorityLevel"],
-    queryFn: () => getPriorityLevel(),
+    queryFn: () => getPriorityLevel(), 
   });
   useQuery({
     queryKey: ["frequencies"],
@@ -97,39 +112,27 @@ const TodoLists = ({ TodoLists }: props) => {
             />
           ))}
         </div>
-        <div className="w-10/12 mx-auto mt-8">
-          <p className="bg-Urgent px-2 w-max">Urgent</p>
-          <div>
-            {todoLists.map((details: todoListDetails) => (
-              <div
-                className="border-l-2 border-l-Urgent flex justify-between items-center p-2"
-                key={details.id}
-              >
-                <div className="h-[3.3rem] line-clamp-3">
-                  <p className="phone:text-sm underline cursor-pointer">
-                    {details.title}
-                  </p>
-                  <p className="phone:text-xs">
-                    {details.description}
-                  </p>
-                </div>
-                <div className="flex gap-3">
-                  <span className="cursor-pointer w-4">
-                    <FontAwesomeIcon
-                      className="text-xl text-Success"
-                      icon={faCircleCheck}
-                    />
-                  </span>
-                  <span className="cursor-pointer w-4">
-                    <FontAwesomeIcon
-                      className="text-xl text-Error"
-                      icon={faCircleXmark}
-                    />
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="w-10/12 mx-auto mt-8 flex flex-col gap-2">
+          <PriorityBasedTodoList
+            priority={"Urgent"}
+            color={sortedTodoList.Urgent.color}
+            todoLists={sortedTodoList.Urgent.todoList}
+          />
+          <PriorityBasedTodoList
+            priority={"High Priority"}
+            color={sortedTodoList.HighPriority.color}
+            todoLists={sortedTodoList.HighPriority.todoList}
+          />
+          <PriorityBasedTodoList
+            priority={"Medium Priority"}
+            color={sortedTodoList.MedPriority.color}
+            todoLists={sortedTodoList.MedPriority.todoList}
+          />
+          <PriorityBasedTodoList
+            priority={"Low Priority"}
+            color={sortedTodoList.LowPriority.color}
+            todoLists={sortedTodoList.LowPriority.todoList}
+          />
         </div>
       </div>
 
