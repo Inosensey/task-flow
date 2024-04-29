@@ -67,7 +67,7 @@ const TodoLists = ({ TodoLists }: props) => {
   const [formAction, setFormAction] = useState<string>("Add");
   const [showTodoListForm, setShowTodoListForm] = useState<boolean>(false);
   const [selectedTodoListStatus, setSelectedTodoListStatus] =
-    useState<string>("");
+    useState<string>("All");
   const [todoListStatuses] = useState<Array<string>>([
     "All",
     "Completed",
@@ -112,26 +112,30 @@ const TodoLists = ({ TodoLists }: props) => {
             />
           ))}
         </div>
-        <div className="w-10/12 mx-auto mt-8 flex flex-col gap-2">
+        <div className="mt-8 flex flex-col gap-3">
           <PriorityBasedTodoList
             priority={"Urgent"}
             color={sortedTodoList.Urgent.color}
             todoLists={sortedTodoList.Urgent.todoList}
+            selectedStatus={selectedTodoListStatus}
           />
           <PriorityBasedTodoList
             priority={"High Priority"}
             color={sortedTodoList.HighPriority.color}
             todoLists={sortedTodoList.HighPriority.todoList}
+            selectedStatus={selectedTodoListStatus}
           />
           <PriorityBasedTodoList
             priority={"Medium Priority"}
             color={sortedTodoList.MedPriority.color}
             todoLists={sortedTodoList.MedPriority.todoList}
+            selectedStatus={selectedTodoListStatus}
           />
           <PriorityBasedTodoList
             priority={"Low Priority"}
             color={sortedTodoList.LowPriority.color}
             todoLists={sortedTodoList.LowPriority.todoList}
+            selectedStatus={selectedTodoListStatus}
           />
         </div>
       </div>

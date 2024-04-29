@@ -8,6 +8,7 @@ export interface todoListDetails {
         color: string
     },
     Frequencies : {
+        id: number,
         frequency: string
     }
     TodoListStatus: {

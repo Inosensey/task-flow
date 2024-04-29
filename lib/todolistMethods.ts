@@ -89,7 +89,7 @@ export const getTodoLists = async (): Promise<
     result = await supabase
       .from("TodoList")
       .select(
-        "id, title, description, PriorityLevel(level, description, color), Frequencies(frequency), TodoListStatus(id, status)"
+        "id, title, description, PriorityLevel(level, description, color), Frequencies(id, frequency), TodoListStatus(id, status)"
       )
       .eq("userId", `${auth.user.id}`);
     // console.log(auth)

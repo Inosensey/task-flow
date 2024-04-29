@@ -33,9 +33,11 @@ import { useFormSerialize } from "@/utils/formUtils";
 import FormValidation from "@/utils/validation";
 
 // Types
+import { todoListDetails } from "@/Types/todoListTypes";
 interface props {
   setShowTodoListForm: React.Dispatch<React.SetStateAction<boolean>>;
-  action: string
+  action: string;
+  data?: todoListDetails;
 }
 
 type validation = {
@@ -44,15 +46,17 @@ type validation = {
   validationMessage: string;
 };
 
-const todoListInputInitials: TableInsert<"TodoList"> = {
-  title: "",
-  description: "",
-  priorityLevel: 0,
-  userId: "",
-  frequency: 0,
-};
+const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
+  // TodoList Initialize
+  const todoListInputInitials: TableInsert<"TodoList"> = {
+    title: action !== "add" && data !== undefined ? data.title : "",
+    description: action !== "add" && data !== undefined ? data.description : "",
+    priorityLevel:
+      action !== "add" && data !== undefined ? data.PriorityLevel.level! : 0,
+    userId: "",
+    frequency: action !== "add" && data !== undefined ? data.Frequencies.id : 0,
+  };
 
-const TodoListForm = ({ setShowTodoListForm, action }: props) => {
   // Initial use query
   const queryClient = useQueryClient();
 
@@ -65,23 +69,28 @@ const TodoListForm = ({ setShowTodoListForm, action }: props) => {
   const [todoListInput, setTodoListInput] = useState<TableInsert<"TodoList">>(
     todoListInputInitials
   );
+  console.log(data);
   const [togglePrioritySelect, setTogglePrioritySelect] =
     useState<boolean>(false);
-  const [selectedPriority, setSelectedPriority] = useState<string>("");
+  const [selectedPriority, setSelectedPriority] = useState<string>(
+    action !== "add" && data !== undefined
+      ? data.PriorityLevel.description
+      : "Priority Levels"
+  );
   const [toggleFrequentSelect, setToggleFrequentSelect] =
     useState<boolean>(false);
-  const [selectedFrequent, setSelectedFrequent] = useState<string>("");
+  const [selectedFrequent, setSelectedFrequent] = useState<string>(
+    action !== "add" && data !== undefined
+      ? data.Frequencies.frequency
+      : "Frequencies"
+  );
 
   // Use Query
-  const {
-    data: priorityLevels,
-  } = useQuery({
+  const { data: priorityLevels } = useQuery({
     queryKey: ["priorityLevel"],
     queryFn: () => getPriorityLevel(),
   });
-  const {
-    data: frequencies,
-  } = useQuery({
+  const { data: frequencies } = useQuery({
     queryKey: ["frequencies"],
     queryFn: () => getFrequencies(),
   });
