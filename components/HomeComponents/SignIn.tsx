@@ -114,7 +114,7 @@ const SignIn = ({ setCurrentForm }: props) => {
         message={loginProcessInfo.message}
       />
 
-      <section className="bg-white rounded-2xl text-black p-3 relative phone:h-[390px] phone:w-11/12">
+      <section className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:h-[390px] phone:w-11/12">
         <div className="flex items-center gap-2">
           <h1
             className={`${poppins.className} text-LightPrimary font-bold text-2xl`}
@@ -129,21 +129,21 @@ const SignIn = ({ setCurrentForm }: props) => {
           onSubmit={useHandleFormSubmit}
         >
           <div className="flex flex-col">
-            <label>Email</label>
+            <label className="phone:text-sm">Email</label>
             <input
               type="text"
               name="email"
               placeholder="Enter your email"
-              className="bg-Secondary text-white px-2 py-3 rounded-md"
+              className="bg-Secondary text-white px-2 py-3 rounded-md phone:text-sm"
             />
           </div>
           <div className="flex flex-col">
-            <label>Password</label>
+            <label className="phone:text-sm">Password</label>
             <input
               type="password"
               name="password"
               placeholder="Enter your password"
-              className="bg-Secondary text-white px-2 py-3 rounded-md"
+              className="bg-Secondary text-white px-2 py-3 rounded-md phone:text-sm"
             />
           </div>
           {loginError.isError && <p className="text-Error bg-SmoothError px-2 py-1 text-sm font-semibold">{loginError.errorMessage}</p>}
@@ -162,7 +162,7 @@ const SignIn = ({ setCurrentForm }: props) => {
           </div>
         </form>
         <div className="text-center absolute bottom-1 left-[50%] -translate-x-[50%] w-52">
-          <p>
+          <p className="phone:text-sm w-max">
             Don&apos;t have an account yet?{" "}
             <span
               onClick={() => setCurrentForm("Sign Up")}

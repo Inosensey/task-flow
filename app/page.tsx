@@ -32,7 +32,7 @@ export default function Home() {
   const [currentForm, setCurrentForm] = useState<string>("Sign In")
 
   return (
-    <main className="bg-Primary flex h-screen items-center justify-center">
+    <main className="bg-Primary flex laptop:h-screen items-center justify-center">
       {currentForm === "Sign In" && <SignIn setCurrentForm={setCurrentForm} />}
       {currentForm === "Sign Up" && <SignUp setCurrentForm={setCurrentForm} />}
     </main>

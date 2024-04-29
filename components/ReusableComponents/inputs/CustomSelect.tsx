@@ -40,8 +40,8 @@ const CustomSelect = ({
         {CheckSelectType(dynamic, fetching, selected, placeHolder, showChoices)}
       </div>
       <div
-        style={{ maxHeight: showChoices ? "224px" : "0px" }}
-        className="phone:text-sm transition-all rounded-md absolute top-10 bg-Secondary overflow-auto z-[100] w-full"
+        style={{ maxHeight: showChoices ? "224px" : "0px", border: showChoices ? "1px solid #393E46" : "" }}
+        className="phone:text-sm  transition-all rounded-md absolute top-10 bg-Secondary overflow-auto z-[100] w-full"
       >
         {children}
       </div>

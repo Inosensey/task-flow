@@ -168,7 +168,7 @@ const LocationInput = ({ scheduleId }: params) => {
                 }}
               >
                 <MaterialSymbolsLocationCityRounded color="#00ADB5" />
-                <p className="text-base">{info.city},</p>
+                <p className="text-sm">{info.city},</p>
                 <p className="text-sm text-[#ccc]">
                   {info.postcode} {info.state} {info.country}
                 </p>

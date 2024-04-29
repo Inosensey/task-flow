@@ -230,7 +230,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
         initial="hidden"
         animate="show"
         exit="hidden"
-        className="bg-Primary p-3 phone:w-11/12 rounded-md"
+        className="bg-Primary p-3 phone:w-11/12 rounded-md phone:mt-2 phone:h-max"
         onSubmit={useHandleFormSubmit}
       >
         <div className="flex justify-between items-center">
@@ -267,7 +267,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
             onChange={handleTextareaChange}
             onBlur={handleTextareaChange}
           />
-          <div className={`flex gap-2`}>
+          <div className={`flex gap-1`}>
             <TimeInput
               label="Date"
               name="date"

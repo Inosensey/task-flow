@@ -75,16 +75,12 @@ const TodoListForm = ({ setShowTodoListForm, action }: props) => {
   // Use Query
   const {
     data: priorityLevels,
-    error: priorityLevelError,
-    isFetched: priorityLevelsIsFetch,
   } = useQuery({
     queryKey: ["priorityLevel"],
     queryFn: () => getPriorityLevel(),
   });
   const {
     data: frequencies,
-    error: frequenciesError,
-    isFetched: frequenciesIsFetched,
   } = useQuery({
     queryKey: ["frequencies"],
     queryFn: () => getFrequencies(),
@@ -205,7 +201,7 @@ const TodoListForm = ({ setShowTodoListForm, action }: props) => {
         animate="show"
         exit="hidden"
         onSubmit={useHandleFormSubmit}
-        className="bg-Primary p-3 phone:w-11/12 rounded-md"
+        className="bg-Primary p-3 phone:w-11/12 rounded-md phone:mt-2 phone:h-max"
       >
         <div className="flex justify-between items-center">
           <p className="py-0">TodoList Form</p>
