@@ -2,16 +2,21 @@
 
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+// Actions
+import { updateTodoListStatus } from "@/actions/todolistActions";
+
+// store
+import { useNotificationStore } from "@/store/useNotificationStore";
+import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 
 // Components
 import TodoListForm from "./TodoListForm";
 
 // Icons
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCircleCheck,
-  faCircleXmark,
-} from "@fortawesome/free-regular-svg-icons";
+import { faCircleCheck, faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 // Types
 import { todoListDetails } from "@/Types/todoListTypes";
@@ -21,6 +26,10 @@ interface props {
   todoLists: todoListDetails[];
   selectedStatus: string;
 }
+type todoListStatusMutationType = {
+  todoListId: number;
+  statusId: number;
+};
 
 const PriorityBasedTodoList = ({
   priority,
@@ -28,10 +37,47 @@ const PriorityBasedTodoList = ({
   todoLists,
   selectedStatus,
 }: props) => {
+    // Initial use query
+    const queryClient = useQueryClient();
+
+    // Zustand Store
+    const { setMessage, setShowSlideNotification } = useNotificationStore();
+
   // States
   const [formAction, setFormAction] = useState<string>("Add");
   const [showTodoListForm, setShowTodoListForm] = useState<boolean>(false);
-  const [selectedTodoList, setSelectedTodoList] = useState<todoListDetails | undefined>(undefined)
+  const [selectedTodoList, setSelectedTodoList] = useState<
+    todoListDetails | undefined
+  >(undefined);
+
+  // Mutation
+  const { mutate, isIdle, isPending, isSuccess } = useMutation({
+    mutationFn: ({
+      todoListId = 0,
+      statusId = 0,
+    }: todoListStatusMutationType) => {
+      return updateTodoListStatus(todoListId, statusId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ["todolists"]})
+    },
+    onError: (data) => {
+      console.log(data);
+    },
+  });
+
+  const onTodoListAddSuccess = (todoListTile: string) => {
+    const notifMessage = `TodoList: ${todoListTile}, Completed`;
+    setMessage(notifMessage);
+    setShowSlideNotification();
+    hideNotificationTimer();
+    setShowTodoListForm(false);
+  };
+
+  const hideNotificationTimer = () => {
+    const interval = setTimeout(setShowSlideNotification, 5000);
+    return () => clearTimeout(interval);
+  };
 
   if (todoLists.length === 0) return;
   return (
@@ -49,7 +95,7 @@ const PriorityBasedTodoList = ({
             >
               <div
                 onClick={() => {
-                  setSelectedTodoList(details)
+                  setSelectedTodoList(details);
                   setFormAction("Edit");
                   setShowTodoListForm((prev) => !prev);
                 }}
@@ -75,16 +121,26 @@ const PriorityBasedTodoList = ({
                 <p className="phone:text-xs">{details.description}</p>
               </div>
               <div className="flex gap-3">
-                <span className="cursor-pointer w-4">
+                {details.TodoListStatus.id !== 2 && <span
+                  onClick={() => {
+                    const mutateParams: todoListStatusMutationType = {
+                      todoListId: details.id,
+                      statusId: 2,
+                    };
+                    mutate(mutateParams);
+                  }}
+                  className="cursor-pointer w-4"
+                >
                   <FontAwesomeIcon
-                    className="text-xl text-Success"
+                    className="phone:text-xl text-Success"
                     icon={faCircleCheck}
                   />
-                </span>
+                </span>}
+                
                 <span className="cursor-pointer w-4">
                   <FontAwesomeIcon
-                    className="text-xl text-Error"
-                    icon={faCircleXmark}
+                    className="phone:text-xl text-Error"
+                    icon={faTrashCan}
                   />
                 </span>
               </div>

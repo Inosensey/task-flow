@@ -130,7 +130,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
     const formValues: TableInsert<"TodoList"> & { [key: string]: string } =
       useFormSerialize(event);
     console.log(formValues);
-    if (scheduleFormValidate(fieldsToCheck, formValues)) {
+    if (todoListFormValidation(fieldsToCheck, formValues)) {
       console.log("valid");
       mutate(formValues);
     } else {
@@ -139,7 +139,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
     }
   };
 
-  const scheduleFormValidate = (
+  const todoListFormValidation = (
     fieldsToCheck: Array<string>,
     formValues: TableInsert<"TodoList"> & { [key: string]: string }
   ) => {

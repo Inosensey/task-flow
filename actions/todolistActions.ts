@@ -48,10 +48,10 @@ const insertTodoList = async (
         title: todoListInfo.title,
         description: todoListInfo.description,
         priorityLevel: parseInt(todoListInfo.priorityLevel!.toString()),
-        frequency: todoListInfo.frequency
+        frequency: todoListInfo.frequency,
       })
       .select();
-    
+
     if (result.error)
       return returnError(
         "There is an error inserting the Todo-List",
@@ -84,6 +84,32 @@ const updateTodoList = async (
         "There is an error updating the Todo-List",
         result.error
       );
+    return returnSuccess("Todo-List Successfully Updated", result.data);
+  } catch (error) {
+    return returnError("There is an error updating the Todo-List", error);
+  }
+};
+
+export const updateTodoListStatus = async (
+  todoListId: number,
+  statusId: number
+): Promise<ReturnInterface<TableRow<"TodoList">> | ReturnInterface<any>> => {
+  try {
+    const supabase = createClient();
+    let result = await supabase
+      .from("TodoList")
+      .update<TableInsert<"TodoList">>({
+        status: statusId,
+      })
+      .eq("id", todoListId)
+      .select();
+
+    if (result.error) {
+      return returnError(
+        "There is an error updating the Todo-List",
+        result.error
+      );
+    }
     return returnSuccess("Todo-List Successfully Updated", result.data);
   } catch (error) {
     return returnError("There is an error updating the Todo-List", error);

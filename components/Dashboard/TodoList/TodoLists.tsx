@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -51,17 +51,10 @@ const TodoLists = ({ TodoLists }: props) => {
     queryFn: getTodoLists,
     initialData: TodoLists,
   });
-  const unSortedTodoList = todoListsData.Response.unsortedTodoList as todoListDetails[];
-  const sortedTodoList = todoListsData.Response.sortedTodoList as sortedTodoListInterface;
-
-  useQuery({
-    queryKey: ["priorityLevel"],
-    queryFn: () => getPriorityLevel(), 
-  });
-  useQuery({
-    queryKey: ["frequencies"],
-    queryFn: () => getFrequencies(),
-  });
+  const unSortedTodoList = todoListsData.Response
+    .unsortedTodoList as todoListDetails[];
+  const sortedTodoList = todoListsData.Response
+    .sortedTodoList as sortedTodoListInterface;
 
   //States
   const [formAction, setFormAction] = useState<string>("Add");
