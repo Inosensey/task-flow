@@ -90,7 +90,7 @@ const updateTodoList = async (
   }
 };
 
-export const updateTodoListStatus = async (
+export const updateTodoStatus = async (
   todoListId: number,
   statusId: number
 ): Promise<ReturnInterface<TableRow<"TodoList">> | ReturnInterface<any>> => {
@@ -102,7 +102,7 @@ export const updateTodoListStatus = async (
         status: statusId,
       })
       .eq("id", todoListId)
-      .select();
+      .select("title");
 
     if (result.error) {
       return returnError(

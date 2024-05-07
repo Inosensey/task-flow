@@ -56,6 +56,8 @@ const TodoLists = ({ TodoLists }: props) => {
   const sortedTodoList = todoListsData.Response
     .sortedTodoList as sortedTodoListInterface;
 
+  console.log(sortedTodoList);
+
   //States
   const [formAction, setFormAction] = useState<string>("Add");
   const [showTodoListForm, setShowTodoListForm] = useState<boolean>(false);
