@@ -40,7 +40,8 @@ interface checkboxInputParam {
   label: string;
   selected?: string;
   setSelected?: React.Dispatch<React.SetStateAction<string>>;
-  onChange?: (val: any) => void;
+  customFunc?: (val: any) => void;
+  onChange?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 const Input = <T extends string | number>({
@@ -157,6 +158,7 @@ export const CheckBoxInput = ({
   setSelected,
   selected,
   onChange,
+  customFunc
 }: checkboxInputParam) => {
   return (
     <div className="flex items-center gap-2">
@@ -164,7 +166,7 @@ export const CheckBoxInput = ({
         style={{ background: selected === label ? "#00ADB5" : "none" }}
         onClick={() => {
           setSelected!(label)
-          onChange!(label)
+          customFunc!(label)
         }}
         className="cursor-pointer outline outline-2 outline-LightPrimaryDisabled phone:w-5 phone:h-5"
       ></div>
@@ -174,6 +176,7 @@ export const CheckBoxInput = ({
         type="checkbox"
         checked={selected === label ? true : false}
         name={name}
+        onChange={onChange}
       />
     </div>
   );

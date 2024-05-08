@@ -67,10 +67,17 @@ const TodoLists = ({ TodoLists }: props) => {
     "Active",
   ]);
 
-  const handleCheckboxOnchange = (value: string) => {
+  
+  const toggleFilter = (value: string) => {
     console.log(sortedTodoList);
     setSelectedTodoListStatus(value);
   };
+
+  const handleCheckBoxOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+
+    setSelectedTodoListStatus(value);
+  }
 
   return (
     <>
@@ -99,7 +106,8 @@ const TodoLists = ({ TodoLists }: props) => {
               selected={selectedTodoListStatus}
               setSelected={setSelectedTodoListStatus}
               name="todo-list-status"
-              onChange={handleCheckboxOnchange}
+              customFunc={toggleFilter}
+              onChange={handleCheckBoxOnChange}
             />
           ))}
         </div>
