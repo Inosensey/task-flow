@@ -56,8 +56,6 @@ const TodoLists = ({ TodoLists }: props) => {
   const sortedTodoList = todoListsData.Response
     .sortedTodoList as sortedTodoListInterface;
 
-  console.log(sortedTodoList);
-
   //States
   const [formAction, setFormAction] = useState<string>("Add");
   const [showTodoListForm, setShowTodoListForm] = useState<boolean>(false);
@@ -69,10 +67,8 @@ const TodoLists = ({ TodoLists }: props) => {
     "Active",
   ]);
 
-  const handleCheckboxOnchange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = event.target;
+  const handleCheckboxOnchange = (value: string) => {
+    console.log(sortedTodoList);
     setSelectedTodoListStatus(value);
   };
 

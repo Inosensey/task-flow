@@ -20,18 +20,22 @@ const PriorityBasedTodoList = ({
   todoLists,
   selectedStatus,
 }: props) => {
-
   if (todoLists.length === 0) return;
   return (
     <>
       <div className="phone:w-11/12 mx-auto">
-        <p style={{ background: `${color}` }} className="px-2 w-max">
+        <p
+          className="bg-LightPrimaryDisabled px-2 w-max phone:text-md"
+        >
           {priority}
         </p>
         <div>
-          {todoLists.map((details: todoListDetails) => (
-            <Todo key={details.id} details={details} />
-          ))}
+          {todoLists.map((details: todoListDetails) => {
+            if (selectedStatus === "All")
+              return <Todo key={details.id} details={details} />;
+            if (selectedStatus === details.TodoListStatus.status)
+              return <Todo key={details.id} details={details} />;
+          })}
         </div>
       </div>
     </>

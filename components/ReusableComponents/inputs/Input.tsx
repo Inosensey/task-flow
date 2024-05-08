@@ -164,6 +164,7 @@ export const CheckBoxInput = ({
         style={{ background: selected === label ? "#00ADB5" : "none" }}
         onClick={() => {
           setSelected!(label)
+          onChange!(label)
         }}
         className="cursor-pointer outline outline-2 outline-LightPrimaryDisabled phone:w-5 phone:h-5"
       ></div>
@@ -173,7 +174,6 @@ export const CheckBoxInput = ({
         type="checkbox"
         checked={selected === label ? true : false}
         name={name}
-        onChange={onChange}
       />
     </div>
   );

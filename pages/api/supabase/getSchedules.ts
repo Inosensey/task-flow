@@ -18,7 +18,7 @@ export default async function handler(
     // Respond with JSON data
     return res
       .status(200)
-      .json(schedules);
+      .json({schedules});
   } catch (error) {
     return res.status(500).json({ message: error });
   }

@@ -74,8 +74,8 @@ export default function Todo({ details }: props) {
   return (
     <>
       <div
-        style={{ borderLeft: `2px solid ${details.PriorityLevel.color}` }}
-        className={`flex justify-between items-center p-2`}
+        // style={{ borderLeft: `2px solid ${details.PriorityLevel.color}` }}
+        className={`border-l-2 border-l-LightPrimaryDisabled flex justify-between items-center p-2`}
         key={details.id}
       >
         <div

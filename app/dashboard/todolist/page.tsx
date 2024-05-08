@@ -14,6 +14,7 @@ import { getTodoLists } from "@/lib/todolistMethods";
 import { TableRow } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
 import { todoListDetails } from "@/Types/todoListTypes";
+import next from "next";
 
 type sortedTodoListType = {
   todoList: todoListDetails[];
@@ -33,8 +34,6 @@ interface todoListResponseInterface {
 const Page = async () => {
   const todoLists: ReturnInterface<todoListResponseInterface> | ReturnInterface<any> =
     await getTodoLists();
-    
-
 
   return (
     <div className="w-full">
