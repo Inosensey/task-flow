@@ -62,7 +62,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
 
   // Zustand Store
   const { setMessage, setShowSlideNotification } = useNotificationStore();
-  const { setValidation, validations, resetValidation, formAction } =
+  const { setValidation, validations, resetValidation } =
     useScheduleFormStore();
 
   // States
@@ -96,9 +96,14 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   });
 
   // Mutation
+  console.log(action);
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
     mutationFn: (todoListInfo: TableInsert<"TodoList">) => {
-      return mutateTodoList(todoListInfo, "add");
+      if (action === "Add") {
+        return mutateTodoList(todoListInfo, "add");
+      } else {
+        return mutateTodoList(todoListInfo, "update", data!.id);
+      }
     },
     onSuccess: (data) => {
       console.log(data);
@@ -111,7 +116,10 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   });
 
   const onTodoListAddSuccess = () => {
-    const notifMessage = "TodoList Successfully Added";
+    const notifMessage =
+      action === "Add"
+        ? "TodoList Successfully Added"
+        : "TodoList Successfully Updated";
     setMessage(notifMessage);
     setShowSlideNotification();
     hideNotificationTimer();
