@@ -8,7 +8,7 @@ import TodoLists from "@/components/Dashboard/TodoList/TodoLists";
 import IonTodayOutline from "@/Icones/IonTodayOutline";
 
 // Libs
-import { getTodoLists } from "@/lib/todolistMethods";
+import { getTodoLists, resetTodoLists } from "@/lib/todolistMethods";
 
 // types
 import { TableRow } from "@/Types/database.types";
@@ -34,6 +34,7 @@ interface todoListResponseInterface {
 const Page = async () => {
   const todoLists: ReturnInterface<todoListResponseInterface> | ReturnInterface<any> =
     await getTodoLists();
+  await resetTodoLists();
 
   return (
     <div className="w-full">

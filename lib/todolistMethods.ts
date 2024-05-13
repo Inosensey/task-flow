@@ -11,6 +11,7 @@ import { getCookieAuth } from "@/utils/cookiesUtils";
 
 // types
 import { todoListDetails } from "@/Types/todoListTypes";
+import { useDays } from "@/utils/useDate";
 
 type sortedTodoListType = {
   todoList: todoListDetails[];
@@ -78,6 +79,19 @@ const handleTodoListSort = (todoLists: todoListDetails[]) => {
   });
   return newSortedTodoList;
 };
+
+export const resetTodoLists = async () => {
+  const response = await getTodoLists();
+  const todoLists: todoListDetails[] = response.Response.unsortedTodoList
+  const currentDate = new Date();
+  const currentDay = currentDate.getDay();
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  const day = days[currentDay];
+
+  todoLists.map((details:todoListDetails) => (
+    console.log(details.Frequencies.frequency)
+  ))
+}
 
 export const getTodoLists = async (): Promise<
   ReturnInterface<todoListResponseInterface> | ReturnInterface<any>
