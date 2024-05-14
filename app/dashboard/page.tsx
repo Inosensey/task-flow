@@ -23,21 +23,43 @@ import {
   getCurrentDaySchedules,
   getCurrentWeekSchedules,
 } from "@/utils/getCurrentDaySchedules";
+import { getCurrentDay } from "@/utils/useDate";
 
 // Types
 import { TableRow } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
-import { todoListResponseInterface } from "@/Types/todoListTypes";
+import {
+  todoListDetails,
+  todoListResponseInterface,
+} from "@/Types/todoListTypes";
 interface schedulesInterface {
   schedules: TableRow<"Schedules">[] | null;
 }
 
 const Page = async () => {
+  const currentDay = getCurrentDay();
+  // Schedules
   let schedulesData: schedulesInterface = {
     schedules: await getSchedules(),
   };
-  const todoLists: ReturnInterface<todoListResponseInterface> | ReturnInterface<any> =
-    await getTodoLists();
+
+  // Todo Lists
+  const todoLists:
+    | ReturnInterface<todoListResponseInterface>
+    | ReturnInterface<any> = await getTodoLists();
+  const unsortedTodoList: todoListDetails[] =
+    todoLists.Response.unsortedTodoList;
+  const formattedTodoList = unsortedTodoList.filter(
+    (details: todoListDetails) =>
+      details.Frequencies.frequency === currentDay ||
+      details.Frequencies.frequency === "Everyday"
+  );
+  const completedTodos: todoListDetails[] | [] = formattedTodoList.filter(
+    (details: todoListDetails) => details.TodoListStatus.status === "Completed"
+  );
+  const activeTodos: todoListDetails[] | [] = formattedTodoList.filter(
+    (details: todoListDetails) => details.TodoListStatus.status === "Active"
+  );
 
   const currentDaySchedules = getCurrentDaySchedules(
     schedulesData.schedules,
@@ -92,7 +114,7 @@ const Page = async () => {
             <div className="flex gap-2">
               <OverviewChildren>
                 <small className="text-Disabled">Schedules</small>
-                <div className="flex flex-col gap-2  text-sm">
+                <div className="flex flex-col gap-2 text-sm">
                   {currentWeekSchedules.length !== 0 ? (
                     currentWeekSchedules.map(
                       (schedules: TableRow<"Schedules">) => (
@@ -107,9 +129,7 @@ const Page = async () => {
                       )
                     )
                   ) : (
-                    <p className="phone:text-xs">
-                      No schedules this week.
-                    </p>
+                    <p className="phone:text-xs">No schedules this week.</p>
                   )}
                 </div>
               </OverviewChildren>
@@ -119,13 +139,40 @@ const Page = async () => {
             <div className="flex gap-2">
               <OverviewChildren>
                 <small className="text-Disabled">
-                  Completed To Do List last week
+                  Completed To Do List this day
                 </small>
-                <p>5</p>
+                {completedTodos.length !== 0 ? (
+                  completedTodos.map((details: todoListDetails) => (
+                    <div key={details.id} className="phone:text-xs">
+                      <p>{details.title}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="phone:text-xs">
+                    You haven&apos;t done any To Dos.
+                  </p>
+                )}
               </OverviewChildren>
               <OverviewChildren>
                 <small className="text-Disabled">Remaining To Do List</small>
-                <p>2</p>
+                <div className="text-sm flex flex-col gap-1">
+                  {activeTodos.length !== 0 ? (
+                    activeTodos.map((details: todoListDetails) => (
+                      <div key={details.id} className="text-sm flex gap-2">
+                        <p>{details.title}</p>
+                        <Link href={`/dashboard/todolist`}>
+                          <button className="text-sm text-LightPrimary w-max underline cursor-pointer">
+                            View
+                          </button>
+                        </Link>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="phone:text-xs">
+                      You have completed all of your To Dos.
+                    </p>
+                  )}
+                </div>
               </OverviewChildren>
             </div>
           </OverviewSection>
