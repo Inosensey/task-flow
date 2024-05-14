@@ -21,22 +21,8 @@ import { getCurrentDate } from "@/utils/useDate";
 // types
 import TodoListForm from "./TodoListForm";
 import { ReturnInterface } from "@/Types/generalTypes";
-import { todoListDetails } from "@/Types/todoListTypes";
-
-interface todoListResponseInterface {
-  unsortedTodoList: todoListDetails[];
-  sortedTodoList: sortedTodoListInterface;
-}
-type sortedTodoListType = {
-  todoList: todoListDetails[];
-  color: string;
-};
-interface sortedTodoListInterface {
-  Urgent: sortedTodoListType;
-  HighPriority: sortedTodoListType;
-  MedPriority: sortedTodoListType;
-  LowPriority: sortedTodoListType;
-}
+import { sortedTodoListInterface, todoListDetails } from "@/Types/todoListTypes";
+import { todoListResponseInterface } from "@/Types/todoListTypes";
 
 interface props {
   TodoLists: ReturnInterface<todoListResponseInterface>;

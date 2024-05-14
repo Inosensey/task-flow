@@ -13,8 +13,10 @@ import MaterialSymbolsCalendarMonthOutlineRounded from "@/Icones/MaterialSymbols
 import IonTodayOutline from "@/Icones/IonTodayOutline";
 import GgNotes from "@/Icones/GgNotes";
 import MaterialSymbolsOverviewOutline from "@/Icones/MaterialSymbolsOverviewOutline";
+
 // libs
 import { getSchedules } from "@/lib/scheduleMethods";
+import { getTodoLists } from "@/lib/todolistMethods";
 
 // Utils
 import {
@@ -24,6 +26,8 @@ import {
 
 // Types
 import { TableRow } from "@/Types/database.types";
+import { ReturnInterface } from "@/Types/generalTypes";
+import { todoListResponseInterface } from "@/Types/todoListTypes";
 interface schedulesInterface {
   schedules: TableRow<"Schedules">[] | null;
 }
@@ -32,8 +36,9 @@ const Page = async () => {
   let schedulesData: schedulesInterface = {
     schedules: await getSchedules(),
   };
+  const todoLists: ReturnInterface<todoListResponseInterface> | ReturnInterface<any> =
+    await getTodoLists();
 
-  const date = new Date();
   const currentDaySchedules = getCurrentDaySchedules(
     schedulesData.schedules,
     ""
