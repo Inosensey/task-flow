@@ -1,17 +1,18 @@
 "use server";
 
-// Types
-import { Table, TableRow } from "@/Types/database.types";
-import { ReturnInterface } from "@/Types/generalTypes";
+// Actions
+import { updateTodoStatus, addDailyReset } from "@/actions/todolistActions";
 
 // Utils
 import { returnError, returnSuccess } from "@/utils/formUtils";
 import { createClient } from "@/utils/supabaseSSR";
 import { getCookieAuth } from "@/utils/cookiesUtils";
+import { getCurrentDate } from "@/utils/useDate";
 
 // types
 import { todoListDetails } from "@/Types/todoListTypes";
-import { useDays } from "@/utils/useDate";
+import { Table, TableRow } from "@/Types/database.types";
+import { ReturnInterface } from "@/Types/generalTypes";
 
 type sortedTodoListType = {
   todoList: todoListDetails[];
@@ -81,16 +82,48 @@ const handleTodoListSort = (todoLists: todoListDetails[]) => {
 };
 
 export const resetTodoLists = async () => {
-  const response = await getTodoLists();
-  const todoLists: todoListDetails[] = response.Response.unsortedTodoList
+  const todoLists = await getTodoLists();
+  const formattedDate = getCurrentDate();
+  const dailyResets = await getResetDates(formattedDate);
+  const unsortedTodoLists: todoListDetails[] = todoLists.Response.unsortedTodoList
   const currentDate = new Date();
   const currentDay = currentDate.getDay();
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
   const day = days[currentDay];
 
-  todoLists.map((details:todoListDetails) => (
-    console.log(details.Frequencies.frequency)
-  ))
+  if(dailyResets.Response.length === 0) {
+    await addDailyReset();
+    for (let index = 0; index < unsortedTodoLists.length; index++) {
+      const todoDetails:todoListDetails = unsortedTodoLists[index];
+      const todoFrequency  = todoDetails.Frequencies.frequency;
+      if(todoFrequency === day) {
+        const res = await updateTodoStatus(todoDetails.id, 1)
+        console.log(res);
+      }
+      if(todoFrequency === "Everyday") {
+        const res = await updateTodoStatus(todoDetails.id, 1)
+        console.log(res);
+      } 
+    }
+  }
+}
+
+export const getResetDates = async (currentDate: string): Promise<
+ReturnInterface<TableRow<"DailyTodoResets">> | ReturnInterface<any>
+> => { 
+  let result;
+  const supabase = createClient();
+  try {
+    result = await supabase.from("DailyTodoResets").select("*").eq("resetDate", currentDate);
+    if(result.error) {
+      return returnError("There is an error getting the Todo-Lists", result.error);
+    }
+    const resetDates: TableRow<"DailyTodoResets">[] | null = result.data;
+    return returnSuccess("TOdos Daily Reset Dates", resetDates);
+
+  } catch (error) {
+    return returnError("There is an error getting the Reset Dates", error);
+  }
 }
 
 export const getTodoLists = async (): Promise<

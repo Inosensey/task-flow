@@ -35,6 +35,21 @@ export const mutateTodoList = async (
   }
 };
 
+export const addDailyReset = async ():Promise<ReturnInterface<TableRow<"DailyTodoResets">> | ReturnInterface<any>> => {
+  try {
+    const supabase = createClient();
+    const result = await supabase.from("DailyTodoResets").insert<TableInsert<"DailyTodoResets">>({})
+    
+    if(result.error) {
+      return returnError("There is an error inserting the Daily Reset", result.error);
+    }
+    
+    return returnSuccess("Daily Reset Successfully Added", result.data);
+  } catch (error) {
+    return returnError("There is an error inserting the Daily Reset", error);
+  }
+}
+
 const insertTodoList = async (
   todoListInfo: TableInsert<"TodoList">
 ): Promise<ReturnInterface<TableRow<"TodoList">> | ReturnInterface<any>> => {
