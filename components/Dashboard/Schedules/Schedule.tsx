@@ -8,7 +8,7 @@ import { faArrowRight, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Utils
-import { formatHourTo12, useDays, useHours } from "@/utils/useDate";
+import { formatHourTo12, getDays, useHours } from "@/utils/useDate";
 import DetailedSchedule from "./DetailedSchedule";
 
 // Components
@@ -34,7 +34,7 @@ type schedule = {
 
 const Schedule = ({ scheduleData }: props) => {
   const date = new Date();
-  const days = useDays();
+  const days = getDays();
 
   // Store
   const { setFormAction } = useScheduleFormStore();

@@ -8,7 +8,7 @@ import styles from "@/css/DashboardComponent/Events.module.css";
 import MaterialSymbolsArrowBackIosNewRounded from "@/Icones/MaterialSymbolsArrowBackIosNewRounded";
 
 // Utils
-import getDate, { useDays, useMonths, getDateMonths, getCurrentDate } from "@/utils/useDate";
+import getDate, { getDays, useMonths, getDateMonths, getCurrentDate } from "@/utils/useDate";
 
 // Types
 interface dateType {
@@ -24,7 +24,7 @@ import {useDateStore} from "@/store/useDateStore";
 const CalendarNav = () => {
   const date = new Date();
   const months = useMonths();
-  const getDays = useDays();
+  const daysList = getDays();
   const datesOfAMonth = getDateMonths({
     currentDate: new Date(),
     selectedMonth: date.getMonth(),
@@ -32,7 +32,7 @@ const CalendarNav = () => {
   const {setDate} = useDateStore();
 
   // States
-  const [days, setDays] = useState<string[]>(getDays);
+  const [days, setDays] = useState<string[]>(daysList);
   const [datesOfMonth, setDatesOfMonth] = useState<string[]>(datesOfAMonth);
   const [currentMonth, setCurrentMonth] = useState<number>(date.getMonth());
   const [currentYear, setCurrentYear] = useState<number>(date.getFullYear());

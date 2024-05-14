@@ -61,7 +61,16 @@ export const getCurrentDate = (selectedDate: string | Date = "") => {
   return localDate;
 }
 
-export const useDays = () => {
+export const getCurrentDay = () => {
+  const currentDate = new Date();
+  const currentDay = currentDate.getDay();
+  const days = getDays()
+  const day = days[currentDay];
+
+  return day;
+}
+
+export const getDays = () => {
   let days = [
     "Sunday",
     "Monday",
@@ -117,7 +126,7 @@ export const getDateMonths = ({ currentDate, selectedMonth }: dateMonthsInterfac
 };
 const useDate = ({ date }: props) => {
   const dates: dateType[] = [];
-  let days = useDays();
+  let days = getDays();
   let months = useMonths();
   let selectedDate;
   if (date === undefined || date === null) {

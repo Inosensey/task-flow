@@ -14,7 +14,9 @@ import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 
 // libs
 import { getTodoLists } from "@/lib/todolistMethods";
-import { getFrequencies, getPriorityLevel } from "@/lib/todolistMethods";
+
+// Utils
+import { getCurrentDate } from "@/utils/useDate";
 
 // types
 import TodoListForm from "./TodoListForm";
@@ -41,6 +43,8 @@ interface props {
 }
 
 const TodoLists = ({ TodoLists }: props) => {
+  const formattedDate = getCurrentDate();
+
   // Use query
   const {
     data: todoListsData,

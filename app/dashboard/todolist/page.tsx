@@ -14,7 +14,9 @@ import { getTodoLists, resetTodoLists } from "@/lib/todolistMethods";
 import { TableRow } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
 import { todoListDetails } from "@/Types/todoListTypes";
-import next from "next";
+
+// Utils
+import { getCurrentDate } from "@/utils/useDate";
 
 type sortedTodoListType = {
   todoList: todoListDetails[];
