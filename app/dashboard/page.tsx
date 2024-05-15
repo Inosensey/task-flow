@@ -44,8 +44,11 @@ const Page = async () => {
   };
 
   // Todo Lists
-  
-  const [resetTodoListResult, todoLists] = await Promise.all([resetTodoLists(), getTodoLists()])
+
+  const [resetTodoListResult, todoLists] = await Promise.all([
+    resetTodoLists(),
+    getTodoLists(),
+  ]);
   const unsortedTodoList: todoListDetails[] =
     todoLists.Response.unsortedTodoList;
   const formattedTodoList = unsortedTodoList.filter(
@@ -134,12 +137,13 @@ const Page = async () => {
               </OverviewChildren>
             </div>
           </OverviewSection>
-          <OverviewSection OverviewTitle="To Do List" Icon={IonTodayOutline}>
+          <OverviewSection
+            OverviewTitle="Completed To-do List this day"
+            Icon={IonTodayOutline}
+          >
             <div className="flex gap-2">
               <OverviewChildren>
-                <small className="text-Disabled">
-                  Completed To Do List this day
-                </small>
+                <small className="text-Disabled">To-do List</small>
                 {completedTodos.length !== 0 ? (
                   completedTodos.map((details: todoListDetails) => (
                     <div key={details.id} className="phone:text-xs">
@@ -152,8 +156,15 @@ const Page = async () => {
                   </p>
                 )}
               </OverviewChildren>
+            </div>
+          </OverviewSection>
+          <OverviewSection
+            OverviewTitle="Remaining To-do List"
+            Icon={IonTodayOutline}
+          >
+            <div className="flex gap-2">
               <OverviewChildren>
-                <small className="text-Disabled">Remaining To Do List</small>
+                <small className="text-Disabled">To-do List</small>
                 <div className="text-sm flex flex-col gap-1">
                   {activeTodos.length !== 0 ? (
                     activeTodos.map((details: todoListDetails) => (
