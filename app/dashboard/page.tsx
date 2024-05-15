@@ -16,7 +16,7 @@ import MaterialSymbolsOverviewOutline from "@/Icones/MaterialSymbolsOverviewOutl
 
 // libs
 import { getSchedules } from "@/lib/scheduleMethods";
-import { getTodoLists } from "@/lib/todolistMethods";
+import { getTodoLists, resetTodoLists } from "@/lib/todolistMethods";
 
 // Utils
 import {
@@ -44,9 +44,8 @@ const Page = async () => {
   };
 
   // Todo Lists
-  const todoLists:
-    | ReturnInterface<todoListResponseInterface>
-    | ReturnInterface<any> = await getTodoLists();
+  
+  const [resetTodoListResult, todoLists] = await Promise.all([resetTodoLists(), getTodoLists()])
   const unsortedTodoList: todoListDetails[] =
     todoLists.Response.unsortedTodoList;
   const formattedTodoList = unsortedTodoList.filter(
@@ -149,7 +148,7 @@ const Page = async () => {
                   ))
                 ) : (
                   <p className="phone:text-xs">
-                    You haven&apos;t done any To Dos.
+                    You haven&apos;t done any To dos.
                   </p>
                 )}
               </OverviewChildren>
@@ -169,7 +168,7 @@ const Page = async () => {
                     ))
                   ) : (
                     <p className="phone:text-xs">
-                      You have completed all of your To Dos.
+                      You have completed all of your To dos.
                     </p>
                   )}
                 </div>

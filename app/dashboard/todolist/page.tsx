@@ -36,7 +36,6 @@ interface todoListResponseInterface {
 const Page = async () => {
   const todoLists: ReturnInterface<todoListResponseInterface> | ReturnInterface<any> =
     await getTodoLists();
-  await resetTodoLists();
 
   return (
     <div className="w-full">
