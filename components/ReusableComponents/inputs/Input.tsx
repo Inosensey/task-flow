@@ -57,7 +57,7 @@ const Input = <T extends string | number>({
   validationMessage,
 }: inputParams<T>) => {
   return (
-    <div className={`flex flex-col phone:w-11/12`}>
+    <div className={`flex flex-col phone:w-[96%] mdphone:w-11/12`}>
       <label className="phone:text-sm">{label}</label>
       <div className="w-full relative overflow-hidden">
         <input
@@ -104,7 +104,7 @@ export const TimeInput = ({
     <div className="flex flex-col phone:text-sm">
       <label className="phone:text-sm">{label}</label>
       <input
-        className="bg-Secondary p-2 w-max description-time-input"
+        className="bg-Secondary py-2 px-1 w-max description-time-input"
         type={type}
         name={name}
         value={state}
@@ -137,7 +137,7 @@ export const TextareaInput = ({
   onChange,
 }: textareaInputParam) => {
   return (
-    <div className="flex flex-col phone:text-sm phone:w-11/12">
+    <div className="flex flex-col phone:text-sm phone:w-[96%] mdphone:w-11/12">
       <label className="phone:text-sm">{label}</label>
       <textarea
         className="bg-Secondary px-2"

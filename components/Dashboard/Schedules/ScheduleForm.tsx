@@ -68,10 +68,10 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
     queryFn: () => getScheduleDetails(parseInt(scheduleId!)),
     enabled: formAction === "edit",
   });
-  
 
   // Initial Schedule Info
-  const detailsData = scheduleData !== undefined ? scheduleData.Response[0] : ""
+  const detailsData =
+    scheduleData !== undefined ? scheduleData.Response[0] : "";
   const initialGeneralInfo: GeneralInfo = {
     date:
       formAction !== "add" && scheduleData !== undefined
@@ -112,7 +112,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
       return mutateSchedule(scheduleInfo, formAction);
     },
     onSuccess: (data) => {
-      console.log(data)
+      console.log(data);
       onScheduleAddSuccess();
       if (formAction === "edit" && scheduleData !== undefined) {
         // queryClient.setQueryData([`Schedule#${detailsData.id}`], () =>
@@ -202,7 +202,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
       [name]: value,
     }));
   };
-  
+
   // Variants
   const popUpVariants = {
     hidden: {
@@ -247,7 +247,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
             X
           </p>
         </div>
-        <div className="mt-4 flex flex-col gap-4">
+        <div className="mt-4 flex flex-col gap-4 ">
           <Input
             state={generalInfo.title}
             type="text"
@@ -279,30 +279,30 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
               valid={validations?.date?.valid}
               validationMessage={validations?.date?.validationMessage}
             />
-            <TimeInput
-              label="Time Start"
-              name="timeStart"
-              state={generalInfo.timeStart}
-              type="time"
-              onChange={handleInputChange}
-              onBlur={handleInputChange}
-              valid={validations?.timeStart?.valid}
-              validationMessage={validations?.timeStart?.validationMessage}
-            />
-            <TimeInput
-              label="Time End"
-              name="timeEnd"
-              state={generalInfo.timeEnd}
-              type="time"
-              onChange={handleInputChange}
-              onBlur={handleInputChange}
-              valid={validations?.timeEnd?.valid}
-              validationMessage={validations?.timeEnd?.validationMessage}
-            />
+            <div className="flex gap-1">
+              <TimeInput
+                label="Time Start"
+                name="timeStart"
+                state={generalInfo.timeStart}
+                type="time"
+                onChange={handleInputChange}
+                onBlur={handleInputChange}
+                valid={validations?.timeStart?.valid}
+                validationMessage={validations?.timeStart?.validationMessage}
+              />
+              <TimeInput
+                label="Time End"
+                name="timeEnd"
+                state={generalInfo.timeEnd}
+                type="time"
+                onChange={handleInputChange}
+                onBlur={handleInputChange}
+                valid={validations?.timeEnd?.valid}
+                validationMessage={validations?.timeEnd?.validationMessage}
+              />
+            </div>
           </div>
-          <div>
-            <LocationInput scheduleId={scheduleId} />
-          </div>
+          <LocationInput scheduleId={scheduleId} />
           <div>
             <motion.button
               whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}

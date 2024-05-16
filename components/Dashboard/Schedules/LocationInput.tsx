@@ -177,13 +177,13 @@ const LocationInput = ({ scheduleId }: params) => {
           </div>
         )}
         {showSupportedCat && (
-          <div>
+          <>
             <p className="phone:text-sm">Place Information</p>
             <CategorySelect
               place_id={placeId}
               scheduleId={formAction === "add" ? null : scheduleId}
             />
-          </div>
+          </>
         )}
       </div>
 
