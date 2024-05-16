@@ -36,6 +36,7 @@ import { GeneralInfo, ScheduleInfo } from "@/Types/scheduleType";
 // Utils
 import { useFormSerialize } from "@/utils/formUtils";
 import FormValidation from "@/utils/validation";
+import { getCurrentDate } from "@/utils/useDate";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -75,15 +76,15 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
     date:
       formAction !== "add" && scheduleData !== undefined
         ? detailsData.date!
-        : "",
+        : getCurrentDate(),
     timeStart:
       formAction !== "add" && scheduleData !== undefined
         ? detailsData.timeStart!
-        : "",
+        : "09:00",
     timeEnd:
       formAction !== "add" && scheduleData !== undefined
         ? detailsData.timeEnd!
-        : "",
+        : "17:00",
     title:
       formAction !== "add" && scheduleData !== undefined
         ? detailsData.title!
@@ -263,7 +264,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
             label="Description"
             state={generalInfo.description}
             cols={30}
-            rows={7}
+            rows={3}
             onChange={handleTextareaChange}
             onBlur={handleTextareaChange}
           />
