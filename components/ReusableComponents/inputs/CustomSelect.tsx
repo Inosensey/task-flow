@@ -17,7 +17,7 @@ interface props {
   selected: string;
   showChoices: boolean;
   setShowChoices: React.Dispatch<React.SetStateAction<boolean>>;
-  setToggleMobileOptions: React.Dispatch<React.SetStateAction<boolean>>;
+  setToggleMobileOptions?: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedMobileOptions?: () => void;
   dynamic?: boolean;
   fetching?: boolean;
@@ -42,7 +42,7 @@ const CustomSelect = ({
         onClick={() => {
           if (windowCurrentWidth >= 280 || windowCurrentWidth <= 768) {
             setSelectedMobileOptions && setSelectedMobileOptions();
-            setToggleMobileOptions(true);
+            setToggleMobileOptions && setToggleMobileOptions(true);
           } else {
             setShowChoices((prev) => !prev);
           }
