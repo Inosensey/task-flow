@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 
 // icones
 import MaterialSymbolsArrowBackIosNewRounded from "@/Icones/MaterialSymbolsArrowBackIosNewRounded";
@@ -8,6 +8,7 @@ import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
 // Utils
 import { formatStringName } from "@/helpers/GeneralHelpers";
+import { SelectedMobileOptionType } from "@/Types/scheduleType";
 
 // Types
 interface props {
@@ -16,6 +17,8 @@ interface props {
   selected: string;
   showChoices: boolean;
   setShowChoices: React.Dispatch<React.SetStateAction<boolean>>;
+  setToggleMobileOptions: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedMobileOptions?: () => void;
   dynamic?: boolean;
   fetching?: boolean;
 }
@@ -26,14 +29,23 @@ const CustomSelect = ({
   children,
   showChoices,
   setShowChoices,
+  setToggleMobileOptions,
   dynamic = false,
   fetching = false,
+  setSelectedMobileOptions,
 }: props) => {
+  const windowCurrentWidth = window.innerWidth;
+
   return (
     <div className="relative phone:w-11/12">
       <div
         onClick={() => {
-          setShowChoices((prev) => !prev);
+          if (windowCurrentWidth >= 280 || windowCurrentWidth <= 768) {
+            setSelectedMobileOptions && setSelectedMobileOptions();
+            setToggleMobileOptions(true);
+          } else {
+            setShowChoices((prev) => !prev);
+          }
         }}
         className="rounded-md bg-Secondary flex justify-between px-2 items-center cursor-pointer phone:h-9 "
       >
@@ -89,9 +101,7 @@ function CheckSelectType(
     return (
       <>
         <p className="select-none text-sm">
-          {formatStringName(
-            selected === placeHolder ? placeHolder : selected
-          )}
+          {formatStringName(selected === placeHolder ? placeHolder : selected)}
         </p>
         <span
           className="transition-all"

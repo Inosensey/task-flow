@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { AnimatePresence } from "framer-motion";
 
 // Libs
 import { GetListOfPlaces } from "@/lib/locationMethods";
@@ -13,13 +14,14 @@ import {
   getLocationKeys,
   getScheduleDetails,
 } from "@/lib/scheduleMethods";
+import { onClickListPlace, onClickLocationCategories, onClickLocationKeys } from "@/utils/categoriesActionEvents";
 
 // Helpers
 import { formatStringName } from "@/helpers/GeneralHelpers";
 
 // Components
 import Input from "@/components/ReusableComponents/inputs/Input";
-import {MobileCatSelectOptions} from "@/components/ReusableComponents/inputs/MobileSelectOptions";
+import { MobileCatSelectOptions } from "@/components/Dashboard/Schedules/MobileSelectOptions";
 
 //Store
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
@@ -27,47 +29,13 @@ import CustomSelect from "@/components/ReusableComponents/inputs/CustomSelect";
 
 // Types
 import { TableRow } from "@/Types/database.types";
-type LocationInfoInput = {
-  categoryKeyId: number;
-  categoryKey: number;
-  namePlace: string;
-  lat: string;
-  long: string;
-  selectedChoice: {
-    key: string | null;
-    id: number;
-  };
-  selectedTypeOfPlace: string | null;
-  selectedPlace: string;
-};
+import {
+  Feature,
+  PlaceList,
+  SelectedMobileOptionType,
+  LocationInfoInput,
+} from "@/Types/scheduleType";
 
-interface Feature {
-  geometry: {
-    coordinates: [string, string];
-    type: string;
-  };
-  properties: {
-    address_line1: string;
-    address_line2: string;
-    categories: string[];
-    city: string;
-    country: string;
-    country_code: string;
-    distance: number;
-    formatted: string;
-    lat: string;
-    lon: string;
-    name: string;
-    place_id: string;
-    postcode: string;
-    region: string;
-    state: string;
-    street: string;
-  };
-}
-interface PlaceList {
-  features: Feature[];
-}
 interface props {
   place_id: string;
   scheduleId: string | null;
@@ -89,8 +57,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
     queryKey: ["locationCategories"],
     queryFn: getLocationCategories,
   });
-  console.log(locationKeyData)
-  console.log(locationCategoriesData)
+
   const {
     data: scheduleData,
     error: scheduleError,
@@ -104,23 +71,6 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
   const detailsData =
     scheduleData !== undefined ? scheduleData.Response[0] : "";
 
-  useEffect(() => {
-    if (formAction !== "add" && scheduleData !== undefined) {
-      const SelectedPlaceType = `${detailsData.ScheduleLocation[0].LocationKeys.key}.${detailsData.ScheduleLocation[0].LocationCategories.category}`;
-      const setPlacesList = async () => {
-        const data: PlaceList | undefined = await getPlaces(
-          detailsData.ScheduleLocation[0].cityId!,
-          SelectedPlaceType
-        );
-
-        if (data !== undefined)
-          setListPlace((prev) => ({ ...prev, features: data.features }));
-      };
-      setPlacesList();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // State
   const [locationInfo, setLocationInfo] = useState<LocationInfoInput>(
     getLocationInfoInitial(formAction, scheduleData?.Response)
@@ -131,10 +81,15 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
   const [listPlace, setListPlace] = useState<PlaceList | undefined>(undefined);
   const [isGettingListPlaces, setIsGettingListPlaces] =
     useState<boolean>(false);
+  const [toggleOptions, setToggleOptions] = useState<boolean>(false);
+  const [selectedMobileOptions, setSelectedMobileOptions] = useState<
+    SelectedMobileOptionType[] | undefined
+  >(undefined);
+  const [mobileOptionType, setMobileOptionType] = useState<string>("");
 
   async function getPlaces(place: string, categories: string | null) {
     if (!categories) return;
-    const data: PlaceList = await queryClient.fetchQuery({
+    const data = await queryClient.fetchQuery({
       queryKey: ["placesList"],
       queryFn: () => GetListOfPlaces(place, categories),
     });
@@ -147,11 +102,35 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
     categories: string | null
   ) => {
     setIsGettingListPlaces(true);
-    const data: PlaceList | undefined = await getPlaces(place, categories);
-    if (data !== undefined)
+    const data = await getPlaces(place, categories);
+    if (data !== undefined) {
       setListPlace((prev) => ({ ...prev, features: data.features }));
+      setSelectedMobileOptions(data?.features);
+    }
+    setMobileOptionType("ListPlace");
     setIsGettingListPlaces(false);
   };
+
+  useEffect(() => {
+    if (formAction !== "add" && scheduleData !== undefined) {
+      const SelectedPlaceType = `${detailsData.ScheduleLocation[0].LocationKeys.key}.${detailsData.ScheduleLocation[0].LocationCategories.category}`;
+      const setPlacesList = async () => {
+        const data = await getPlaces(
+          detailsData.ScheduleLocation[0].cityId!,
+          SelectedPlaceType
+        );
+
+        if (data !== undefined) {
+          setListPlace((prev) => ({ ...prev, features: data.features }));
+          setSelectedMobileOptions(data?.features);
+        }
+      };
+      setPlacesList();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  console.log(selectedMobileOptions);
 
   return (
     <>
@@ -161,33 +140,32 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
           selected={locationInfo.selectedChoice?.key!}
           placeHolder={locationInfo.selectedChoice?.key!}
           showChoices={showChoices}
+          setToggleMobileOptions={setToggleOptions}
           setShowChoices={setShowChoices}
+          setSelectedMobileOptions={() => {
+            setSelectedMobileOptions(locationKeyData);
+            setMobileOptionType("Key");
+          }}
         >
-          {locationKeyData?.map((category: TableRow<"LocationKeys">) => (
+          {locationKeyData?.map((locationKeyInfo: TableRow<"LocationKeys">) => (
             <div
               onClick={() => {
-                setLocationInfo((locationInfo) => ({
-                  ...locationInfo,
-                  selectedChoice: {
-                    key: category.key,
-                    id: category.id,
-                  },
-                }));
-                setShowChoices((prev) => !prev);
-                setLocationInfo((locationInfoPrev) => ({
-                  ...locationInfoPrev,
-                  categoryKeyId: category.id,
-                }));
+                const onClickLocationKeyProps = {
+                  setLocationInfo,
+                  locationKeyInfo,
+                  setShowChoices,
+                };
+                onClickLocationKeys(onClickLocationKeyProps);
               }}
-              key={category.key}
+              key={locationKeyInfo.key}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >
               <p className="select-none">
-                {formatStringName(category.key)}
-                {category.description !== null && (
+                {formatStringName(locationKeyInfo.key)}
+                {locationKeyInfo.description !== null && (
                   <span className="text-xs text-[#ccc]">
                     {" "}
-                    - {category.description}
+                    - {locationKeyInfo.description}
                   </span>
                 )}
               </p>
@@ -202,31 +180,33 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             selected={locationInfo.selectedTypeOfPlace!}
             placeHolder={locationInfo.selectedTypeOfPlace!}
             showChoices={showPlacesType}
+            setToggleMobileOptions={setToggleOptions}
             setShowChoices={setShowPlacesType}
+            setSelectedMobileOptions={() => {
+              setSelectedMobileOptions(locationCategoriesData);
+
+              setMobileOptionType("Categories");
+            }}
           >
             {locationCategoriesData?.map(
-              (info: TableRow<"LocationCategories">) =>
-                locationInfo.selectedChoice?.id === info.keyId && (
+              (locationCatInfo: TableRow<"LocationCategories">) =>
+                locationInfo.selectedChoice?.id === locationCatInfo.keyId && (
                   <div
                     onClick={() => {
-                      const SelectedPlaceType = `${locationInfo.selectedChoice.key}.${info.category}`;
-                      // setSelectedTypeOfPlace(info.category);
-                      setLocationInfo((locationInfo) => ({
-                        ...locationInfo,
-                        selectedTypeOfPlace: info.category,
-                      }));
-                      setShowPlacesType((prev) => !prev);
+                      const SelectedPlaceType = `${locationInfo.selectedChoice.key}.${locationCatInfo.category}`;
+                      const onClickLocationCatInfoProps = {
+                        setLocationInfo,
+                        locationCatInfo,
+                        setShowPlacesType,
+                      };
+                      onClickLocationCategories(onClickLocationCatInfoProps)
                       handlePlaceTypeChange(place_id, SelectedPlaceType);
-                      setLocationInfo((locationInfoPrev) => ({
-                        ...locationInfoPrev,
-                        categoryKey: info.id,
-                      }));
                     }}
-                    key={info.id}
+                    key={locationCatInfo.id}
                     className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
                   >
                     <p className="select-none">
-                      {formatStringName(info.category)}
+                      {formatStringName(locationCatInfo.category)}
                     </p>
                   </div>
                 )
@@ -242,31 +222,26 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             placeHolder={locationInfo.selectedPlace}
             showChoices={showPlaceList}
             setShowChoices={setShowPlaceList}
+            setToggleMobileOptions={setToggleOptions}
             dynamic={true}
             fetching={isGettingListPlaces}
           >
             {listPlace?.features ? (
-              listPlace?.features.map((place: Feature) => (
+              listPlace?.features.map((listPlaceInfo: Feature) => (
                 <div
-                  key={place.properties.place_id}
+                  key={listPlaceInfo.properties.place_id}
                   onClick={() => {
-                    // setSelectedPlace(place.properties.address_line1);
-                    setLocationInfo((locationInfo) => ({
-                      ...locationInfo,
-                      selectedPlace: place.properties.address_line1,
-                    }));
-                    setLocationInfo((locationInfoPrev) => ({
-                      ...locationInfoPrev,
-                      namePlace: place.properties.address_line1,
-                      lat: place.geometry.coordinates[1],
-                      long: place.geometry.coordinates[0],
-                    }));
-                    setShowPlaceList((prev) => !prev);
+                    const onClickListPlaceInfoProps = {
+                      setLocationInfo,
+                      listPlaceInfo,
+                      setShowPlaceList,
+                    };
+                    onClickListPlace(onClickListPlaceInfoProps)
                   }}
                   className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
                 >
                   <p className="select-none">
-                    {formatStringName(place.properties.address_line1)}
+                    {formatStringName(listPlaceInfo.properties.address_line1)}
                   </p>
                 </div>
               ))
@@ -329,7 +304,15 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
           />
         </div>
       </div>
-      {/* <MobileCatSelectOptions /> */}
+      <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
+        {toggleOptions && (
+          <MobileCatSelectOptions
+            setToggleOptions={setToggleOptions}
+            choices={selectedMobileOptions}
+            optionType={mobileOptionType}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };

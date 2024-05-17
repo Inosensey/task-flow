@@ -9,6 +9,7 @@ interface inputParams<T> {
   label: string;
   valid?: null | boolean | undefined;
   validationMessage?: string;
+  autoComplete?: string,
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onInput?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
@@ -48,6 +49,7 @@ const Input = <T extends string | number>({
   state,
   type,
   name,
+  autoComplete,
   onChange,
   onBlur,
   onInput,
@@ -69,6 +71,7 @@ const Input = <T extends string | number>({
           name={name}
           placeholder={placeholder}
           className={`bg-Secondary w-full text-white px-2 py-2 phone:text-sm ${style.input}`}
+          autoComplete={autoComplete}
           // required
         />
         <div

@@ -137,6 +137,7 @@ const LocationInput = ({ scheduleId }: params) => {
             name="city"
             placeholder="Enter the City you are in"
             label="City"
+            autoComplete="off"
             onChange={HandleInputChange}
             onBlur={HandleInputChange}
             valid={validations?.city?.valid}
