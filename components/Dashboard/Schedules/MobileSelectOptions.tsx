@@ -8,7 +8,7 @@ interface props {
     choices?: SelectedMobileOptionType[]
     setToggleOptions: React.Dispatch<React.SetStateAction<boolean>>
     optionType: string,
-    optionOnClick: () => void
+    optionOnClick?: () => void
 }
 
 export function MobileCatSelectOptions<T>({choices, setToggleOptions, optionType, optionOnClick}:props) {
