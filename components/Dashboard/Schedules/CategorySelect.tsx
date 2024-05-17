@@ -86,6 +86,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
     SelectedMobileOptionType[] | undefined
   >(undefined);
   const [mobileOptionType, setMobileOptionType] = useState<string>("");
+  const [mobileOptionHeader, setMobileOptionHeader] = useState<string>("")
 
   async function getPlaces(place: string, categories: string | null) {
     if (!categories) return;
@@ -145,6 +146,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
           setSelectedMobileOptions={() => {
             setSelectedMobileOptions(locationKeyData);
             setMobileOptionType("Key");
+            setMobileOptionHeader("Places")
           }}
         >
           {locationKeyData?.map((locationKeyInfo: TableRow<"LocationKeys">) => (
@@ -184,8 +186,8 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             setShowChoices={setShowPlacesType}
             setSelectedMobileOptions={() => {
               setSelectedMobileOptions(locationCategoriesData);
-
               setMobileOptionType("Categories");
+              setMobileOptionHeader("Type of Place")
             }}
           >
             {locationCategoriesData?.map(
@@ -225,9 +227,14 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             setToggleMobileOptions={setToggleOptions}
             dynamic={true}
             fetching={isGettingListPlaces}
+            setSelectedMobileOptions={() => {
+              setSelectedMobileOptions(listPlace?.features);
+              setMobileOptionType("listPlace");
+              setMobileOptionHeader("List of Places")
+            }}
           >
-            {listPlace?.features ? (
-              listPlace?.features.map((listPlaceInfo: Feature) => (
+            {listPlace?.features?.length !== 0 ? (
+              listPlace?.features?.map((listPlaceInfo: Feature) => (
                 <div
                   key={listPlaceInfo.properties.place_id}
                   onClick={() => {
@@ -307,9 +314,14 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
         {toggleOptions && (
           <MobileCatSelectOptions
+          placeId={place_id}
             setToggleOptions={setToggleOptions}
+            locationInfo={locationInfo}
+            setLocationInfo={setLocationInfo}
             choices={selectedMobileOptions}
             optionType={mobileOptionType}
+            handlePlaceTypeChange={handlePlaceTypeChange}
+            header={mobileOptionHeader}
           />
         )}
       </AnimatePresence>
