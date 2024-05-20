@@ -8,7 +8,6 @@ import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
 // Utils
 import { formatStringName } from "@/helpers/GeneralHelpers";
-import { SelectedMobileOptionType } from "@/Types/scheduleType";
 
 // Types
 interface props {

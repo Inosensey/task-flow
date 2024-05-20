@@ -18,7 +18,7 @@ import {
 
 interface props {
   choices?: SelectedMobileOptionType[];
-  setToggleOptions: React.Dispatch<React.SetStateAction<boolean>>;
+  setToggleMobileOptions: React.Dispatch<React.SetStateAction<boolean>>;
   locationInfo: LocationInfoInput;
   setLocationInfo: React.Dispatch<React.SetStateAction<LocationInfoInput>>;
   optionType: string;
@@ -36,7 +36,7 @@ export function MobileCatSelectOptions({
   optionType,
   header,
   handlePlaceTypeChange,
-  setToggleOptions,
+  setToggleMobileOptions,
   setLocationInfo,
   locationInfo,
 }: props) {
@@ -48,7 +48,7 @@ export function MobileCatSelectOptions({
           {options?.map((locationKeyInfo: TableRow<"LocationKeys">) => (
             <div
               onClick={() => {
-                setToggleOptions(false);
+                setToggleMobileOptions(false);
                 const onClickLocationKeyProps = {
                   setLocationInfo,
                   locationKeyInfo,
@@ -139,7 +139,7 @@ export function MobileCatSelectOptions({
 
   return (
     <div
-      onClick={() => setToggleOptions(false)}
+      onClick={() => setToggleMobileOptions(false)}
       className="h-screen w-screen flex justify-center absolute top-0 -left-[0.1px] bg-black/[.54] table:items-center "
     >
       <div className="phone:w-10/12 phone:mt-24 tablet:max-w-[450px]">

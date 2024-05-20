@@ -1,6 +1,6 @@
 import { ScheduleDetails } from "@/Types/scheduleType";
 
-const getLocationInfoInitial = (
+export const getLocationInfoInitial = (
   formAction: string,
   scheduleData: ScheduleDetails | undefined
 ) => {
@@ -48,4 +48,10 @@ const getLocationInfoInitial = (
   return initialData;
 };
 
-export default getLocationInfoInitial;
+export const getToggleDesktopSelectOptionsInitials = () => {
+  return {
+    showChoices: false,
+    showPlacesType: false,
+    showPlaceList: false,
+  };
+};
