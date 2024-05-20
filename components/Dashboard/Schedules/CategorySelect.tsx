@@ -140,7 +140,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
           placeHolder={locationInfo.selectedChoice?.key!}
           showChoices={showChoices}
           setToggleMobileOptions={setToggleOptions}
-          setShowChoices={setShowChoices}
+          setToggleDesktopOptions={setShowChoices}
           setSelectedMobileOptions={() => {
             setSelectedMobileOptions(locationKeyData);
             setMobileOptionType("Key");
@@ -181,7 +181,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             placeHolder={locationInfo.selectedTypeOfPlace!}
             showChoices={showPlacesType}
             setToggleMobileOptions={setToggleOptions}
-            setShowChoices={setShowPlacesType}
+            setToggleDesktopOptions={setShowPlacesType}
             setSelectedMobileOptions={() => {
               setSelectedMobileOptions(locationCategoriesData);
               setMobileOptionType("Categories");
@@ -221,7 +221,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             selected={locationInfo.selectedPlace}
             placeHolder={locationInfo.selectedPlace}
             showChoices={showPlaceList}
-            setShowChoices={setShowPlaceList}
+            setToggleDesktopOptions={setShowPlaceList}
             setToggleMobileOptions={setToggleOptions}
             dynamic={true}
             fetching={isGettingListPlaces}

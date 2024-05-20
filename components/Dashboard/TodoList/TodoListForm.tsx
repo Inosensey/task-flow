@@ -251,7 +251,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
               }
               placeHolder={"Priority Levels"}
               showChoices={togglePrioritySelect}
-              setShowChoices={setTogglePrioritySelect}
+              setToggleDesktopOptions={setTogglePrioritySelect}
             >
               {priorityLevels?.map((level: TableRow<"PriorityLevel">) => (
                 <div
@@ -285,7 +285,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
               }
               placeHolder={"Frequencies"}
               showChoices={toggleFrequentSelect}
-              setShowChoices={setToggleFrequentSelect}
+              setToggleDesktopOptions={setToggleFrequentSelect}
             >
               {frequencies?.map((frequency: TableRow<"Frequencies">) => (
                 <div

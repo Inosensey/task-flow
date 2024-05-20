@@ -16,7 +16,7 @@ interface props {
   children: React.ReactNode;
   selected: string;
   showChoices: boolean;
-  setShowChoices: React.Dispatch<React.SetStateAction<boolean>>;
+  setToggleDesktopOptions: React.Dispatch<React.SetStateAction<boolean>>;
   setToggleMobileOptions?: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedMobileOptions?: () => void;
   dynamic?: boolean;
@@ -28,7 +28,7 @@ const CustomSelect = ({
   selected,
   children,
   showChoices,
-  setShowChoices,
+  setToggleDesktopOptions,
   setToggleMobileOptions,
   dynamic = false,
   fetching = false,
@@ -44,7 +44,7 @@ const CustomSelect = ({
             setSelectedMobileOptions && setSelectedMobileOptions();
             setToggleMobileOptions && setToggleMobileOptions(true);
           } else {
-            setShowChoices((prev) => !prev);
+            setToggleDesktopOptions((prev) => !prev);
           }
         }}
         className="rounded-md bg-Secondary flex justify-between px-2 items-center cursor-pointer phone:h-9 "

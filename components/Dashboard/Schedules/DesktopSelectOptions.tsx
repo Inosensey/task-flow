@@ -30,7 +30,7 @@ interface props {
   header?: string;
 }
 
-export function MobileCatSelectOptions({
+export function DesktopSelectOptions({
   choices,
   placeId,
   optionType,
@@ -58,16 +58,15 @@ export function MobileCatSelectOptions({
               key={locationKeyInfo.key}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >
-              <div className="flex flex-col">
-                <p className="phone:text-sm select-none">
-                  {formatStringName(locationKeyInfo.key)}
-                </p>
+              <p className="select-none">
+                {formatStringName(locationKeyInfo.key)}
                 {locationKeyInfo.description !== null && (
-                  <p className="text-xs text-[#ccc]">
-                    {locationKeyInfo.description}
-                  </p>
+                  <span className="text-xs text-[#ccc]">
+                    {" "}
+                    - {locationKeyInfo.description}
+                  </span>
                 )}
-              </div>
+              </p>
             </div>
           ))}
         </>
@@ -137,23 +136,5 @@ export function MobileCatSelectOptions({
     }
   };
 
-  return (
-    <div
-      onClick={() => setToggleOptions(false)}
-      className="h-screen w-screen flex justify-center absolute top-0 -left-[0.1px] bg-black/[.54] table:items-center "
-    >
-      <div className="phone:w-10/12 phone:mt-24 tablet:max-w-[450px]">
-        <div className="bg-Primary max-h-[400px] rounded-sm">
-          <div className="py-1 px-2 border-b-2 border-b-LightPrimaryDisabled">
-            <p>{header}</p>
-          </div>
-          <div className="overflow-auto max-h-[350px]">
-            <div className="flex flex-col gap-2">
-              {returnOptionsBaseOnType()}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return <>{returnOptionsBaseOnType()}</>;
 }
