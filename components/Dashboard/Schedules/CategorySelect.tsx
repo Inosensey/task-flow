@@ -131,8 +131,6 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(selectedMobileOptions);
-
   return (
     <>
       <div className="flex flex-col gap-1">

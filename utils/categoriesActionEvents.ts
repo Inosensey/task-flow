@@ -17,16 +17,15 @@ export const onClickLocationKeys = ({
 }: generalInfoType) => {
   setLocationInfo((locationInfo) => ({
     ...locationInfo,
+    categoryKeyId: locationKeyInfo!.id,
+    selectedTypeOfPlace:"Type of Place",
+    selectedPlace: "Place List",
     selectedChoice: {
       key: locationKeyInfo!.key,
       id: locationKeyInfo!.id,
     },
   }));
   setShowChoices && setShowChoices((prev) => !prev);
-  setLocationInfo((locationInfoPrev) => ({
-    ...locationInfoPrev,
-    categoryKeyId: locationKeyInfo!.id,
-  }));
 };
 
 export const onClickLocationCategories = ({
@@ -37,12 +36,10 @@ export const onClickLocationCategories = ({
   setLocationInfo((locationInfo) => ({
     ...locationInfo,
     selectedTypeOfPlace: locationCatInfo!.category,
+    categoryKey: locationCatInfo!.id,
+    selectedPlace: "Place List",
   }));
   setShowChoices && setShowChoices((prev) => !prev);
-  setLocationInfo((locationInfoPrev) => ({
-    ...locationInfoPrev,
-    categoryKey: locationCatInfo!.id,
-  }));
 };
 
 export const onClickListPlace = ({
@@ -53,9 +50,6 @@ export const onClickListPlace = ({
   setLocationInfo((locationInfo) => ({
     ...locationInfo,
     selectedPlace: listPlaceInfo!.properties.address_line1,
-  }));
-  setLocationInfo((locationInfoPrev) => ({
-    ...locationInfoPrev,
     namePlace: listPlaceInfo!.properties.address_line1,
     lat: listPlaceInfo!.geometry.coordinates[1],
     long: listPlaceInfo!.geometry.coordinates[0],
