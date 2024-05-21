@@ -8,7 +8,13 @@ import styles from "@/css/DashboardComponent/Events.module.css";
 import MaterialSymbolsArrowBackIosNewRounded from "@/Icones/MaterialSymbolsArrowBackIosNewRounded";
 
 // Utils
-import getDate, { getDays, useMonths, getDateMonths, getCurrentDate } from "@/utils/useDate";
+import getDate, {
+  getDays,
+  useMonths,
+  getDateMonths,
+  getCurrentDate,
+  formatSelectedDate,
+} from "@/utils/useDate";
 
 // Types
 interface dateType {
@@ -19,7 +25,7 @@ interface dateType {
 }
 
 // store
-import {useDateStore} from "@/store/useDateStore";
+import { useDateStore } from "@/store/useDateStore";
 
 const CalendarNav = () => {
   const date = new Date();
@@ -29,27 +35,21 @@ const CalendarNav = () => {
     currentDate: new Date(),
     selectedMonth: date.getMonth(),
   });
-  const {setDate} = useDateStore();
+  const { setDate, dateSelected } = useDateStore();
 
   // States
   const [days, setDays] = useState<string[]>(daysList);
   const [datesOfMonth, setDatesOfMonth] = useState<string[]>(datesOfAMonth);
   const [currentMonth, setCurrentMonth] = useState<number>(date.getMonth());
-  const [currentYear, setCurrentYear] = useState<number>(date.getFullYear());
   const [showMonthList, setShowMonthList] = useState<boolean>(false);
   const [showDateList, setShowDateList] = useState<boolean>(false);
-  const [currentDate, setCurrentDate] = useState<string>("");
 
-  const setSelectedDate = (dateNumber: number = 0):string => {
+  const setSelectedDate = (dateNumber: number = 0) => {
     const date = new Date();
     date.setMonth(currentMonth);
     date.setDate(dateNumber + 1);
-    const dayOfWeek = date.getDay();
-    const dayOfMonth = date.getDate();
-    const dateSelected = getCurrentDate(date)
-    setCurrentDate(`${dayOfMonth}, ${days[dayOfWeek]}`);
-    setDate(dateSelected)
-    return `${dayOfMonth}, ${days[dayOfWeek]}`
+    const dateSelected = getCurrentDate(date);
+    setDate(dateSelected);
   };
 
   return (
@@ -84,7 +84,7 @@ const CalendarNav = () => {
                 });
                 setCurrentMonth(index);
                 setShowMonthList(false);
-                setSelectedDate()
+                setSelectedDate();
                 setDatesOfMonth(getDateOfMonth);
               }}
               key={index}
@@ -102,7 +102,9 @@ const CalendarNav = () => {
           }}
           className="rounded-md bg-SmoothDark flex justify-between px-2 items-center cursor-pointer phone:w-40 mdphone:w-44 phone:h-9"
         >
-          <p className="select-none text-sm">{currentDate === "" ? setSelectedDate(date.getDate() - 1) : currentDate}</p>
+          <p className="select-none text-sm">
+            {formatSelectedDate(dateSelected)}
+          </p>
           <span
             className="transition-all"
             style={{
@@ -121,7 +123,6 @@ const CalendarNav = () => {
               onClick={() => {
                 setSelectedDate(index);
                 setShowDateList(false);
-
               }}
               key={index}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer"

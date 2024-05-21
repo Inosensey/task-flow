@@ -160,8 +160,8 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             showChoices={showPlacesType}
             setToggleMobileOptions={() => {
               setToggleMobileOptions((prev) => !prev);
-              setOptionType("Key");
-              setMobileOptionHeader("Places");
+              setOptionType("Categories");
+              setMobileOptionHeader("Type of Place");
             }}
             setToggleDesktopOptions={() => {
               setShowPlacesType((prev) => !prev);
@@ -170,7 +170,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
               setOptionType("Categories");
             }}
             setSelectedMobileOptions={() => {
-              setSelectedMobileOptions(locationKeyData);
+              setSelectedMobileOptions(locationCategoriesData);
             }}
           >
             {windowCurrentWidth >= 769 && optionType === "Categories" && (
@@ -196,8 +196,8 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             showChoices={showPlaceList}
             setToggleMobileOptions={() => {
               setToggleMobileOptions((prev) => !prev);
-              setOptionType("Key");
-              setMobileOptionHeader("Places");
+              setOptionType("listPlace");
+              setMobileOptionHeader("Found Places");
             }}
             setToggleDesktopOptions={() => {
               setShowPlaceList((prev) => !prev);
@@ -206,7 +206,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
               setOptionType("listPlace");
             }}
             setSelectedMobileOptions={() => {
-              setSelectedMobileOptions(locationKeyData);
+              setSelectedMobileOptions(listPlace?.features);
             }}
             dynamic={true}
             fetching={gettingListOfPlaces}

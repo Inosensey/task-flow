@@ -61,6 +61,15 @@ export const getCurrentDate = (selectedDate: string | Date = "") => {
   return localDate;
 }
 
+export const formatSelectedDate = (selectedDate: string) => {
+  const daysList = getDays();
+  let date = new Date(selectedDate);
+  const dayOfWeek = date.getDay();
+  const dayOfMonth = date.getDate();
+  const formattedSelectedDate = `${dayOfMonth}, ${daysList[dayOfWeek]}`
+  return formattedSelectedDate
+}
+
 export const getCurrentDay = () => {
   const currentDate = new Date();
   const currentDay = currentDate.getDay();

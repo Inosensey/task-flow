@@ -26,8 +26,7 @@ import { getScheduleDetails } from "@/lib/scheduleMethods";
 
 // store
 import { useNotificationStore } from "@/store/useNotificationStore";
-
-// Validation
+import { useDateStore } from "@/store/useDateStore";
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 
 // Typescript
@@ -37,6 +36,7 @@ import { GeneralInfo, ScheduleInfo } from "@/Types/scheduleType";
 import { useFormSerialize } from "@/utils/formUtils";
 import FormValidation from "@/utils/validation";
 import { getCurrentDate } from "@/utils/useDate";
+import { TableRow } from "@/Types/database.types";
 
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -57,6 +57,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
   const { setMessage, setShowSlideNotification } = useNotificationStore();
   const { setValidation, validations, resetValidation, formAction } =
     useScheduleFormStore();
+  const { setDate } = useDateStore();
 
   // Use query
   const {
@@ -112,7 +113,6 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
       return mutateSchedule(scheduleInfo, formAction);
     },
     onSuccess: (data) => {
-      console.log(data);
       onScheduleAddSuccess();
       if (formAction === "edit" && scheduleData !== undefined) {
         // queryClient.setQueryData([`Schedule#${detailsData.id}`], () =>
@@ -121,6 +121,9 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
         queryClient.invalidateQueries({
           queryKey: [`Schedule#${detailsData.id}`],
         });
+      } else {
+        const scheduleData = data.Response[0] as TableRow<"Schedules">
+        setDate(scheduleData.date as string);
       }
       queryClient.invalidateQueries({ queryKey: ["schedules"] });
     },
