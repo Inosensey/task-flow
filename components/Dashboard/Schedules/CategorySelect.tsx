@@ -1,27 +1,19 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
 
 // Libs
 import { GetListOfPlaces } from "@/lib/locationMethods";
 
 // Utils
-import {getLocationInfoInitial} from "@/utils/stateInitials";
-import {
-  onClickListPlace,
-  onClickLocationCategories,
-  onClickLocationKeys,
-} from "@/utils/categoriesActionEvents";
+import { getLocationInfoInitial } from "@/utils/stateInitials";
 import {
   useGetScheduleDetails,
   useLocationCategories,
   useLocationKeys,
 } from "@/utils/TanStackQueryFns";
-
-// Helpers
-import { formatStringName } from "@/helpers/GeneralHelpers";
 
 // Components
 import Input from "@/components/ReusableComponents/inputs/Input";
@@ -32,19 +24,21 @@ import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 import CustomSelect from "@/components/ReusableComponents/inputs/CustomSelect";
 
 // Types
-import { TableRow } from "@/Types/database.types";
 import {
   Feature,
   PlaceList,
   SelectedMobileOptionType,
   LocationInfoInput,
 } from "@/Types/scheduleType";
+import { DesktopSelectOptions } from "./DesktopSelectOptions";
 interface props {
   place_id: string;
   scheduleId: string | null;
 }
 
 const CategorySelect = ({ place_id, scheduleId }: props) => {
+  const windowCurrentWidth = window.innerWidth;
+
   // Initialize query client
   const queryClient = useQueryClient();
 
@@ -54,30 +48,29 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
   // Use Query
   const locationKeyData = useLocationKeys();
   const locationCategoriesData = useLocationCategories();
-  const { scheduleData, scheduleIsFetching } = useGetScheduleDetails(
-    scheduleId,
-    formAction
-  );
+  const { scheduleData } = useGetScheduleDetails(scheduleId, formAction);
   const detailsData = scheduleData !== undefined ? scheduleData.Response : "";
 
   // State
   const [locationInfo, setLocationInfo] = useState<LocationInfoInput>(
     getLocationInfoInitial(formAction, scheduleData?.Response)
   );
+  const [optionType, setOptionType] = useState<string>("");
   // Toggle desktop options UI
   const [showChoices, setShowChoices] = useState<boolean>(false);
   const [showPlacesType, setShowPlacesType] = useState<boolean>(false);
   const [showPlaceList, setShowPlaceList] = useState<boolean>(false);
 
   const [listPlace, setListPlace] = useState<PlaceList | undefined>(undefined);
-  const [gettingListOfPlaces, setGettingListOfPlaces] = useState<boolean>(false);
+  const [gettingListOfPlaces, setGettingListOfPlaces] =
+    useState<boolean>(false);
 
   // Toggle mobile options UI
   const [selectedMobileOptions, setSelectedMobileOptions] = useState<
     SelectedMobileOptionType[] | undefined
   >(undefined);
-  const [toggleMobileOptions, setToggleMobileOptions] = useState<boolean>(false);
-  const [mobileOptionType, setMobileOptionType] = useState<string>("");
+  const [toggleMobileOptions, setToggleMobileOptions] =
+    useState<boolean>(false);
   const [mobileOptionHeader, setMobileOptionHeader] = useState<string>("");
 
   async function getPlaces(place: string, categories: string | null) {
@@ -100,8 +93,8 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
       setListPlace((prev) => ({ ...prev, features: data.features }));
       setSelectedMobileOptions(data?.features);
     }
-    setGettingListOfPlaces(false)
-    setMobileOptionType("ListPlace");
+    setGettingListOfPlaces(false);
+    setOptionType("ListPlace");
   };
 
   useEffect(() => {
@@ -131,38 +124,31 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
           selected={locationInfo.selectedChoice?.key!}
           placeHolder={locationInfo.selectedChoice?.key!}
           showChoices={showChoices}
-          setToggleMobileOptions={setToggleMobileOptions}
-          setToggleDesktopOptions={setShowChoices}
-          setSelectedMobileOptions={() => {
-            setSelectedMobileOptions(locationKeyData);
-            setMobileOptionType("Key");
+          setToggleMobileOptions={() => {
+            setToggleMobileOptions((prev) => !prev);
+            setOptionType("Key");
             setMobileOptionHeader("Places");
           }}
+          setToggleDesktopOptions={() => {
+            setShowChoices((prev) => !prev);
+            setShowPlacesType(false)
+            setShowPlaceList(false)
+            setOptionType("Key");
+          }}
+          setSelectedMobileOptions={() => {
+            setSelectedMobileOptions(locationKeyData);
+          }}
         >
-          {locationKeyData?.map((locationKeyInfo: TableRow<"LocationKeys">) => (
-            <div
-              onClick={() => {
-                const onClickLocationKeyProps = {
-                  setLocationInfo,
-                  locationKeyInfo,
-                  setShowChoices,
-                };
-                onClickLocationKeys(onClickLocationKeyProps);
-              }}
-              key={locationKeyInfo.key}
-              className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
-            >
-              <p className="select-none">
-                {formatStringName(locationKeyInfo.key)}
-                {locationKeyInfo.description !== null && (
-                  <span className="text-xs text-[#ccc]">
-                    {" "}
-                    - {locationKeyInfo.description}
-                  </span>
-                )}
-              </p>
-            </div>
-          ))}
+          {windowCurrentWidth >= 769 && optionType === "Key" && (
+            <DesktopSelectOptions
+              placeId={place_id}
+              optionType={optionType}
+              locationInfo={locationInfo}
+              setLocationInfo={setLocationInfo}
+              setToggleOptions={setShowChoices}
+              choices={locationKeyData}
+            />
+          )}
         </CustomSelect>
         {/* Categories Select code end */}
 
@@ -172,36 +158,31 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             selected={locationInfo.selectedTypeOfPlace!}
             placeHolder={locationInfo.selectedTypeOfPlace!}
             showChoices={showPlacesType}
-            setToggleMobileOptions={setToggleMobileOptions}
-            setToggleDesktopOptions={setShowPlacesType}
+            setToggleMobileOptions={() => {
+              setToggleMobileOptions((prev) => !prev);
+              setOptionType("Key");
+              setMobileOptionHeader("Places");
+            }}
+            setToggleDesktopOptions={() => {
+              setShowPlacesType((prev) => !prev);
+              setShowChoices(false)
+              setShowPlaceList(false)
+              setOptionType("Categories");
+            }}
             setSelectedMobileOptions={() => {
-              setSelectedMobileOptions(locationCategoriesData);
-              setMobileOptionType("Categories");
-              setMobileOptionHeader("Type of Place");
+              setSelectedMobileOptions(locationKeyData);
             }}
           >
-            {locationCategoriesData?.map(
-              (locationCatInfo: TableRow<"LocationCategories">) =>
-                locationInfo.selectedChoice?.id === locationCatInfo.keyId && (
-                  <div
-                    onClick={() => {
-                      const SelectedPlaceType = `${locationInfo.selectedChoice.key}.${locationCatInfo.category}`;
-                      const onClickLocationCatInfoProps = {
-                        setLocationInfo,
-                        locationCatInfo,
-                        setShowPlacesType,
-                      };
-                      onClickLocationCategories(onClickLocationCatInfoProps);
-                      handlePlaceTypeChange(place_id, SelectedPlaceType);
-                    }}
-                    key={locationCatInfo.id}
-                    className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
-                  >
-                    <p className="select-none">
-                      {formatStringName(locationCatInfo.category)}
-                    </p>
-                  </div>
-                )
+            {windowCurrentWidth >= 769 && optionType === "Categories" && (
+              <DesktopSelectOptions
+                placeId={place_id}
+                optionType={optionType}
+                locationInfo={locationInfo}
+                setLocationInfo={setLocationInfo}
+                setToggleOptions={setShowPlacesType}
+                choices={locationCategoriesData}
+                handlePlaceTypeChange={handlePlaceTypeChange}
+              />
             )}
           </CustomSelect>
         )}
@@ -213,41 +194,32 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             selected={locationInfo.selectedPlace}
             placeHolder={locationInfo.selectedPlace}
             showChoices={showPlaceList}
-            setToggleDesktopOptions={setShowPlaceList}
-            setToggleMobileOptions={setToggleMobileOptions}
+            setToggleMobileOptions={() => {
+              setToggleMobileOptions((prev) => !prev);
+              setOptionType("Key");
+              setMobileOptionHeader("Places");
+            }}
+            setToggleDesktopOptions={() => {
+              setShowPlaceList((prev) => !prev);
+              setShowPlacesType(false)
+              setShowChoices(false)
+              setOptionType("listPlace");
+            }}
+            setSelectedMobileOptions={() => {
+              setSelectedMobileOptions(locationKeyData);
+            }}
             dynamic={true}
             fetching={gettingListOfPlaces}
-            setSelectedMobileOptions={() => {
-              setSelectedMobileOptions(listPlace?.features);
-              setMobileOptionType("listPlace");
-              setMobileOptionHeader("List of Places");
-            }}
           >
-            {listPlace?.features?.length !== 0 ? (
-              listPlace?.features?.map((listPlaceInfo: Feature) => (
-                <div
-                  key={listPlaceInfo.properties.place_id}
-                  onClick={() => {
-                    const onClickListPlaceInfoProps = {
-                      setLocationInfo,
-                      listPlaceInfo,
-                      setShowPlaceList,
-                    };
-                    onClickListPlace(onClickListPlaceInfoProps);
-                  }}
-                  className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
-                >
-                  <p className="select-none">
-                    {formatStringName(listPlaceInfo.properties.address_line1)}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <div className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary">
-                <p className="select-none">
-                  The selected city doesn&lsquo;t have this place
-                </p>
-              </div>
+            {windowCurrentWidth >= 769 && optionType === "listPlace" && (
+              <DesktopSelectOptions
+                placeId={place_id}
+                optionType={optionType}
+                locationInfo={locationInfo}
+                setLocationInfo={setLocationInfo}
+                setToggleOptions={setShowPlaceList}
+                choices={listPlace?.features}
+              />
             )}
           </CustomSelect>
         )}
@@ -309,7 +281,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             locationInfo={locationInfo}
             setLocationInfo={setLocationInfo}
             choices={selectedMobileOptions}
-            optionType={mobileOptionType}
+            optionType={optionType}
             handlePlaceTypeChange={handlePlaceTypeChange}
             header={mobileOptionHeader}
           />

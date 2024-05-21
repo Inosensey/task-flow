@@ -34,7 +34,6 @@ export function DesktopSelectOptions({
   choices,
   placeId,
   optionType,
-  header,
   handlePlaceTypeChange,
   setToggleOptions,
   setLocationInfo,
@@ -81,6 +80,7 @@ export function DesktopSelectOptions({
               locationInfo.selectedChoice?.id === locationCatInfo.keyId && (
                 <div
                   onClick={() => {
+                    setToggleOptions(false);
                     const SelectedPlaceType = `${locationInfo.selectedChoice.key}.${locationCatInfo.category}`;
                     const onClickLocationCatInfoProps = {
                       setLocationInfo,
@@ -88,7 +88,7 @@ export function DesktopSelectOptions({
                     };
                     onClickLocationCategories(onClickLocationCatInfoProps);
                     handlePlaceTypeChange &&
-                      handlePlaceTypeChange(placeId, SelectedPlaceType);
+                    handlePlaceTypeChange(placeId, SelectedPlaceType);
                   }}
                   key={locationCatInfo.id}
                   className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -111,6 +111,7 @@ export function DesktopSelectOptions({
               <div
                 key={listPlaceInfo.properties.place_id}
                 onClick={() => {
+                  setToggleOptions(false);
                   const onClickListPlaceInfoProps = {
                     setLocationInfo,
                     listPlaceInfo,

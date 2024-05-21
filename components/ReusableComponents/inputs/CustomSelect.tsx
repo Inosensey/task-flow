@@ -15,8 +15,8 @@ interface props {
   children: React.ReactNode;
   selected: string;
   showChoices: boolean;
-  setToggleDesktopOptions: React.Dispatch<React.SetStateAction<boolean>>;
-  setToggleMobileOptions?: React.Dispatch<React.SetStateAction<boolean>>;
+  setToggleDesktopOptions?: () => void;
+  setToggleMobileOptions?: () => void;
   setSelectedMobileOptions?: () => void;
   dynamic?: boolean;
   fetching?: boolean;
@@ -39,11 +39,11 @@ const CustomSelect = ({
     <div className="relative phone:w-11/12">
       <div
         onClick={() => {
-          if (windowCurrentWidth >= 280 || windowCurrentWidth <= 768) {
+          if (windowCurrentWidth >= 280 && windowCurrentWidth <= 768) {
             setSelectedMobileOptions && setSelectedMobileOptions();
-            setToggleMobileOptions && setToggleMobileOptions(true);
+            setToggleMobileOptions && setToggleMobileOptions();
           } else {
-            setToggleDesktopOptions((prev) => !prev);
+            setToggleDesktopOptions && setToggleDesktopOptions();
           }
         }}
         className="rounded-md bg-Secondary flex justify-between px-2 items-center cursor-pointer phone:h-9 "
