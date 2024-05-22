@@ -72,7 +72,7 @@ const Schedule = ({ scheduleData }: props) => {
     <>
       <div className="flex-1">
         <div className="text-LightSecondary py-4 px-2 border-b-2 border-LightPrimary flex justify-between items-center">
-          <p className="p-0 h-max">{currentDate}</p>
+          <p className="select-none p-0 h-max">{currentDate}</p>
           <motion.button
             whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.95 }}
@@ -80,7 +80,7 @@ const Schedule = ({ scheduleData }: props) => {
               setShowScheduleForm((prev) => !prev);
               setFormAction("add");
             }}
-            className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1"
+            className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1 select-none"
           >
             Add schedule
             <span className="w-4">

@@ -31,53 +31,53 @@ export const useHours = () => {
   return hours;
 };
 
-export const formatHourTo12 = (hour:string | null) => {
-    // Split the time into hours and minutes
-    if(hour === null) return
-    let timeSplit = hour.split(':');
-    let hours = parseInt(timeSplit[0]);
-    let minutes = timeSplit[1];
+export const formatHourTo12 = (hour: string | null) => {
+  // Split the time into hours and minutes
+  if (hour === null) return;
+  let timeSplit = hour.split(":");
+  let hours = parseInt(timeSplit[0]);
+  let minutes = timeSplit[1];
 
-    // Determine AM or PM
-    let period = hours >= 12 ? 'PM' : 'AM';
+  // Determine AM or PM
+  let period = hours >= 12 ? "PM" : "AM";
 
-    // Adjust hours to 12-hour format
-    hours = hours % 12;
-    hours = hours ? hours : 12; // 0 should be considered as 12
+  // Adjust hours to 12-hour format
+  hours = hours % 12;
+  hours = hours ? hours : 12; // 0 should be considered as 12
 
-    // Pad single digit hours with a leading zero
-    hours = hours < 10 ? 0 + hours : hours;
+  // Pad single digit hours with a leading zero
+  hours = hours < 10 ? 0 + hours : hours;
 
-    // Return the formatted time
-    return hours + ':' + minutes + ' ' + period;
-}
+  // Return the formatted time
+  return hours + ":" + minutes + " " + period;
+};
 
 export const getCurrentDate = (selectedDate: string | Date = "") => {
-  const date =  selectedDate == "" ? new Date() : new Date(selectedDate);
+  const date = selectedDate == "" ? new Date() : new Date(selectedDate);
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   const localDate = `${year}-${month}-${day}`;
   return localDate;
-}
+};
 
 export const formatSelectedDate = (selectedDate: string) => {
   const daysList = getDays();
   let date = new Date(selectedDate);
   const dayOfWeek = date.getDay();
   const dayOfMonth = date.getDate();
-  const formattedSelectedDate = `${dayOfMonth}, ${daysList[dayOfWeek]}`
-  return formattedSelectedDate
-}
+  const formattedSelectedDate = `${dayOfMonth}, ${daysList[dayOfWeek]}`;
+  return formattedSelectedDate;
+};
 
 export const getCurrentDay = () => {
   const currentDate = new Date();
   const currentDay = currentDate.getDay();
-  const days = getDays()
+  const days = getDays();
   const day = days[currentDay];
 
   return day;
-}
+};
 
 export const getDays = () => {
   let days = [
@@ -108,8 +108,12 @@ export const useMonths = () => {
   ];
   return months;
 };
-export const getDateMonths = ({ currentDate, selectedMonth }: dateMonthsInterface) => {
-  let monthDates:string[] = [];
+export const getDateMonths = ({
+  currentDate,
+  selectedMonth,
+}: dateMonthsInterface) => {
+  let monthDates: string[] = [];
+  let dates: number[] = [];
   currentDate.setMonth(selectedMonth);
   currentDate.setDate(1);
   // Loop through the days of the month
@@ -129,9 +133,10 @@ export const getDateMonths = ({ currentDate, selectedMonth }: dateMonthsInterfac
 
     // Move to the next day
     currentDate.setDate(dayOfMonth + 1);
-    monthDates.push(`${dayOfMonth}, ${dayName}`)
+    monthDates.push(`${dayOfMonth}, ${dayName}`);
+    dates.push(dayOfMonth);
   }
-  return monthDates;
+  return { dates: dates, formattedDates: monthDates };
 };
 const useDate = ({ date }: props) => {
   const dates: dateType[] = [];

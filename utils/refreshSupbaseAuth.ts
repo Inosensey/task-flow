@@ -7,7 +7,6 @@ export async function updateSession(request: NextRequest) {
       headers: request.headers,
     },
   });
-
   const supabaseUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const supabaseAnonKey: string = process.env.NEXT_PUBLIC_ANON_KEY ?? "";
 
