@@ -61,3 +61,11 @@ export const getAuthenticatedUser = async () => {
     );
   }
 };
+
+
+export const deleteCookieAuth = () => {
+  const cookieStore = cookies();
+  cookieStore.getAll().forEach((cookie) => {
+    cookieStore.delete(cookie.name);
+  });
+};
