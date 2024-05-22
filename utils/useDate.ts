@@ -108,6 +108,52 @@ export const useMonths = () => {
   ];
   return months;
 };
+
+export const getLastThreeDaysOfPrevMonth = (selectedDate?: Date) => {
+  const date = selectedDate === undefined ? new Date() : selectedDate;
+
+  date.setDate(0);
+  let lastThreeDays = [];
+
+  for (let i = 0; i < 3; i++) {
+    const previousMonth = new Date(date);
+    lastThreeDays.push(previousMonth.getDate());
+    date.setDate(date.getDate() - 1);
+  }
+
+  lastThreeDays.reverse();
+  return lastThreeDays;
+};
+
+export const getFirstDayOfNextMonth = (selectedDate?: Date) => {
+  const date = selectedDate === undefined ? new Date() : selectedDate;
+  let firstDate;
+  date.setDate(1);
+
+  date.setMonth(date.getMonth() + 1);
+
+  firstDate = date.getDate();
+  return firstDate;
+};
+
+export const getCalendarDates = (selectedDate?: Date) => {
+  const date = selectedDate === undefined ? new Date() : selectedDate;
+  selectedDate === undefined && date.setMonth(date.getMonth() - 1)
+  const dateMonths = getDateMonths({
+    currentDate: date,
+    selectedMonth: date.getMonth(),
+  });
+  console.log(selectedDate)
+  const lastThreeDaysOfPrevMonth = getLastThreeDaysOfPrevMonth(date);
+  const firstDayOfNextMonth = getFirstDayOfNextMonth(date);
+  let calendarDates: number[] = lastThreeDaysOfPrevMonth.concat(
+    dateMonths.dates
+  );
+  calendarDates.push(firstDayOfNextMonth);
+
+  return calendarDates;
+};
+
 export const getDateMonths = ({
   currentDate,
   selectedMonth,
