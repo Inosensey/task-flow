@@ -58,9 +58,9 @@ export async function updateSession(request: NextRequest) {
     data: { session },
     error,
   } = await supabase.auth.getSession();
-  if(error) {
-    deleteCookieAuth()
-  }
+  // if(error) {
+  //   deleteCookieAuth()
+  // }
 
   
   // refreshing the auth token

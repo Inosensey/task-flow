@@ -27,6 +27,8 @@ interface dateType {
 // store
 import { useDateStore } from "@/store/useDateStore";
 import CustomCalendar from "@/components/ReusableComponents/CustomCalendar";
+import { AnimatePresence } from "framer-motion";
+import MaterialSymbolsCalendarMonthOutlineRounded from "@/Icones/MaterialSymbolsCalendarMonthOutlineRounded";
 
 const CalendarNav = () => {
   const date = new Date();
@@ -40,10 +42,13 @@ const CalendarNav = () => {
 
   // States
   const [days, setDays] = useState<string[]>(daysList);
-  const [datesOfMonth, setDatesOfMonth] = useState<string[]>(datesOfAMonth.formattedDates);
+  const [datesOfMonth, setDatesOfMonth] = useState<string[]>(
+    datesOfAMonth.formattedDates
+  );
   const [currentMonth, setCurrentMonth] = useState<number>(date.getMonth());
   const [showMonthList, setShowMonthList] = useState<boolean>(false);
   const [showDateList, setShowDateList] = useState<boolean>(false);
+  const [showCustomCalendar, setShowCustomCalendar] = useState<boolean>(false);
 
   const setSelectedDate = (dateNumber: number = 0) => {
     const date = new Date();
@@ -134,8 +139,22 @@ const CalendarNav = () => {
             ))}
           </div>
         </div>
+        <div>
+          <button
+            onClick={() => setShowCustomCalendar((prev) => !prev)}
+            className="bg-SmoothDark px-4 py-[8px] rounded-md text-sm flex items-center gap-1 select-none"
+          >
+            Set Date
+            <MaterialSymbolsCalendarMonthOutlineRounded color="#fff" />
+          </button>
+        </div>
       </div>
-      <CustomCalendar />
+
+      <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
+        {showCustomCalendar && (
+          <CustomCalendar setShowCustomCalendar={setShowCustomCalendar} />
+        )}
+      </AnimatePresence>
     </>
   );
 };
