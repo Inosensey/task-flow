@@ -11,6 +11,10 @@ interface dateMonthsInterface {
   currentDate: Date;
   selectedMonth: number;
 }
+type calendarDate = {
+  date: number;
+  status: string;
+};
 
 export const useHours = () => {
   let hours = ["All Day"];
@@ -109,47 +113,72 @@ export const useMonths = () => {
   return months;
 };
 
-export const getLastThreeDaysOfPrevMonth = (selectedDate?: Date) => {
+export const getLastDaysOfPrevMonth = (selectedDate?: Date) => {
   const date = selectedDate === undefined ? new Date() : selectedDate;
 
-  date.setDate(0);
-  let lastThreeDays = [];
+  let currentYear = date.getFullYear();
+  let currentMonth = date.getMonth();
+  let firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+  let lastDateOfLastMonth = new Date(currentYear, currentMonth, 0).getDate();
 
-  for (let i = 0; i < 3; i++) {
-    const previousMonth = new Date(date);
-    lastThreeDays.push(previousMonth.getDate());
-    date.setDate(date.getDate() - 1);
+  let lastDatesOfPreviousMonth: calendarDate[] = [];
+
+  for (let i = firstDayOfMonth; i > 0; i--) {
+    const lastDateOfPreviousMonth: number = lastDateOfLastMonth - i + 1;
+    const status: string = "inactive";
+    const calendarDate: calendarDate = {
+      date: lastDateOfPreviousMonth,
+      status: status,
+    };
+    lastDatesOfPreviousMonth.push(calendarDate);
   }
-
-  lastThreeDays.reverse();
-  return lastThreeDays;
+  return lastDatesOfPreviousMonth;
 };
 
-export const getFirstDayOfNextMonth = (selectedDate?: Date) => {
+export const getCurrentMonthCalendarDates = (selectedDate?: Date) => {
   const date = selectedDate === undefined ? new Date() : selectedDate;
-  let firstDate;
-  date.setDate(1);
-
-  date.setMonth(date.getMonth() + 1);
-
-  firstDate = date.getDate();
-  return firstDate;
-};
-
-export const getCalendarDates = (selectedDate?: Date) => {
-  const date = selectedDate === undefined ? new Date() : selectedDate;
-  selectedDate === undefined && date.setMonth(date.getMonth() - 1)
   const dateMonths = getDateMonths({
     currentDate: date,
     selectedMonth: date.getMonth(),
   });
-  console.log(selectedDate)
-  const lastThreeDaysOfPrevMonth = getLastThreeDaysOfPrevMonth(date);
-  const firstDayOfNextMonth = getFirstDayOfNextMonth(date);
-  let calendarDates: number[] = lastThreeDaysOfPrevMonth.concat(
-    dateMonths.dates
+  const calendarDates: calendarDate[] = dateMonths.dates.map(
+    (date: number) => ({ date: date, status: "active" })
   );
-  calendarDates.push(firstDayOfNextMonth);
+  return calendarDates;
+};
+
+export const getFirstDaysOfNextMonth = (selectedDate?: Date) => {
+  const date = selectedDate === undefined ? new Date() : selectedDate;
+  let currentYear = date.getFullYear();
+  let currentMonth = date.getMonth();
+  let lastDateOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  let lastDayOfMonth = new Date(
+    currentYear,
+    currentMonth,
+    lastDateOfMonth
+  ).getDay();
+  let calendarDate: calendarDate[] = [];
+  for (let i = lastDayOfMonth; i < 6; i++) {
+    // creating li of next month first days
+    const firstDateOfNextMonth = i - lastDayOfMonth + 1;
+    const status = "inactive";
+    calendarDate.push({
+      date: firstDateOfNextMonth,
+      status: status,
+    });
+  }
+  return calendarDate;
+};
+
+export const getCalendarDates = (selectedDate?: Date) => {
+  const date = selectedDate === undefined ? new Date() : selectedDate;
+  let calendarDates: calendarDate[] = [];
+  const lastDaysOfPrevMonth = getLastDaysOfPrevMonth(date);
+  const monthDates = getCurrentMonthCalendarDates(date);
+  const firstDaysOfNextMonth = getFirstDaysOfNextMonth(date);
+
+  calendarDates = lastDaysOfPrevMonth.concat(monthDates);
+  calendarDates.push(...firstDaysOfNextMonth);
 
   return calendarDates;
 };
