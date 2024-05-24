@@ -19,6 +19,7 @@ import { TableRow } from "@/Types/database.types";
 
 // Stpre
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+import { useDateStore } from "@/store/useDateStore";
 
 // Props
 type props = {
@@ -33,11 +34,12 @@ type schedule = {
 };
 
 const Schedule = ({ scheduleData }: props) => {
-  const date = new Date();
-  const days = getDays();
-
   // Store
   const { setFormAction } = useScheduleFormStore();
+  const { dateSelected } = useDateStore()
+
+  const date = new Date(dateSelected);
+  const days = getDays();
 
   // States
   const [timeHeightNumber, setTimeHeightNumber] = useState<number>(0);
@@ -72,7 +74,7 @@ const Schedule = ({ scheduleData }: props) => {
     <>
       <div className="flex-1">
         <div className="text-LightSecondary py-4 px-2 border-b-2 border-LightPrimary flex justify-between items-center">
-          <p className="select-none p-0 h-max">{currentDate}</p>
+          <p className="select-none p-0 h-max">{days[date.getDay()]}</p>
           <motion.button
             whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.95 }}

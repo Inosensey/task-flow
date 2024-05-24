@@ -61,7 +61,22 @@ const CalendarNav = () => {
   return (
     <>
       <div className="flex text-LightSecondary items-center gap-2 border-b-2 border-LightPrimary w-full h-14 px-2">
-        <div className="relative">
+        <div>
+          <button
+            onClick={() => setShowCustomCalendar((prev) => !prev)}
+            className="bg-SmoothDark px-4 py-[8px] rounded-md text-sm flex items-center gap-1 select-none"
+          >
+            Set Date
+            <MaterialSymbolsCalendarMonthOutlineRounded color="#fff" />
+          </button>
+        </div>
+        <div className="flex gap-1">
+          <p className="select-none text-sm">{months[currentMonth]}</p>
+          <p className="select-none text-sm">
+            {formatSelectedDate(dateSelected)}
+          </p>
+        </div>
+        {/* <div className="relative">
           <div
             onClick={() => {
               setShowMonthList((prev) => !prev);
@@ -138,16 +153,7 @@ const CalendarNav = () => {
               </div>
             ))}
           </div>
-        </div>
-        <div>
-          <button
-            onClick={() => setShowCustomCalendar((prev) => !prev)}
-            className="bg-SmoothDark px-4 py-[8px] rounded-md text-sm flex items-center gap-1 select-none"
-          >
-            Set Date
-            <MaterialSymbolsCalendarMonthOutlineRounded color="#fff" />
-          </button>
-        </div>
+        </div> */}
       </div>
 
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>

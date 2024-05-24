@@ -23,7 +23,7 @@ interface props {
   schedules: TableRow<"Schedules">[] | null;
 }
 
-const Schedules = ({ schedules }: props) => {
+const Schedules = (props: props) => {
   const { dateSelected } = useDateStore();
 
   // Use query
@@ -34,10 +34,10 @@ const Schedules = ({ schedules }: props) => {
   } = useQuery({
     queryKey: ["schedules"],
     queryFn: getSchedules,
-    initialData: schedules,
+    initialData: props.schedules,
   });
 
-  const currentDaySchedules = getCurrentDaySchedules(schedules, dateSelected);
+  const currentDaySchedules = getCurrentDaySchedules(props.schedules, dateSelected);
   const hours = useHours();
   return (
     <div className="w-full flex">
