@@ -21,7 +21,10 @@ import { getCurrentDate } from "@/utils/useDate";
 // types
 import TodoListForm from "./TodoListForm";
 import { ReturnInterface } from "@/Types/generalTypes";
-import { sortedTodoListInterface, todoListDetails } from "@/Types/todoListTypes";
+import {
+  sortedTodoListInterface,
+  todoListDetails,
+} from "@/Types/todoListTypes";
 import { todoListResponseInterface } from "@/Types/todoListTypes";
 
 interface props {
@@ -41,6 +44,7 @@ const TodoLists = ({ TodoLists }: props) => {
     queryFn: getTodoLists,
     initialData: TodoLists,
   });
+  console.log(TodoLists);
   const unSortedTodoList = todoListsData.Response
     .unsortedTodoList as todoListDetails[];
   const sortedTodoList = todoListsData.Response
@@ -57,17 +61,18 @@ const TodoLists = ({ TodoLists }: props) => {
     "Active",
   ]);
 
-  
   const toggleFilter = (value: string) => {
     console.log(sortedTodoList);
     setSelectedTodoListStatus(value);
   };
 
-  const handleCheckBoxOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckBoxOnChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const { value } = event.target;
 
     setSelectedTodoListStatus(value);
-  }
+  };
 
   return (
     <>
@@ -107,24 +112,40 @@ const TodoLists = ({ TodoLists }: props) => {
             color={sortedTodoList.Urgent.color}
             todoLists={sortedTodoList.Urgent.todoList}
             selectedStatus={selectedTodoListStatus}
+            addTodoFn={() => {
+              setFormAction("Add");
+              setShowTodoListForm((prev) => !prev);
+            }}
           />
           <PriorityBasedTodoList
             priority={"High Priority"}
             color={sortedTodoList.HighPriority.color}
             todoLists={sortedTodoList.HighPriority.todoList}
             selectedStatus={selectedTodoListStatus}
+            addTodoFn={() => {
+              setFormAction("Add");
+              setShowTodoListForm((prev) => !prev);
+            }}
           />
           <PriorityBasedTodoList
             priority={"Medium Priority"}
             color={sortedTodoList.MedPriority.color}
             todoLists={sortedTodoList.MedPriority.todoList}
             selectedStatus={selectedTodoListStatus}
+            addTodoFn={() => {
+              setFormAction("Add");
+              setShowTodoListForm((prev) => !prev);
+            }}
           />
           <PriorityBasedTodoList
             priority={"Low Priority"}
             color={sortedTodoList.LowPriority.color}
             todoLists={sortedTodoList.LowPriority.todoList}
             selectedStatus={selectedTodoListStatus}
+            addTodoFn={() => {
+              setFormAction("Add");
+              setShowTodoListForm((prev) => !prev);
+            }}
           />
         </div>
       </div>

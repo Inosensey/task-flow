@@ -2,7 +2,7 @@
 
 // Core
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 
@@ -22,7 +22,9 @@ import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 // types
 import { TableInsert, TableRow } from "@/Types/database.types";
 import { getFrequencies, getPriorityLevel } from "@/lib/todolistMethods";
-import CustomSelect from "@/components/ReusableComponents/inputs/CustomSelect";
+import CustomSelect, {
+  MobileSelectOptions,
+} from "@/components/ReusableComponents/inputs/CustomSelect";
 
 // Icons
 import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons";
@@ -69,7 +71,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   const [todoListInput, setTodoListInput] = useState<TableInsert<"TodoList">>(
     todoListInputInitials
   );
-  console.log(data);
+  useState<boolean>(false);
   const [togglePrioritySelect, setTogglePrioritySelect] =
     useState<boolean>(false);
   const [selectedPriority, setSelectedPriority] = useState<string>(
@@ -85,6 +87,15 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
       : "Frequencies"
   );
 
+  // Toggle mobile options UI
+  const [optionType, setOptionType] = useState<string>("");
+  const [selectedMobileOptions, setSelectedMobileOptions] = useState<
+    any[] | undefined
+  >(undefined);
+  const [toggleMobileOptions, setToggleMobileOptions] =
+    useState<boolean>(false);
+  const [mobileOptionHeader, setMobileOptionHeader] = useState<string>("");
+
   // Use Query
   const { data: priorityLevels } = useQuery({
     queryKey: ["priorityLevel"],
@@ -96,7 +107,6 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   });
 
   // Mutation
-  console.log(action);
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
     mutationFn: (todoListInfo: TableInsert<"TodoList">) => {
       if (action === "Add") {
@@ -187,6 +197,22 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
       [name]: value,
     }));
   };
+  const handlePriorityLevelChange = (level: TableRow<"PriorityLevel">) => {
+    setTodoListInput((prev) => ({
+      ...prev,
+      priorityLevel: level.level,
+    }));
+    setSelectedPriority(
+      `${level.level} - ${level.description!}`
+    );
+  }
+  const handleFrequencyChange = (frequency: TableRow<"Frequencies">) => {
+    setTodoListInput((prev) => ({
+      ...prev,
+      frequency: frequency.id,
+    }));
+    setSelectedFrequent(frequency.frequency!);
+  }
 
   // Variants
   const popUpVariants = {
@@ -211,164 +237,198 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   };
 
   return (
-    <Overlay>
-      <motion.form
-        variants={popUpVariants}
-        initial="hidden"
-        animate="show"
-        exit="hidden"
-        onSubmit={useHandleFormSubmit}
-        className="bg-Primary p-3 phone:w-11/12 rounded-md phone:mt-2 phone:h-max"
-      >
-        <div className="flex justify-between items-center">
-          <p className="py-0">TodoList Form</p>
-          <p
-            style={{ height: "max-content" }}
-            className="cursor-pointer bg-LightPrimary px-2 py-0 font-bold text-lg rounded-md"
-            onClick={() => setShowTodoListForm((prev) => !prev)}
-          >
-            X
-          </p>
-        </div>
-        <div className="mt-4 flex flex-col gap-4">
-          <Input
-            state={todoListInput.title!}
-            type="text"
-            name="title"
-            placeholder="Enter the Title of your Todo"
-            label="Title"
-            onChange={handleInputChange}
-            onBlur={handleInputChange}
-            valid={null}
-          />
-          <div>
-            <label className="phone:text-sm">Set Priority Level</label>
-            <CustomSelect
-              selected={
-                todoListInput.priorityLevel == 0
-                  ? "Priority Levels"
-                  : selectedPriority
-              }
-              placeHolder={"Priority Levels"}
-              showChoices={togglePrioritySelect}
-              setToggleDesktopOptions={() => setTogglePrioritySelect(true)}
+    <>
+      <Overlay>
+        <motion.form
+          variants={popUpVariants}
+          initial="hidden"
+          animate="show"
+          exit="hidden"
+          onSubmit={useHandleFormSubmit}
+          className="bg-Primary p-3 phone:w-11/12 rounded-md phone:mt-2 phone:h-max"
+        >
+          <div className="flex justify-between items-center">
+            <p className="py-0">TodoList Form</p>
+            <p
+              style={{ height: "max-content" }}
+              className="cursor-pointer bg-LightPrimary px-2 py-0 font-bold text-lg rounded-md"
+              onClick={() => setShowTodoListForm((prev) => !prev)}
             >
-              {priorityLevels?.map((level: TableRow<"PriorityLevel">) => (
-                <div
-                  onClick={() => {
-                    setTodoListInput((prev) => ({
-                      ...prev,
-                      priorityLevel: level.level,
-                    }));
-                    setSelectedPriority(
-                      `${level.level} - ${level.description!}`
-                    );
-                    setTogglePrioritySelect(false);
-                  }}
-                  key={level.level}
-                  className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
-                >
-                  <p className="select-none">
-                    {level.level} - {level.description}
-                  </p>
-                </div>
-              ))}
-            </CustomSelect>
+              X
+            </p>
           </div>
-          <div>
-            <label className="phone:text-sm">
-              Choose how frequent your Todo
-            </label>
-            <CustomSelect
-              selected={
-                selectedFrequent === "" ? "Frequencies" : selectedFrequent
-              }
-              placeHolder={"Frequencies"}
-              showChoices={toggleFrequentSelect}
-              setToggleDesktopOptions={() => setToggleFrequentSelect(true)}
-            >
-              {frequencies?.map((frequency: TableRow<"Frequencies">) => (
-                <div
-                  onClick={() => {
-                    setTodoListInput((prev) => ({
-                      ...prev,
-                      frequency: frequency.id,
-                    }));
-                    setSelectedFrequent(frequency.frequency!);
-                    setToggleFrequentSelect(false);
-                  }}
-                  key={frequency.frequency}
-                  className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
-                >
-                  <p className="select-none">{frequency.frequency}</p>
-                </div>
-              ))}
-            </CustomSelect>
-          </div>
-          <TextareaInput
-            name="description"
-            label="Description"
-            state={todoListInput.description!}
-            cols={30}
-            rows={7}
-            onChange={handleTextareaChange}
-            onBlur={handleTextareaChange}
-          />
-          <div className="hidden">
+          <div className="mt-4 flex flex-col gap-4">
             <Input
-              state={todoListInput.priorityLevel?.toString()!}
-              type="hidden"
-              name="priorityLevel"
-              placeholder=""
-              label=""
+              state={todoListInput.title!}
+              type="text"
+              name="title"
+              placeholder="Enter the Title of your Todo"
+              label="Title"
+              onChange={handleInputChange}
+              onBlur={handleInputChange}
               valid={null}
-              validationMessage={""}
             />
-            <Input
-              state={todoListInput.frequency?.toString()!}
-              type="hidden"
-              name="frequency"
-              placeholder=""
-              label=""
-              valid={null}
-              validationMessage={""}
+            <div>
+              <label className="phone:text-sm">Set Priority Level</label>
+              <CustomSelect
+                selected={
+                  todoListInput.priorityLevel == 0
+                    ? "Priority Levels"
+                    : selectedPriority
+                }
+                setToggleMobileOptions={() => {
+                  setToggleMobileOptions((prev) => !prev);
+                  setOptionType("PriorityLevel");
+                  setMobileOptionHeader("Priority Levels");
+                }}
+                setSelectedMobileOptions={() => {
+                  setSelectedMobileOptions(priorityLevels);
+                }}
+                placeHolder={"Priority Levels"}
+                showChoices={togglePrioritySelect}
+                setToggleDesktopOptions={() => setTogglePrioritySelect(true)}
+              >
+                {priorityLevels?.map((level: TableRow<"PriorityLevel">) => (
+                  <div
+                    onClick={() => {
+                      setTodoListInput((prev) => ({
+                        ...prev,
+                        priorityLevel: level.level,
+                      }));
+                      setSelectedPriority(
+                        `${level.level} - ${level.description!}`
+                      );
+                      setTogglePrioritySelect(false);
+                    }}
+                    key={level.level}
+                    className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
+                  >
+                    <p className="select-none">
+                      {level.level} - {level.description}
+                    </p>
+                  </div>
+                ))}
+              </CustomSelect>
+            </div>
+            <div>
+              <label className="phone:text-sm">
+                Choose how frequent your Todo
+              </label>
+              <CustomSelect
+                selected={
+                  selectedFrequent === "" ? "Frequencies" : selectedFrequent
+                }
+                placeHolder={"Frequencies"}
+                showChoices={toggleFrequentSelect}
+                setToggleDesktopOptions={() => setToggleFrequentSelect(true)}
+                setToggleMobileOptions={() => {
+                  setToggleMobileOptions((prev) => !prev);
+                  setOptionType("Frequencies");
+                  setMobileOptionHeader("Frequencies");
+                }}
+                setSelectedMobileOptions={() => {
+                  setSelectedMobileOptions(frequencies);
+                }}
+              >
+                {frequencies?.map((frequency: TableRow<"Frequencies">) => (
+                  <div
+                    onClick={() => {
+                      setTodoListInput((prev) => ({
+                        ...prev,
+                        frequency: frequency.id,
+                      }));
+                      setSelectedFrequent(frequency.frequency!);
+                      setToggleFrequentSelect(false);
+                    }}
+                    key={frequency.frequency}
+                    className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
+                  >
+                    <p className="select-none">{frequency.frequency}</p>
+                  </div>
+                ))}
+              </CustomSelect>
+            </div>
+            <TextareaInput
+              name="description"
+              label="Description"
+              state={todoListInput.description!}
+              cols={30}
+              rows={7}
+              onChange={handleTextareaChange}
+              onBlur={handleTextareaChange}
             />
+            <div className="hidden">
+              <Input
+                state={todoListInput.priorityLevel?.toString()!}
+                type="hidden"
+                name="priorityLevel"
+                placeholder=""
+                label=""
+                valid={null}
+                validationMessage={""}
+              />
+              <Input
+                state={todoListInput.frequency?.toString()!}
+                type="hidden"
+                name="frequency"
+                placeholder=""
+                label=""
+                valid={null}
+                validationMessage={""}
+              />
+            </div>
+            <div>
+              <motion.button
+                whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.95 }}
+                className={`${
+                  isIdle || isSuccess
+                    ? "bg-LightPrimary text-LightSecondary"
+                    : ""
+                } ${
+                  isPending && "bg-LightPrimaryDisabled text-Disabled"
+                }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
+                type="submit"
+              >
+                {isIdle || isSuccess ? (
+                  <>
+                    <span className="w-4">
+                      <FontAwesomeIcon
+                        className="text-sm"
+                        icon={faClipboardCheck}
+                      />
+                    </span>
+                    Save Todo List
+                  </>
+                ) : (
+                  ""
+                )}
+                {isPending && (
+                  <>
+                    <SvgSpinnersBlocksShuffle3 color="#00ADB5" />
+                    Saving Todo List
+                  </>
+                )}
+              </motion.button>
+            </div>
           </div>
-          <div>
-            <motion.button
-              whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.95 }}
-              className={`${
-                isIdle || isSuccess ? "bg-LightPrimary text-LightSecondary" : ""
-              } ${
-                isPending && "bg-LightPrimaryDisabled text-Disabled"
-              }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
-              type="submit"
-            >
-              {isIdle || isSuccess ? (
-                <>
-                  <span className="w-4">
-                    <FontAwesomeIcon
-                      className="text-sm"
-                      icon={faClipboardCheck}
-                    />
-                  </span>
-                  Save Todo List
-                </>
-              ) : (
-                ""
-              )}
-              {isPending && (
-                <>
-                  <SvgSpinnersBlocksShuffle3 color="#00ADB5" />
-                  Saving Todo List
-                </>
-              )}
-            </motion.button>
-          </div>
-        </div>
-      </motion.form>
-    </Overlay>
+        </motion.form>
+        <AnimatePresence
+          initial={false}
+          mode="wait"
+          onExitComplete={() => null}
+        >
+          {/* {toggleMobileOptions && (
+            <MobileSelectOptions
+              setToggleMobileOptions={setToggleMobileOptions}
+              choices={selectedMobileOptions}
+              optionType={optionType}
+              header={mobileOptionHeader}
+            />
+          )} */}
+        </AnimatePresence>
+      </Overlay>
+    </>
   );
 };
 

@@ -17,7 +17,7 @@ import {
 
 // Components
 import Input from "@/components/ReusableComponents/inputs/Input";
-import { MobileCatSelectOptions } from "@/components/Dashboard/Schedules/MobileSelectOptions";
+import { MobileCatSelectOptions } from "@/components/Dashboard/Schedules/MobileSelectCatOptions";
 
 //Store
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
@@ -30,7 +30,7 @@ import {
   SelectedMobileOptionType,
   LocationInfoInput,
 } from "@/Types/scheduleType";
-import { DesktopSelectOptions } from "./DesktopSelectOptions";
+import { DesktopSelectOptions } from "./DesktopSelectCatOptions";
 interface props {
   place_id: string;
   scheduleId: string | null;
@@ -55,7 +55,6 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
   const [locationInfo, setLocationInfo] = useState<LocationInfoInput>(
     getLocationInfoInitial(formAction, scheduleData?.Response)
   );
-  const [optionType, setOptionType] = useState<string>("");
   // Toggle desktop options UI
   const [showChoices, setShowChoices] = useState<boolean>(false);
   const [showPlacesType, setShowPlacesType] = useState<boolean>(false);
@@ -66,6 +65,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
     useState<boolean>(false);
 
   // Toggle mobile options UI
+  const [optionType, setOptionType] = useState<string>("");
   const [selectedMobileOptions, setSelectedMobileOptions] = useState<
     SelectedMobileOptionType[] | undefined
   >(undefined);
