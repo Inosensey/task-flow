@@ -33,6 +33,8 @@ const FormValidation = (data: params): validationInfo => {
     case "date":
     case "timeStart":
     case "timeEnd":
+    case "priorityLevel":
+    case "frequency":
       return validateTimeOrDate(data);
     case "gender":
     case "country":

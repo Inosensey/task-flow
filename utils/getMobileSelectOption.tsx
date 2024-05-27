@@ -24,10 +24,9 @@ export const getMobileSelectOption = <T,>({
               onClick={() => {
                 setState((prev: T) => ({
                   ...prev,
-                  priorityLevel: priorityLevelInfo.id,
+                  priorityLevel: priorityLevelInfo.level,
                 }));
                 setToggleMobileOptions(false);
-                console.log("PriorityLevel")
               }}
               key={priorityLevelInfo.id}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -53,7 +52,6 @@ export const getMobileSelectOption = <T,>({
                   frequency: frequencyInfo.id,
                 }));
                 setToggleMobileOptions(false);
-                console.log("Frequencies")
               }}
               key={frequencyInfo.id}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"

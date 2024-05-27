@@ -44,7 +44,7 @@ const TodoLists = ({ TodoLists }: props) => {
     queryFn: getTodoLists,
     initialData: TodoLists,
   });
-  console.log(TodoLists);
+  
   const unSortedTodoList = todoListsData.Response
     .unsortedTodoList as todoListDetails[];
   const sortedTodoList = todoListsData.Response

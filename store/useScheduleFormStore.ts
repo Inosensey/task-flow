@@ -25,29 +25,32 @@ export const useScheduleFormStore = create<StoreType>((set) => ({
   formAction: "add",
   setFormAction: (action: string) => {
     set(() => ({ formAction: action }));
-  },
-  validations: {
-    title: {
-      valid: null,
-      validationMessage: "",
-    },
-    data: {
-      valid: null,
-      validationMessage: "",
-    },
-    timeStart: {
-      valid: null,
-      validationMessage: "",
-    },
-    timeEnd: {
-      valid: null,
-      validationMessage: "",
-    },
-    city: {
-      valid: null,
-      validationMessage: "",
-    },
-  },
+  }
+  ,
+  validations: undefined
+  // {
+  //   title: {
+  //     valid: null,
+  //     validationMessage: "",
+  //   },
+  //   data: {
+  //     valid: null,
+  //     validationMessage: "",
+  //   },
+  //   timeStart: {
+  //     valid: null,
+  //     validationMessage: "",
+  //   },
+  //   timeEnd: {
+  //     valid: null,
+  //     validationMessage: "",
+  //   },
+  //   city: {
+  //     valid: null,
+  //     validationMessage: "",
+  //   },
+  // }
+  ,
   setValidation: (data: validationParams) =>
     set((prev) => ({
       validations: {
@@ -60,27 +63,6 @@ export const useScheduleFormStore = create<StoreType>((set) => ({
     })),
   resetValidation: () =>
     set(() => ({
-      validations: {
-        title: {
-          valid: null,
-          validationMessage: "",
-        },
-        data: {
-          valid: null,
-          validationMessage: "",
-        },
-        timeStart: {
-          valid: null,
-          validationMessage: "",
-        },
-        timeEnd: {
-          valid: null,
-          validationMessage: "",
-        },
-        city: {
-          valid: null,
-          validationMessage: "",
-        },
-      },
+      validations: undefined,
     })),
 }));

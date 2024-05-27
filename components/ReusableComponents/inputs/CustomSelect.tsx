@@ -22,6 +22,8 @@ interface props {
   setSelectedMobileOptions?: () => void;
   dynamic?: boolean;
   fetching?: boolean;
+  valid?: null | boolean | undefined;
+  validationMessage?: string;
 }
 
 interface MobileSelectOptionsProps<T> {
@@ -42,6 +44,8 @@ const CustomSelect = ({
   dynamic = false,
   fetching = false,
   setSelectedMobileOptions,
+  valid,
+  validationMessage
 }: props) => {
   const windowCurrentWidth = window.innerWidth;
 
@@ -66,6 +70,17 @@ const CustomSelect = ({
       >
         {children}
       </div>
+      {valid != null ? (
+        valid === true ? (
+          ""
+        ) : (
+          <span className="text-[0.75rem] text-red-500 font-bold">
+            {validationMessage}
+          </span>
+        )
+      ) : (
+        ""
+      )}
     </div>
   );
 };

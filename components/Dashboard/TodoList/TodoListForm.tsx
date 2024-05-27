@@ -49,14 +49,18 @@ type validation = {
 };
 
 const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
+  const windowCurrentWidth = window.innerWidth;
   // TodoList Initialize
   const todoListInputInitials: TableInsert<"TodoList"> = {
     title: action !== "add" && data !== undefined ? data.title : "",
     description: action !== "add" && data !== undefined ? data.description : "",
     priorityLevel:
-      action !== "add" && data !== undefined ? data.PriorityLevel.level! : 0,
+      action !== "add" && data !== undefined
+        ? data.PriorityLevel.level!
+        : undefined,
     userId: "",
-    frequency: action !== "add" && data !== undefined ? data.Frequencies.id : 0,
+    frequency:
+      action !== "add" && data !== undefined ? data.Frequencies.id : undefined,
   };
 
   // Initial use query
@@ -74,18 +78,8 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   useState<boolean>(false);
   const [togglePrioritySelect, setTogglePrioritySelect] =
     useState<boolean>(false);
-  const [selectedPriority, setSelectedPriority] = useState<string>(
-    action !== "add" && data !== undefined
-      ? data.PriorityLevel.description
-      : "Priority Levels"
-  );
   const [toggleFrequentSelect, setToggleFrequentSelect] =
     useState<boolean>(false);
-  const [selectedFrequent, setSelectedFrequent] = useState<string>(
-    action !== "add" && data !== undefined
-      ? data.Frequencies.frequency
-      : "Frequencies"
-  );
 
   // Toggle mobile options UI
   const [optionType, setOptionType] = useState<string>("");
@@ -140,7 +134,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   // Events
   const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const fieldsToCheck = ["date", "title", "timeStart", "timeEnd", "city"];
+    const fieldsToCheck = ["title", "priorityLevel", "frequency"];
     const formValues: TableInsert<"TodoList"> & { [key: string]: string } =
       useFormSerialize(event);
     console.log(formValues);
@@ -157,7 +151,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   ) => {
     let isValid = true;
     fieldsToCheck.some((field) => {
-      if (formValues[field] === "") {
+      if (formValues[field] === "" || formValues[field] === undefined) {
         isValid = false;
         const validationParams = {
           value: formValues[field],
@@ -230,7 +224,11 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
             <p
               style={{ height: "max-content" }}
               className="cursor-pointer bg-LightPrimary px-2 py-0 font-bold text-lg rounded-md"
-              onClick={() => setShowTodoListForm((prev) => !prev)}
+              onClick={() => {
+                setShowTodoListForm((prev) => !prev);
+                resetValidation();
+                setTodoListInput(todoListInputInitials);
+              }}
             >
               X
             </p>
@@ -244,13 +242,18 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
               label="Title"
               onChange={handleInputChange}
               onBlur={handleInputChange}
-              valid={null}
+              valid={validations?.title?.valid}
+              validationMessage={validations?.title?.validationMessage}
             />
             <div>
               <label className="phone:text-sm">Set Priority Level</label>
               <CustomSelect
+                valid={validations?.priorityLevel?.valid}
+                validationMessage={
+                  validations?.priorityLevel?.validationMessage
+                }
                 selected={
-                  todoListInput.priorityLevel == 0
+                  todoListInput.priorityLevel === undefined
                     ? "Priority Levels"
                     : priorityLevels.find(
                         (priorityLevelInfo: TableRow<"PriorityLevel">) =>
@@ -269,28 +272,30 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 }}
                 placeHolder={"Priority Levels"}
                 showChoices={togglePrioritySelect}
-                setToggleDesktopOptions={() => setTogglePrioritySelect(true)}
+                setToggleDesktopOptions={() => {
+                  setTogglePrioritySelect((prev) => !prev);
+                  setOptionType("PriorityLevel");
+                }}
               >
-                {priorityLevels?.map((level: TableRow<"PriorityLevel">) => (
-                  <div
-                    onClick={() => {
-                      setTodoListInput((prev) => ({
-                        ...prev,
-                        priorityLevel: level.level,
-                      }));
-                      setSelectedPriority(
-                        `${level.level} - ${level.description!}`
-                      );
-                      setTogglePrioritySelect(false);
-                    }}
-                    key={level.level}
-                    className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
-                  >
-                    <p className="select-none">
-                      {level.level} - {level.description}
-                    </p>
-                  </div>
-                ))}
+                {windowCurrentWidth >= 769 &&
+                  optionType === "PriorityLevel" &&
+                  priorityLevels?.map((level: TableRow<"PriorityLevel">) => (
+                    <div
+                      onClick={() => {
+                        setTodoListInput((prev) => ({
+                          ...prev,
+                          priorityLevel: level.level,
+                        }));
+                        setTogglePrioritySelect(false);
+                      }}
+                      key={level.level}
+                      className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
+                    >
+                      <p className="select-none">
+                        {level.level} - {level.description}
+                      </p>
+                    </div>
+                  ))}
               </CustomSelect>
             </div>
             <div>
@@ -298,18 +303,23 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 Choose how frequent your Todo
               </label>
               <CustomSelect
+                valid={validations?.frequency.valid}
+                validationMessage={validations?.frequency?.validationMessage}
                 selected={
-                  todoListInput.frequency === 0
+                  todoListInput.frequency === undefined
                     ? "Frequencies"
                     : frequencies.find(
                         (frequency: TableRow<"Frequencies">) =>
-                          frequency.id === todoListInput.frequency &&
+                          frequency.id === todoListInput?.frequency &&
                           frequency.frequency
                       ).frequency
                 }
                 placeHolder={"Frequencies"}
                 showChoices={toggleFrequentSelect}
-                setToggleDesktopOptions={() => setToggleFrequentSelect(true)}
+                setToggleDesktopOptions={() => {
+                  setToggleFrequentSelect((prev) => !prev);
+                  setOptionType("Frequencies");
+                }}
                 setToggleMobileOptions={() => {
                   setToggleMobileOptions((prev) => !prev);
                   setOptionType("Frequencies");
@@ -319,22 +329,23 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                   setSelectedMobileOptions(frequencies);
                 }}
               >
-                {frequencies?.map((frequency: TableRow<"Frequencies">) => (
-                  <div
-                    onClick={() => {
-                      setTodoListInput((prev) => ({
-                        ...prev,
-                        frequency: frequency.id,
-                      }));
-                      setSelectedFrequent(frequency.frequency!);
-                      setToggleFrequentSelect(false);
-                    }}
-                    key={frequency.frequency}
-                    className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
-                  >
-                    <p className="select-none">{frequency.frequency}</p>
-                  </div>
-                ))}
+                {windowCurrentWidth >= 769 &&
+                  optionType === "Frequencies" &&
+                  frequencies?.map((frequency: TableRow<"Frequencies">) => (
+                    <div
+                      onClick={() => {
+                        setTodoListInput((prev) => ({
+                          ...prev,
+                          frequency: frequency.id,
+                        }));
+                        setToggleFrequentSelect(false);
+                      }}
+                      key={frequency.frequency}
+                      className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
+                    >
+                      <p className="select-none">{frequency.frequency}</p>
+                    </div>
+                  ))}
               </CustomSelect>
             </div>
             <TextareaInput

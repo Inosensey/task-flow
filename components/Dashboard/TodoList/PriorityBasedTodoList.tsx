@@ -26,7 +26,6 @@ const PriorityBasedTodoList = ({
   const [haveTodos, setHaveTodos] = useState<boolean>(true);
 
   const checkTodosLength = () => {
-    console.log(selectedStatus);
     if (selectedStatus === "All") return setHaveTodos(true);
     const todosLength = todoLists.filter(
       (details: todoListDetails) =>
