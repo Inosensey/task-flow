@@ -22,7 +22,6 @@ const PriorityBasedTodoList = ({
   selectedStatus,
   addTodoFn
 }: props) => {
-  console.log(todoLists);
 
   const [haveTodos, setHaveTodos] = useState<boolean>(true);
 

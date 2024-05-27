@@ -166,7 +166,7 @@ export const getTodoLists = async (): Promise<
       unsortedTodoList: unsortedTodoList,
       sortedTodoList: sortedTodoList,
     };
-    return returnSuccess("Schedule Successfully Todo-Lists", response);
+    return returnSuccess("Todo-Lists Successfully fetched", response);
   } catch (error) {
     return returnError("There is an error getting the Todo-Lists", error);
   }

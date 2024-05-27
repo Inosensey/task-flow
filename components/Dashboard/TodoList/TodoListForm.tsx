@@ -116,12 +116,8 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
       }
     },
     onSuccess: (data) => {
-      console.log(data);
       onTodoListAddSuccess();
       queryClient.invalidateQueries({ queryKey: ["todolists"] });
-    },
-    onError: (data) => {
-      console.log(data);
     },
   });
 
@@ -149,10 +145,8 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
       useFormSerialize(event);
     console.log(formValues);
     if (todoListFormValidation(fieldsToCheck, formValues)) {
-      console.log("valid");
       mutate(formValues);
     } else {
-      console.log("not valid");
       return;
     }
   };
@@ -197,22 +191,6 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
       [name]: value,
     }));
   };
-  const handlePriorityLevelChange = (level: TableRow<"PriorityLevel">) => {
-    setTodoListInput((prev) => ({
-      ...prev,
-      priorityLevel: level.level,
-    }));
-    setSelectedPriority(
-      `${level.level} - ${level.description!}`
-    );
-  }
-  const handleFrequencyChange = (frequency: TableRow<"Frequencies">) => {
-    setTodoListInput((prev) => ({
-      ...prev,
-      frequency: frequency.id,
-    }));
-    setSelectedFrequent(frequency.frequency!);
-  }
 
   // Variants
   const popUpVariants = {
@@ -274,7 +252,12 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 selected={
                   todoListInput.priorityLevel == 0
                     ? "Priority Levels"
-                    : selectedPriority
+                    : priorityLevels.find(
+                        (priorityLevelInfo: TableRow<"PriorityLevel">) =>
+                          priorityLevelInfo.level ===
+                            todoListInput.priorityLevel &&
+                          priorityLevelInfo.description
+                      ).description
                 }
                 setToggleMobileOptions={() => {
                   setToggleMobileOptions((prev) => !prev);
@@ -316,7 +299,13 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
               </label>
               <CustomSelect
                 selected={
-                  selectedFrequent === "" ? "Frequencies" : selectedFrequent
+                  todoListInput.frequency === 0
+                    ? "Frequencies"
+                    : frequencies.find(
+                        (frequency: TableRow<"Frequencies">) =>
+                          frequency.id === todoListInput.frequency &&
+                          frequency.frequency
+                      ).frequency
                 }
                 placeHolder={"Frequencies"}
                 showChoices={toggleFrequentSelect}
@@ -418,14 +407,15 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
           mode="wait"
           onExitComplete={() => null}
         >
-          {/* {toggleMobileOptions && (
+          {toggleMobileOptions && (
             <MobileSelectOptions
               setToggleMobileOptions={setToggleMobileOptions}
               choices={selectedMobileOptions}
               optionType={optionType}
               header={mobileOptionHeader}
+              setState={setTodoListInput}
             />
-          )} */}
+          )}
         </AnimatePresence>
       </Overlay>
     </>
