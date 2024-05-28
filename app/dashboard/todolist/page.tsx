@@ -1,4 +1,6 @@
 "use server";
+import { headers } from "next/headers";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 // Components
 import Header from "@/components/Dashboard/Header";
@@ -8,15 +10,11 @@ import TodoLists from "@/components/Dashboard/TodoList/TodoLists";
 import IonTodayOutline from "@/Icones/IonTodayOutline";
 
 // Libs
-import { getTodoLists, resetTodoLists } from "@/lib/todolistMethods";
+import { getTodoLists } from "@/lib/todolistMethods";
 
-// types
-import { TableRow } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
 import { todoListDetails } from "@/Types/todoListTypes";
-
-// Utils
-import { getCurrentDate } from "@/utils/useDate";
+import { getSupabaseUser } from "@/utils/supabaseUtils";
 
 type sortedTodoListType = {
   todoList: todoListDetails[];
@@ -34,14 +32,25 @@ interface todoListResponseInterface {
 }
 
 const Page = async () => {
-  const todoLists: ReturnInterface<todoListResponseInterface> | ReturnInterface<any> =
-    await getTodoLists();
+  const userData = await getSupabaseUser();
+  const userId = userData.data.user!.id;
+
+  const res = await fetch(
+    `http://localhost:3000/api/supabase/getTodoList?user=${userId}`,
+    {
+      method: "GET",
+      headers: headers(),
+      cache: "no-store",
+      next: { tags: ["todolists"] },
+    }
+  );
+  const todoLists = await res.json();
 
   return (
     <div className="w-full">
       <div className="flex flex-col w-full bg-Primary">
         <Header headerName="Todo-List" Icon={IonTodayOutline} />
-        <TodoLists TodoLists={todoLists} />
+        <TodoLists TodoLists={todoLists.response} />
       </div>
     </div>
   );

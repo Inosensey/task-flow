@@ -1,4 +1,5 @@
 "use server";
+import { headers } from "next/headers";
 
 // Actions
 import { updateTodoStatus, addDailyReset } from "@/actions/todolistActions";
@@ -28,7 +29,7 @@ interface sortedTodoListInterface {
 
 interface todoListResponseInterface {
   unsortedTodoList: todoListDetails[];
-  sortedTodoList: sortedTodoListInterface;
+  sortedTodoList: sortedTodoListInterface | [];
 }
 
 const handleTodoListSort = (todoLists: todoListDetails[]) => {
@@ -94,8 +95,9 @@ export const resetTodoLists = async () => {
   const dailyResets = await getResetDates(formattedDate);
   const currentDay = getCurrentDay();
 
-  const unsortedTodoLists: todoListDetails[] =
-    todoLists.Response.unsortedTodoList;
+  const unsortedTodoLists: todoListDetails[] | undefined =
+    todoLists?.unsortedTodoList;
+  if (unsortedTodoLists === undefined) return;
 
   if (dailyResets.Response.length === 0) {
     await addDailyReset();
@@ -139,9 +141,7 @@ export const getResetDates = async (
   }
 };
 
-export const getTodoLists = async (): Promise<
-  ReturnInterface<todoListResponseInterface> | ReturnInterface<any>
-> => {
+export const getTodoLists = async () => {
   let result;
   const supabase = createClient();
   const auth: any = getCookieAuth();
@@ -154,10 +154,11 @@ export const getTodoLists = async (): Promise<
       .eq("userId", `${auth.user.id}`);
     // console.log(auth)
     if (result.error) {
-      return returnError(
-        "There is an error getting the Todo-Lists",
-        result.error
-      );
+      console.log("There is an error getting the Todo-Lists", result.error);
+      return {
+        unsortedTodoList: [],
+        sortedTodoList: [],
+      };
     }
     const resData: any = result.data;
     const unsortedTodoList = resData as todoListDetails[];
@@ -166,9 +167,13 @@ export const getTodoLists = async (): Promise<
       unsortedTodoList: unsortedTodoList,
       sortedTodoList: sortedTodoList,
     };
-    return returnSuccess("Todo-Lists Successfully fetched", response);
+    return response;
   } catch (error) {
-    return returnError("There is an error getting the Todo-Lists", error);
+    console.log("There is an error getting the Todo-Lists", error);
+    return {
+      unsortedTodoList: [],
+      sortedTodoList: [],
+    };
   }
 };
 

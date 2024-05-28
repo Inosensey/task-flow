@@ -30,14 +30,14 @@ export const loginAuthWithEmailPass = async (credentials: credentials) => {
 };
 
 export const signOut = async () => {  try {
-  const cookieStore = cookies();
+  // const cookieStore = cookies();
   const supabase = createClient()
   let result = await supabase.auth.signOut();
   if (result.error) return returnError("Sign out Failed:", result.error.message);
 
-  cookieStore.getAll().forEach((cookie) => {
-    cookieStore.delete(cookie.name);
-  });
+  // cookieStore.getAll().forEach((cookie) => {
+  //   cookieStore.delete(cookie.name);
+  // });
 
   return true;
 } catch (error) {

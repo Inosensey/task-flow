@@ -44,13 +44,12 @@ const Page = async () => {
   };
 
   // Todo Lists
-
   const [resetTodoListResult, todoLists] = await Promise.all([
     resetTodoLists(),
     getTodoLists(),
   ]);
   const unsortedTodoList: todoListDetails[] =
-    todoLists.Response.unsortedTodoList;
+    todoLists.unsortedTodoList;
   const formattedTodoList = unsortedTodoList.filter(
     (details: todoListDetails) =>
       details.Frequencies.frequency === currentDay ||

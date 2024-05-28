@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 import { cookies } from "next/headers";
 import { updateSession } from "./utils/refreshSupbaseAuth";
 import { headers } from "next/headers";
 
 // Utils
-import { getCookieAuth } from "./utils/cookiesUtils";
+import { getCookieAuth, supabaseAuth } from "./utils/cookiesUtils";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
-  const auth: any = getCookieAuth();
+  // const auth: any = getCookieAuth();
+  const auth: any = supabaseAuth(request);
   // Protected routes
   if (request.nextUrl.pathname.startsWith("/dashboard")) {
     if (auth === undefined) {

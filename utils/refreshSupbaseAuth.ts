@@ -1,6 +1,5 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { deleteCookieAuth } from "@/actions/authActions";
 
 export async function updateSession(request: NextRequest) {
   const res = NextResponse.next();
@@ -54,10 +53,11 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  const {
-    data: { session },
-    error,
-  } = await supabase.auth.getSession();
+  // const {
+  //   data: { session },
+  //   error,
+  // } = await supabase.auth.getSession();
+  // console.log(session)
   // if(error) {
   //   deleteCookieAuth()
   // }

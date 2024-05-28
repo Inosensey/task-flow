@@ -28,7 +28,7 @@ export const mutateTodoList = async (
       revalidateTag("todoList");
       revalidateTag(`todoList${todoListId}`);
     }
-    console.log(result);
+    revalidateTag("todolists");
     return result;
   } catch (e) {
     return returnError("There is an error inserting the schedule", e);

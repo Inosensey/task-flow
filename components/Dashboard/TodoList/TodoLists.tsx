@@ -27,28 +27,27 @@ import {
 } from "@/Types/todoListTypes";
 import { todoListResponseInterface } from "@/Types/todoListTypes";
 
+interface todoListsTypes {
+  unsortedTodoList: todoListDetails[];
+  sortedTodoList: sortedTodoListInterface;
+}
 interface props {
-  TodoLists: ReturnInterface<todoListResponseInterface>;
+  TodoLists: todoListsTypes;
 }
 
 const TodoLists = ({ TodoLists }: props) => {
   const formattedDate = getCurrentDate();
 
   // Use query
-  const {
-    data: todoListsData,
-    error: todoListsError,
-    isFetched: todoListsIsFetched,
-  } = useQuery({
+  const { data: todoListsData } = useQuery({
     queryKey: ["todolists"],
     queryFn: getTodoLists,
     initialData: TodoLists,
   });
-  
-  const unSortedTodoList = todoListsData.Response
-    .unsortedTodoList as todoListDetails[];
-  const sortedTodoList = todoListsData.Response
-    .sortedTodoList as sortedTodoListInterface;
+
+  const unSortedTodoList = todoListsData.unsortedTodoList as todoListDetails[];
+  const sortedTodoList =
+    todoListsData.sortedTodoList as sortedTodoListInterface;
 
   //States
   const [formAction, setFormAction] = useState<string>("Add");
