@@ -31,16 +31,15 @@ interface todoListResponseInterface {
   sortedTodoList: sortedTodoListInterface;
 }
 
-const Page = async () => {
+const page = async () => {
   const userData = await getSupabaseUser();
   const userId = userData.data.user!.id;
-
+  const headerInfo = headers();
+  
   const res = await fetch(
-    `http://localhost:3000/api/supabase/getTodoList?user=${userId}`,
+    `http://www.localhost:3000/api/supabase/getTodoList?user=${userId}`,
     {
-      method: "GET",
-      headers: headers(),
-      cache: "no-store",
+      headers: {cookie: headerInfo.get("cookie")!},
       next: { tags: ["todolists"] },
     }
   );
@@ -56,4 +55,4 @@ const Page = async () => {
   );
 };
 
-export default Page;
+export default page;

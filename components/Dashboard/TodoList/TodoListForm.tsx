@@ -1,10 +1,11 @@
 "use client";
 
 // Core
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useFormState } from "react-dom";
 
 // Components
 import Overlay from "@/components/ReusableComponents/Overlay";
@@ -36,6 +37,7 @@ import FormValidation from "@/utils/validation";
 
 // Types
 import { todoListDetails } from "@/Types/todoListTypes";
+import { useFormStateType } from "@/Types/formStates";
 interface props {
   setShowTodoListForm: React.Dispatch<React.SetStateAction<boolean>>;
   action: string;
@@ -48,8 +50,18 @@ type validation = {
   validationMessage: string;
 };
 
+
+// Initials
+const useFormStateInitials:useFormStateType = {
+  success: null,
+error: null,
+  message: "",
+  data: []
+}
+
 const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   const windowCurrentWidth = window.innerWidth;
+
   // TodoList Initialize
   const todoListInputInitials: TableInsert<"TodoList"> = {
     title: action !== "add" && data !== undefined ? data.title : "",
@@ -58,7 +70,6 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
       action !== "add" && data !== undefined
         ? data.PriorityLevel.level!
         : undefined,
-    userId: "",
     frequency:
       action !== "add" && data !== undefined ? data.Frequencies.id : undefined,
   };
@@ -71,6 +82,9 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   const { setValidation, validations, resetValidation } =
     useScheduleFormStore();
 
+  // UseFormState
+  const [state, formAction] = useFormState(mutateTodoList, useFormStateInitials)
+  
   // States
   const [todoListInput, setTodoListInput] = useState<TableInsert<"TodoList">>(
     todoListInputInitials
@@ -80,6 +94,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
     useState<boolean>(false);
   const [toggleFrequentSelect, setToggleFrequentSelect] =
     useState<boolean>(false);
+  const [isPending, setIsPending] = useState<boolean|null>(null)
 
   // Toggle mobile options UI
   const [optionType, setOptionType] = useState<string>("");
@@ -100,21 +115,6 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
     queryFn: () => getFrequencies(),
   });
 
-  // Mutation
-  const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
-    mutationFn: (todoListInfo: TableInsert<"TodoList">) => {
-      if (action === "Add") {
-        return mutateTodoList(todoListInfo, "add");
-      } else {
-        return mutateTodoList(todoListInfo, "update", data!.id);
-      }
-    },
-    onSuccess: (data) => {
-      onTodoListAddSuccess();
-      queryClient.invalidateQueries({ queryKey: ["todolists"] });
-    },
-  });
-
   const onTodoListAddSuccess = () => {
     const notifMessage =
       action === "Add"
@@ -133,15 +133,15 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
 
   // Events
   const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    // event.preventDefault();
+    setIsPending(true);
     const fieldsToCheck = ["title", "priorityLevel", "frequency"];
     const formValues: TableInsert<"TodoList"> & { [key: string]: string } =
       useFormSerialize(event);
     console.log(formValues);
-    if (todoListFormValidation(fieldsToCheck, formValues)) {
-      mutate(formValues);
-    } else {
-      return;
+    if (!todoListFormValidation(fieldsToCheck, formValues)) {
+      event.preventDefault();
+      setIsPending(false);
     }
   };
 
@@ -151,7 +151,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   ) => {
     let isValid = true;
     fieldsToCheck.some((field) => {
-      if (formValues[field] === "" || formValues[field] === undefined) {
+      if (formValues[field] === "" || formValues[field] === '0') {
         isValid = false;
         const validationParams = {
           value: formValues[field],
@@ -186,6 +186,16 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
     }));
   };
 
+  // UseEffect
+  useEffect(() => {
+    if(state.success) {
+      queryClient.invalidateQueries({ queryKey: ["todolists"] });
+      setIsPending(false);
+      onTodoListAddSuccess();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state])
+
   // Variants
   const popUpVariants = {
     hidden: {
@@ -212,6 +222,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
     <>
       <Overlay>
         <motion.form
+          action={formAction}
           variants={popUpVariants}
           initial="hidden"
           animate="show"
@@ -359,7 +370,12 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
             />
             <div className="hidden">
               <Input
-                state={todoListInput.priorityLevel?.toString()!}
+                state={
+                  todoListInput.priorityLevel === undefined ||
+                  todoListInput.priorityLevel === null
+                    ? "0"
+                    : todoListInput.priorityLevel.toString()
+                }
                 type="hidden"
                 name="priorityLevel"
                 placeholder=""
@@ -368,7 +384,12 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 validationMessage={""}
               />
               <Input
-                state={todoListInput.frequency?.toString()!}
+                state={
+                  todoListInput.frequency === undefined ||
+                  todoListInput.frequency === null
+                    ? "0"
+                    : todoListInput.frequency.toString()
+                }
                 type="hidden"
                 name="frequency"
                 placeholder=""
@@ -382,7 +403,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
                 whileTap={{ scale: 0.95 }}
                 className={`${
-                  isIdle || isSuccess
+                  isPending === null  || isPending === false
                     ? "bg-LightPrimary text-LightSecondary"
                     : ""
                 } ${
@@ -390,7 +411,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
                 type="submit"
               >
-                {isIdle || isSuccess ? (
+                {isPending === null || isPending === false ? (
                   <>
                     <span className="w-4">
                       <FontAwesomeIcon

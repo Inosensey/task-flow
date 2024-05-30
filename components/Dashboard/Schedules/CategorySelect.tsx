@@ -13,7 +13,7 @@ import {
   useGetScheduleDetails,
   useLocationCategories,
   useLocationKeys,
-} from "@/utils/TanStackQueryFns";
+} from "@/lib/TanStackQueryFns";
 
 // Components
 import Input from "@/components/ReusableComponents/inputs/Input";

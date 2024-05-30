@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -12,9 +12,6 @@ import PriorityBasedTodoList from "./PriorityBasedTodoList";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 
-// libs
-import { getTodoLists } from "@/lib/todolistMethods";
-
 // Utils
 import { getCurrentDate } from "@/utils/useDate";
 
@@ -25,7 +22,7 @@ import {
   sortedTodoListInterface,
   todoListDetails,
 } from "@/Types/todoListTypes";
-import { todoListResponseInterface } from "@/Types/todoListTypes";
+import { getTodoList } from "@/lib/TanStackQueryFns";
 
 interface todoListsTypes {
   unsortedTodoList: todoListDetails[];
@@ -41,7 +38,7 @@ const TodoLists = ({ TodoLists }: props) => {
   // Use query
   const { data: todoListsData } = useQuery({
     queryKey: ["todolists"],
-    queryFn: getTodoLists,
+    queryFn: getTodoList,
     initialData: TodoLists,
   });
 
@@ -61,7 +58,6 @@ const TodoLists = ({ TodoLists }: props) => {
   ]);
 
   const toggleFilter = (value: string) => {
-    console.log(sortedTodoList);
     setSelectedTodoListStatus(value);
   };
 

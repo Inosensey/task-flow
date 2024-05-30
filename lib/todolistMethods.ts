@@ -7,13 +7,13 @@ import { updateTodoStatus, addDailyReset } from "@/actions/todolistActions";
 // Utils
 import { returnError, returnSuccess } from "@/utils/formUtils";
 import { createClient } from "@/utils/supabaseSSR";
-import { getCookieAuth } from "@/utils/cookiesUtils";
 import { getCurrentDate, getCurrentDay, getDays } from "@/utils/useDate";
 
 // types
 import { todoListDetails } from "@/Types/todoListTypes";
 import { Table, TableRow } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
+import { getSupabaseUser } from "@/utils/supabaseUtils";
 
 type sortedTodoListType = {
   todoList: todoListDetails[];
@@ -96,7 +96,7 @@ export const resetTodoLists = async () => {
   const currentDay = getCurrentDay();
 
   const unsortedTodoLists: todoListDetails[] | undefined =
-    todoLists?.unsortedTodoList;
+    todoLists.unsortedTodoList;
   if (unsortedTodoLists === undefined) return;
 
   if (dailyResets.Response.length === 0) {
@@ -144,14 +144,15 @@ export const getResetDates = async (
 export const getTodoLists = async () => {
   let result;
   const supabase = createClient();
-  const auth: any = getCookieAuth();
+  const userData = await getSupabaseUser();
+  const userId = userData.data.user!.id;
   try {
     result = await supabase
       .from("TodoList")
       .select(
         "id, title, description, PriorityLevel(level, description, color), Frequencies(id, frequency), TodoListStatus(id, status)"
       )
-      .eq("userId", `${auth.user.id}`);
+      .eq("userId", `${userId}`);
     // console.log(auth)
     if (result.error) {
       console.log("There is an error getting the Todo-Lists", result.error);

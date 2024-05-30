@@ -29,12 +29,12 @@ const FormValidation = (data: params): validationInfo => {
     case "age":
     case "zip":
     case "contactNumber":
+    case "priorityLevel":
+    case "frequency":
       return validateNumber(data);
     case "date":
     case "timeStart":
     case "timeEnd":
-    case "priorityLevel":
-    case "frequency":
       return validateTimeOrDate(data);
     case "gender":
     case "country":
@@ -65,7 +65,7 @@ let validationInfo: validationInfo = {
 };
 const validateNumber = (data: params): validationInfo => {
   const numbersRegex = /^[0-9]+$/;
-  if (data.value.length === 0) {
+  if (data.value.length === 0 || data.value === '0') {
     return (validationInfo = {
       validationName: data.stateName,
       valid: false,

@@ -1,65 +1,90 @@
 "use server";
 import { revalidateTag } from "next/cache";
 
-// Supabase
-import { useSupabase } from "@/utils/useSupabaseClient";
-
 // Types
 import { TableInsert, TableRow } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
+interface mutateTodoListProps {
+  todoListInfo: TableInsert<"TodoList">;
+  formAction: string;
+  todoListId?: number;
+}
 
 // Utils
 import { returnError, returnSuccess } from "@/utils/formUtils";
 import { createClient } from "@/utils/supabaseSSR";
-import { getCookieAuth } from "@/utils/cookiesUtils";
+import { getSupabaseUser } from "@/utils/supabaseUtils";
+import { useFormStateType } from "@/Types/formStates";
 
 export const mutateTodoList = async (
-  todoListInfo: TableInsert<"TodoList">,
-  formAction: string,
-  todoListId?: number
-): Promise<ReturnInterface<TableRow<"TodoList">[]> | ReturnInterface<any>> => {
+  prevState: useFormStateType,
+  formData: FormData
+) => {
   try {
     let result;
-    if (formAction === "add") {
-      revalidateTag("todoList");
-      result = await insertTodoList(todoListInfo);
-    } else {
-      result = await updateTodoList(todoListId!, todoListInfo);
-      revalidateTag("todoList");
-      revalidateTag(`todoList${todoListId}`);
-    }
-    revalidateTag("todolists");
-    return result;
+    const formAction = formData.get("formAction");
+    const todoListData = {
+      userId: formData.get("userId") as string,
+      title: formData.get("title") as string,
+      priorityLevel: parseInt(formData.get("priorityLevel") as string),
+      frequency: parseInt(formData.get("frequency") as string),
+      description: formData.get("description") as string,
+    };
+    console.log(todoListData);
+    // if (formAction === "Add") {
+    result = await insertTodoList(todoListData);
+    revalidateTag("todoList");
+    // } else {
+    // result = await updateTodoList(todoListId!, todoListInfo);
+    // revalidateTag(`todoList${todoListId}`);
+    // }
+    return {
+      success: true,
+      error: false,
+      data: [],
+      message: "",
+    };
   } catch (e) {
-    return returnError("There is an error inserting the schedule", e);
+    return {
+      success: true,
+      error: false,
+      data: [],
+      message: `There is an error inserting the schedule: ${e}`,
+    };
   }
 };
 
-export const addDailyReset = async ():Promise<ReturnInterface<TableRow<"DailyTodoResets">> | ReturnInterface<any>> => {
+export const addDailyReset = async (): Promise<
+  ReturnInterface<TableRow<"DailyTodoResets">> | ReturnInterface<any>
+> => {
   try {
     const supabase = createClient();
-    const result = await supabase.from("DailyTodoResets").insert<TableInsert<"DailyTodoResets">>({})
-    
-    if(result.error) {
-      return returnError("There is an error inserting the Daily Reset", result.error);
+    const result = await supabase
+      .from("DailyTodoResets")
+      .insert<TableInsert<"DailyTodoResets">>({});
+
+    if (result.error) {
+      return returnError(
+        "There is an error inserting the Daily Reset",
+        result.error
+      );
     }
-    
+
     return returnSuccess("Daily Reset Successfully Added", result.data);
   } catch (error) {
     return returnError("There is an error inserting the Daily Reset", error);
   }
-}
+};
 
-const insertTodoList = async (
-  todoListInfo: TableInsert<"TodoList">
-): Promise<ReturnInterface<TableRow<"TodoList">> | ReturnInterface<any>> => {
+const insertTodoList = async (todoListInfo: TableInsert<"TodoList">) => {
   try {
     const supabase = createClient();
-    const auth: any = getCookieAuth();
+    const userData = await getSupabaseUser();
+    const userId = userData.data.user!.id;
     let result = await supabase
       .from("TodoList")
       .insert<TableInsert<"TodoList">>({
-        userId: auth.user.id,
+        userId: userId,
         title: todoListInfo.title,
         description: todoListInfo.description,
         priorityLevel: parseInt(todoListInfo.priorityLevel!.toString()),

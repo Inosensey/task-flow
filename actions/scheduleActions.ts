@@ -1,9 +1,6 @@
 "use server";
 import { revalidateTag } from "next/cache";
 
-// Supabase
-import { useSupabase } from "@/utils/useSupabaseClient";
-
 // Types
 import { TableInsert, TableRow } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";

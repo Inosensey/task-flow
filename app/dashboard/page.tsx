@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import Link from "next/link";
 
 // Components
@@ -32,24 +32,35 @@ import {
   todoListDetails,
   todoListResponseInterface,
 } from "@/Types/todoListTypes";
+import Schedules from "@/components/Dashboard/Schedules/Schedules";
+import { getSupabaseUser } from "@/utils/supabaseUtils";
 interface schedulesInterface {
   schedules: TableRow<"Schedules">[] | null;
 }
 
 const Page = async () => {
+  const userData = await getSupabaseUser();
+  const userId = userData.data.user!.id;
+  const headerInfo = headers();
   const currentDay = getCurrentDay();
-  // Schedules
-  let schedulesData: schedulesInterface = {
-    schedules: await getSchedules(),
-  };
 
-  // Todo Lists
-  const [resetTodoListResult, todoLists] = await Promise.all([
+  // Fetch
+  const [schedulesData ,resetTodoListResult, todoLists] = await Promise.all([
+    fetch(`http://www.localhost:3000/api/supabase/getSchedules?user=${userId}`, {
+      headers: { cookie: headerInfo.get("cookie")! },
+      next: { tags: ["schedules"] },
+    }),
     resetTodoLists(),
-    getTodoLists(),
+    fetch(`http://www.localhost:3000/api/supabase/getTodoList?user=${userId}`, {
+      headers: { cookie: headerInfo.get("cookie")! },
+      next: { tags: ["todolists"] },
+    }),
   ]);
-  const unsortedTodoList: todoListDetails[] =
-    todoLists.unsortedTodoList;
+
+  const todoList = await todoLists.json();
+  const schedules = await schedulesData.json();
+
+  const unsortedTodoList: todoListDetails[] = todoList.response.unsortedTodoList;
   const formattedTodoList = unsortedTodoList.filter(
     (details: todoListDetails) =>
       details.Frequencies.frequency === currentDay ||
@@ -63,10 +74,10 @@ const Page = async () => {
   );
 
   const currentDaySchedules = getCurrentDaySchedules(
-    schedulesData.schedules,
+    schedules.schedules,
     ""
-  );
-  const currentWeekSchedules = getCurrentWeekSchedules(schedulesData.schedules);
+  );schedules
+  const currentWeekSchedules = getCurrentWeekSchedules(schedules.schedules);
 
   return (
     <div className="flex flex-col w-full bg-Primary">
