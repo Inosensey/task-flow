@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useFormState } from "react-dom";
 
 // Components
@@ -32,7 +32,7 @@ import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
 // Utils
-import { useFormSerialize } from "@/utils/formUtils";
+import { useFormSerialize, useFormValidation } from "@/utils/formUtils";
 import FormValidation from "@/utils/validation";
 
 // Types
@@ -50,32 +50,36 @@ type validation = {
   validationMessage: string;
 };
 
-
 // Initials
-const useFormStateInitials:useFormStateType = {
+const useFormStateInitials: useFormStateType = {
   success: null,
-error: null,
+  error: null,
   message: "",
-  data: []
-}
+  data: [],
+};
 
 const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   const windowCurrentWidth = window.innerWidth;
 
   // TodoList Initialize
-  const todoListInputInitials: TableInsert<"TodoList"> = {
-    title: action !== "add" && data !== undefined ? data.title : "",
-    description: action !== "add" && data !== undefined ? data.description : "",
+  const initializeTodoListInput = (): TableInsert<"TodoList"> => ({
+    title: action !== "add" && data ? data.title : "",
+    description: action !== "add" && data ? data.description : "",
     priorityLevel:
-      action !== "add" && data !== undefined
-        ? data.PriorityLevel.level!
-        : undefined,
-    frequency:
-      action !== "add" && data !== undefined ? data.Frequencies.id : undefined,
-  };
+      action !== "add" && data ? data.PriorityLevel.level! : undefined,
+    frequency: action !== "add" && data ? data.Frequencies.id : undefined,
+  });
 
-  // Initial use query
+  // Use query
   const queryClient = useQueryClient();
+  const { data: priorityLevels } = useQuery({
+    queryKey: ["priorityLevels"],
+    queryFn: () => getPriorityLevel(),
+  });
+  const { data: frequencies } = useQuery({
+    queryKey: ["frequencies"],
+    queryFn: () => getFrequencies(),
+  });
 
   // Zustand Store
   const { setMessage, setShowSlideNotification } = useNotificationStore();
@@ -83,37 +87,26 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
     useScheduleFormStore();
 
   // UseFormState
-  const [state, formAction] = useFormState(mutateTodoList, useFormStateInitials)
-  
+  const [state, formAction] = useFormState(
+    mutateTodoList,
+    useFormStateInitials
+  );
+
   // States
   const [todoListInput, setTodoListInput] = useState<TableInsert<"TodoList">>(
-    todoListInputInitials
+    initializeTodoListInput
   );
-  useState<boolean>(false);
-  const [togglePrioritySelect, setTogglePrioritySelect] =
-    useState<boolean>(false);
-  const [toggleFrequentSelect, setToggleFrequentSelect] =
-    useState<boolean>(false);
-  const [isPending, setIsPending] = useState<boolean|null>(null)
+  const [togglePrioritySelect, setTogglePrioritySelect] = useState(false);
+  const [toggleFrequentSelect, setToggleFrequentSelect] = useState(false);
+  const [isPending, setIsPending] = useState<boolean | null>(null);
 
   // Toggle mobile options UI
   const [optionType, setOptionType] = useState<string>("");
   const [selectedMobileOptions, setSelectedMobileOptions] = useState<
     any[] | undefined
   >(undefined);
-  const [toggleMobileOptions, setToggleMobileOptions] =
-    useState<boolean>(false);
-  const [mobileOptionHeader, setMobileOptionHeader] = useState<string>("");
-
-  // Use Query
-  const { data: priorityLevels } = useQuery({
-    queryKey: ["priorityLevel"],
-    queryFn: () => getPriorityLevel(),
-  });
-  const { data: frequencies } = useQuery({
-    queryKey: ["frequencies"],
-    queryFn: () => getFrequencies(),
-  });
+  const [toggleMobileOptions, setToggleMobileOptions] = useState(false);
+  const [mobileOptionHeader, setMobileOptionHeader] = useState("");
 
   const onTodoListAddSuccess = () => {
     const notifMessage =
@@ -138,33 +131,13 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
     const fieldsToCheck = ["title", "priorityLevel", "frequency"];
     const formValues: TableInsert<"TodoList"> & { [key: string]: string } =
       useFormSerialize(event);
-    console.log(formValues);
-    if (!todoListFormValidation(fieldsToCheck, formValues)) {
+    if (!useFormValidation(fieldsToCheck, formValues, setValidation)) {
       event.preventDefault();
       setIsPending(false);
     }
   };
 
-  const todoListFormValidation = (
-    fieldsToCheck: Array<string>,
-    formValues: TableInsert<"TodoList"> & { [key: string]: string }
-  ) => {
-    let isValid = true;
-    fieldsToCheck.some((field) => {
-      if (formValues[field] === "" || formValues[field] === '0') {
-        isValid = false;
-        const validationParams = {
-          value: formValues[field],
-          stateName: field,
-        };
-        const result: validation = FormValidation(validationParams);
-        setValidation(result);
-      }
-    });
-    return isValid;
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const useHandleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     const validationParams = {
       value: value,
@@ -174,6 +147,9 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
       ...prev,
       [name]: value,
     }));
+
+    const result: validation = FormValidation(validationParams);
+    setValidation(result);
   };
   const handleTextareaChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
@@ -188,13 +164,13 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
 
   // UseEffect
   useEffect(() => {
-    if(state.success) {
+    if (state.success) {
       queryClient.invalidateQueries({ queryKey: ["todolists"] });
       setIsPending(false);
       onTodoListAddSuccess();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   // Variants
   const popUpVariants = {
@@ -238,7 +214,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
               onClick={() => {
                 setShowTodoListForm((prev) => !prev);
                 resetValidation();
-                setTodoListInput(todoListInputInitials);
+                setTodoListInput(initializeTodoListInput);
               }}
             >
               X
@@ -251,8 +227,8 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
               name="title"
               placeholder="Enter the Title of your Todo"
               label="Title"
-              onChange={handleInputChange}
-              onBlur={handleInputChange}
+              onChange={useHandleInputChange}
+              onBlur={useHandleInputChange}
               valid={validations?.title?.valid}
               validationMessage={validations?.title?.validationMessage}
             />
@@ -397,13 +373,21 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 valid={null}
                 validationMessage={""}
               />
+              
+            <Input
+              state={action}
+              type="hidden"
+              name="action"
+              placeholder="Enter the Title of your schedule"
+              label="Title"
+            />
             </div>
             <div>
               <motion.button
                 whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
                 whileTap={{ scale: 0.95 }}
                 className={`${
-                  isPending === null  || isPending === false
+                  isPending === null || isPending === false
                     ? "bg-LightPrimary text-LightSecondary"
                     : ""
                 } ${

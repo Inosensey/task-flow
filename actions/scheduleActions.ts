@@ -1,15 +1,16 @@
 "use server";
 import { revalidateTag } from "next/cache";
 
-// Types
-import { TableInsert, TableRow } from "@/Types/database.types";
-import { ReturnInterface } from "@/Types/generalTypes";
-
 // Utils
 import { returnError, returnSuccess } from "@/utils/formUtils";
 import { createClient } from "@/utils/supabaseSSR";
 import { getCookieAuth } from "@/utils/cookiesUtils";
+import { getSupabaseUser } from "@/utils/supabaseUtils";
 
+// Types
+import { TableInsert, TableRow } from "@/Types/database.types";
+import { ReturnInterface } from "@/Types/generalTypes";
+import { useFormStateType } from "@/Types/formStates";
 type ScheduleInfo = {
   date: string;
   timeStart: string;
@@ -44,27 +45,53 @@ export const getLocationKeys = async () => {
 };
 
 export const mutateSchedule = async (
-  scheduleInfo: ScheduleInfo,
-  formAction: string,
-  scheduleId?: number
-): Promise<ReturnInterface<TableRow<"Schedules">[]> | ReturnInterface<any>> => {
+  prevState: useFormStateType,
+  formData: FormData
+)=> {
   try {
     let result;
-    if (formAction === "add") {
+    const formAction = formData.get("action") as string;
+    const scheduleData = {
+      title:formData.get("title") as string,
+      description:formData.get("description") as string,
+      date:formData.get("date") as string,
+      timeStart:formData.get("timeStart") as string,
+      timeEnd:formData.get("timeEnd") as string,
+      themeColor: "",
+      categoryKey: formData.get("categoryKey") as string,
+      categoryKeyId: formData.get("categoryKeyId") as string,
+      city: formData.get("city") as string,
+      cityId: formData.get("cityId") as string,
+      namePlace: formData.get("namePlace") as string,
+      lat: formData.get("lat") as string,
+      long: formData.get("long") as string,
+    };
+    // if (formAction === "add") {
       revalidateTag("schedules");
-      result = await insertSchedule(scheduleInfo);
-    } else {
-      result = await updateSchedule(scheduleId!, scheduleInfo);
-      revalidateTag("schedules");
-      revalidateTag(`schedule${scheduleId}`);
-    }
+      result = await insertSchedule(scheduleData);
+    // } else {
+    //   result = await updateSchedule(scheduleId!, scheduleData);
+    //   revalidateTag("schedules");
+    //   revalidateTag(`schedule${scuhedleId}`);
+    // }
     if (result.Status === "Success") {
       const responseData = result.Response as TableRow<"Schedules">[];
-      await mutateLocationInfo(scheduleInfo, responseData[0].id, formAction);
+      await mutateLocationInfo(scheduleData, responseData[0].id, formAction);
     }
-    return result;
+    return {
+      success: true,
+      error: false,
+      data: [],
+      message: "",
+    };
   } catch (e) {
-    return returnError("There is an error inserting the schedule", e);
+    
+    return {
+      success: true,
+      error: false,
+      data: [],
+      message: `There is an error inserting the schedule: ${e}`,
+    };
   }
 };
 
@@ -91,7 +118,8 @@ const insertSchedule = async (
 ): Promise<ReturnInterface<TableRow<"Schedules">> | ReturnInterface<any>> => {
   try {
     const supabase = createClient();
-    const auth: any = getCookieAuth();
+    const userData = await getSupabaseUser();
+    const userId = userData.data.user!.id;
     let result = await supabase
       .from("Schedules")
       .insert<TableInsert<"Schedules">>({
@@ -101,11 +129,9 @@ const insertSchedule = async (
         timeStart: scheduleInfo.timeStart,
         timeEnd: scheduleInfo.timeEnd,
         themeColor: "",
-        userId: auth.user.id,
+        userId: userId,
       })
       .select();
-    console.log(auth.user.id);
-    console.log(result);
     if (result.error)
       return returnError(
         "There is an error inserting the schedule",

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
 
 // Libs
@@ -9,11 +9,7 @@ import { GetListOfPlaces } from "@/lib/locationMethods";
 
 // Utils
 import { getLocationInfoInitial } from "@/utils/stateInitials";
-import {
-  useGetScheduleDetails,
-  useLocationCategories,
-  useLocationKeys,
-} from "@/lib/TanStackQueryFns";
+import { getLocationCategories, getLocationKeys, getScheduleDetails } from "@/lib/TanStackQueryFns";
 
 // Components
 import Input from "@/components/ReusableComponents/inputs/Input";
@@ -29,11 +25,15 @@ import {
   PlaceList,
   SelectedMobileOptionType,
   LocationInfoInput,
+  ScheduleDetails,
 } from "@/Types/scheduleType";
 import { DesktopSelectOptions } from "./DesktopSelectCatOptions";
 interface props {
   place_id: string;
   scheduleId: string | null;
+}
+interface reactQueryType {
+  schedule: ScheduleDetails[]
 }
 
 const CategorySelect = ({ place_id, scheduleId }: props) => {
@@ -46,15 +46,34 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
   const { formAction } = useScheduleFormStore();
 
   // Use Query
-  const locationKeyData = useLocationKeys();
-  const locationCategoriesData = useLocationCategories();
-  const { scheduleData } = useGetScheduleDetails(scheduleId, formAction);
-  const detailsData = scheduleData !== undefined ? scheduleData.Response : "";
+  const {
+    data: locationCategoriesData
+  } = useQuery({
+    queryKey: ["locationCategories"],
+    queryFn: getLocationCategories,
+  });
+  const {
+    data: locationKeyData
+  } = useQuery({
+    queryKey: ["locationKeys"],
+    queryFn: getLocationKeys,
+  });
+  const {
+    data: data,
+  } = useQuery({
+    queryKey: [`Schedule#${scheduleId}`],
+    queryFn: () => getScheduleDetails(parseInt(scheduleId!)),
+    enabled: formAction === "edit",
+  });
 
   // State
+  const scheduleData = data as unknown as reactQueryType
+  const initialDetailData = scheduleData ? scheduleData?.schedule[0] : undefined
   const [locationInfo, setLocationInfo] = useState<LocationInfoInput>(
-    getLocationInfoInitial(formAction, scheduleData?.Response)
+    getLocationInfoInitial(formAction, initialDetailData)
   );
+  const [detailsData, setDetailsData] = useState<ScheduleDetails | undefined | null>(initialDetailData)
+  
   // Toggle desktop options UI
   const [showChoices, setShowChoices] = useState<boolean>(false);
   const [showPlacesType, setShowPlacesType] = useState<boolean>(false);
@@ -67,7 +86,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
   // Toggle mobile options UI
   const [optionType, setOptionType] = useState<string>("");
   const [selectedMobileOptions, setSelectedMobileOptions] = useState<
-    SelectedMobileOptionType[] | undefined
+    SelectedMobileOptionType[] | null | undefined
   >(undefined);
   const [toggleMobileOptions, setToggleMobileOptions] =
     useState<boolean>(false);
@@ -98,11 +117,12 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
   };
 
   useEffect(() => {
-    if (formAction !== "add" && scheduleData !== undefined) {
-      const SelectedPlaceType = `${detailsData.ScheduleLocation[0].LocationKeys.key}.${detailsData.ScheduleLocation[0].LocationCategories.category}`;
+    if (formAction !== "add" && !detailsData && detailsData !== null) {
+      const location = scheduleData?.schedule[0].ScheduleLocation[0]
+      const SelectedPlaceType = `${location.LocationKeys.key}.${location.LocationCategories.category}`;
       const setPlacesList = async () => {
         const data = await getPlaces(
-          detailsData.ScheduleLocation[0].cityId!,
+          location.cityId!,
           SelectedPlaceType
         );
 

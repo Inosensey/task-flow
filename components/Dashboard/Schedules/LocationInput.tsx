@@ -21,6 +21,7 @@ import FormValidation from "@/utils/validation";
 
 // lib
 import { getScheduleDetails } from "@/lib/scheduleMethods";
+import { ScheduleDetails } from "@/Types/scheduleType";
 
 // Types
 type LocationInfoInput = {
@@ -56,6 +57,9 @@ interface locationListType {
 type params = {
   scheduleId: string | null;
 };
+interface reactQueryType {
+  schedule: ScheduleDetails[]
+}
 
 const LocationInput = ({ scheduleId }: params) => {
   // Store
@@ -63,7 +67,7 @@ const LocationInput = ({ scheduleId }: params) => {
 
   // Use query
   const {
-    data: scheduleData,
+    data: data,
     error: scheduleError,
     isFetched: scheduleIsFetched,
   } = useQuery({
@@ -72,17 +76,19 @@ const LocationInput = ({ scheduleId }: params) => {
     enabled: formAction === "edit",
   });
   
-  const detailsData = scheduleData !== undefined ? scheduleData.Response[0] : ""
+  const scheduleData = data as unknown as reactQueryType
+  const detailsData = scheduleData !== undefined ? scheduleData.schedule[0] : ""
+  const location = scheduleData?.schedule[0].ScheduleLocation[0]
 
   // States
   const [locationInfo, setLocationInfo] = useState<LocationInfoInput>({
     city:
       formAction === "edit" && scheduleData !== undefined
-        ? detailsData.ScheduleLocation[0].city!
+        ? location.city!
         : "",
     cityId:
       formAction === "edit" && scheduleData !== undefined
-        ? detailsData.ScheduleLocation[0].cityId!
+        ? location.cityId!
         : "",
   });
   const [locationList, setLocationList] = useState<

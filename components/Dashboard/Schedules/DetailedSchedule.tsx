@@ -22,7 +22,7 @@ import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocation
 
 // Utils
 import { formatHourTo12 } from "@/utils/useDate";
-// import { getScheduleDetails } from "@/lib/scheduleMethods";
+import { getScheduleDetails } from "@/lib/TanStackQueryFns";
 
 // Store
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
@@ -30,17 +30,11 @@ import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 // Types
 import { TableRow } from "@/Types/database.types";
 import { ScheduleDetails } from "@/Types/scheduleType";
-import { ReturnInterface } from "@/Types/generalTypes";
-
-// lib
-import { getScheduleDetails } from "@/lib/scheduleMethods";
-
-
 type props = {
   scheduleId: string;
   scheduleInfo?: TableRow<"Schedules">;
   setShowPopUp?: React.Dispatch<React.SetStateAction<boolean>>;
-  details: ReturnInterface<ScheduleDetails>;
+  details: ScheduleDetails[];
 };
 type mapAttrInfo = {
   width: string;
@@ -49,19 +43,19 @@ type mapAttrInfo = {
   lat: string;
   iconType: string;
 };
+interface reactQueryType {
+  schedule: ScheduleDetails[]
+}
 
 const DetailedSchedule = ({ details, scheduleId }: props) => {
   // Use query
   const {
     data: data,
-    error: error,
-    isFetched: isFetched,
   } = useQuery({
     queryKey: [`Schedule#${scheduleId}`],
     queryFn: () => getScheduleDetails(parseInt(scheduleId)),
     initialData: details,
   });
-
   // Store
   const { setFormAction } = useScheduleFormStore();
 
@@ -70,8 +64,10 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
   const [mapToggle, setMapToggle] = useState<boolean>(false);
   const [showScheduleForm, setShowScheduleForm] = useState<boolean>(false);
 
-  const detailsData = data.Response[0]
-  const locationDetails = detailsData.ScheduleLocation[0];
+  console.log(data)
+
+  const detailsData = data as unknown as reactQueryType
+  const locationDetails = detailsData.schedule[0].ScheduleLocation[0];
 
   const mapAttrInfo: mapAttrInfo = {
     height: "400",
@@ -112,7 +108,7 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
         <div className="mt-2 flex flex-col">
           <div className="bg-Secondary p-2 rounded-md">
             <p className="text-LightPrimary font-semibold text-lg">
-              {detailsData.title}
+              {detailsData.schedule[0].title}
             </p>
             <div className="font-semibold text-sm text-LightSecondary">
               <p className="flex items-center">
@@ -132,13 +128,13 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
                 />
               </span>
               <div className="flex gap-1 text-sm">
-                <p>{formatHourTo12(detailsData.timeStart)}</p>
-                {detailsData.timeEnd !== "" && (
+                <p>{formatHourTo12(detailsData.schedule[0].timeStart)}</p>
+                {detailsData.schedule[0].timeEnd !== "" && (
                   <span className="w-4">
                     <FontAwesomeIcon className="text-sm" icon={faArrowRight} />
                   </span>
                 )}
-                <p>{formatHourTo12(detailsData.timeEnd)}</p>
+                <p>{formatHourTo12(detailsData.schedule[0].timeEnd)}</p>
               </div>
             </div>
             <motion.button
@@ -156,7 +152,7 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
             <p className="text-lg font-semibold text-LightPrimary">
               Description
             </p>
-            <p className="text-justify leading-6">{detailsData.description}</p>
+            <p className="text-justify leading-6">{detailsData.schedule[0].description}</p>
           </div>
         </div>
         <div className="flex justify-between">

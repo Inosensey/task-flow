@@ -3,3 +3,9 @@ export interface ReturnInterface<T> {
   Message: string;
   Response: T;
 }
+
+export type validation = {
+  validationName: string;
+  valid: null | boolean;
+  validationMessage: string;
+};

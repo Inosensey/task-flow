@@ -21,12 +21,6 @@ export async function middleware(request: NextRequest) {
   // const response = createCSP(request);
   // return response;
   return await updateSession(request);
-
-  // if (request.nextUrl.pathname.startsWith("/")) {
-  //   if (accessToken !== undefined) {
-  //     return NextResponse.rewrite(new URL("/dashboard/", request.url));
-  //   }
-  // }
 }
 
 const createCSP = (request: NextRequest) => {

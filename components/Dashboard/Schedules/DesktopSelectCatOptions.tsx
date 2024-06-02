@@ -17,7 +17,7 @@ import {
 } from "@/Types/scheduleType";
 
 interface props {
-  choices?: SelectedMobileOptionType[];
+  choices?: SelectedMobileOptionType[] | null;
   setToggleOptions: React.Dispatch<React.SetStateAction<boolean>>;
   locationInfo: LocationInfoInput;
   setLocationInfo: React.Dispatch<React.SetStateAction<LocationInfoInput>>;

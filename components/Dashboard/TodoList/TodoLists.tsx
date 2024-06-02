@@ -22,7 +22,8 @@ import {
   sortedTodoListInterface,
   todoListDetails,
 } from "@/Types/todoListTypes";
-import { getTodoList } from "@/lib/TanStackQueryFns";
+import { getFrequencies, getPriorityLevels, getTodoList } from "@/lib/TanStackQueryFns";
+import { TableRow } from "@/Types/database.types";
 
 interface todoListsTypes {
   unsortedTodoList: todoListDetails[];
@@ -30,9 +31,11 @@ interface todoListsTypes {
 }
 interface props {
   TodoLists: todoListsTypes;
+  frequencies: TableRow<"Frequencies">[] | []
+  priorityLevels: TableRow<"PriorityLevel">[] | []
 }
 
-const TodoLists = ({ TodoLists }: props) => {
+const TodoLists = ({ TodoLists, frequencies, priorityLevels }: props) => {
   const formattedDate = getCurrentDate();
 
   // Use query
@@ -40,6 +43,16 @@ const TodoLists = ({ TodoLists }: props) => {
     queryKey: ["todolists"],
     queryFn: getTodoList,
     initialData: TodoLists,
+  });
+  const { data: frequenciesData } = useQuery({
+    queryKey: ["frequencies"],
+    queryFn: getFrequencies,
+    initialData: frequencies,
+  });
+  const { data: priorityLevelsData } = useQuery({
+    queryKey: ["priorityLevels"],
+    queryFn: getPriorityLevels,
+    initialData: priorityLevels,
   });
 
   const unSortedTodoList = todoListsData.unsortedTodoList as todoListDetails[];

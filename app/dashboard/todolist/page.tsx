@@ -35,21 +35,41 @@ const page = async () => {
   const userData = await getSupabaseUser();
   const userId = userData.data.user!.id;
   const headerInfo = headers();
-  
-  const res = await fetch(
+
+  const todoListJson = await fetch(
     `http://www.localhost:3000/api/supabase/getTodoList?user=${userId}`,
     {
-      headers: {cookie: headerInfo.get("cookie")!},
+      headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["todolists"] },
     }
   );
-  const todoLists = await res.json();
+  const frequenciesJson = await fetch(
+    `http://www.localhost:3000/api/supabase/getFrequencies`,
+    {
+      headers: { cookie: headerInfo.get("cookie")! },
+      next: { tags: ["frequencies"] },
+    }
+  );
+  const priorityLevelsJson = await fetch(
+    `http://www.localhost:3000/api/supabase/getPriorityLevels`,
+    {
+      headers: { cookie: headerInfo.get("cookie")! },
+      next: { tags: ["priorityLevels"] },
+    }
+  );
+  const todoLists = await todoListJson.json();
+  const frequencies = await frequenciesJson.json();
+  const priorityLevels = await priorityLevelsJson.json();
 
   return (
     <div className="w-full">
       <div className="flex flex-col w-full bg-Primary">
         <Header headerName="Todo-List" Icon={IonTodayOutline} />
-        <TodoLists TodoLists={todoLists.response} />
+        <TodoLists
+          TodoLists={todoLists.response}
+          frequencies={frequencies.response}
+          priorityLevels={priorityLevels.response}
+        />
       </div>
     </div>
   );

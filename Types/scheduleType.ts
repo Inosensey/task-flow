@@ -1,6 +1,7 @@
 import { TableRow } from "./database.types";
 
 export type GeneralInfo = {
+  id: string,
   date: string;
   timeStart: string;
   timeEnd: string;
@@ -17,7 +18,7 @@ export interface ScheduleInfo extends GeneralInfo {
   long: string;
   [key: string]: string;
 }
-export type ScheduleDetails = [
+export type ScheduleDetails = 
   TableRow<"Schedules"> & {
     ScheduleLocation: {
       id: number;
@@ -36,7 +37,7 @@ export type ScheduleDetails = [
       lat: string;
     }[];
   }
-];
+;
 export interface Feature {
   geometry: {
     coordinates: [string, string];

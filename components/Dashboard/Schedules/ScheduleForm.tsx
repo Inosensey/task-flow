@@ -1,10 +1,11 @@
 "use client";
 
 // Core
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useFormState } from "react-dom";
 
 // Components
 import Overlay from "@/components/ReusableComponents/Overlay";
@@ -22,22 +23,22 @@ import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 import { mutateSchedule } from "@/actions/scheduleActions";
 
 // lib
-import { getScheduleDetails } from "@/lib/scheduleMethods";
+import { getScheduleDetails } from "@/lib/TanStackQueryFns";
 
 // store
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { useDateStore } from "@/store/useDateStore";
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 
-// Typescript
-import { GeneralInfo, ScheduleInfo } from "@/Types/scheduleType";
-
 // Utils
-import { useFormSerialize } from "@/utils/formUtils";
-import FormValidation from "@/utils/validation";
+import { useFormSerialize, useFormValidation } from "@/utils/formUtils";
 import { getCurrentDate } from "@/utils/useDate";
-import { TableRow } from "@/Types/database.types";
+import FormValidation from "@/utils/validation";
 
+// Typescript
+import { GeneralInfo, ScheduleDetails, ScheduleInfo } from "@/Types/scheduleType";
+import { useFormStateType } from "@/Types/formStates";
+import { TableInsert } from "@/Types/database.types";
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
   scheduleId: string | null;
@@ -47,6 +48,17 @@ type validation = {
   validationName: string;
   valid: null | boolean;
   validationMessage: string;
+};
+interface reactQueryType {
+  schedule: ScheduleDetails[]
+}
+
+// Initials
+const useFormStateInitials: useFormStateType = {
+  success: null,
+  error: null,
+  message: "",
+  data: [],
 };
 
 const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
@@ -59,9 +71,12 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
     useScheduleFormStore();
   const { setDate } = useDateStore();
 
+  // UseFormState
+  const [state, action] = useFormState(mutateSchedule, useFormStateInitials);
+
   // Use query
   const {
-    data: scheduleData,
+    data: data,
     error: scheduleError,
     isFetched: scheduleIsFetched,
   } = useQuery({
@@ -71,63 +86,40 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
   });
 
   // Initial Schedule Info
+  const scheduleData = data as unknown as reactQueryType
   const detailsData =
-    scheduleData !== undefined ? scheduleData.Response[0] : "";
+    scheduleData ? scheduleData.schedule[0] : undefined;
   const initialGeneralInfo: GeneralInfo = {
+    id:
+    formAction !== "add" && scheduleData !== undefined
+      ? "1"
+      : "09:00",
     date:
       formAction !== "add" && scheduleData !== undefined
-        ? detailsData.date!
+        ? detailsData!.date!
         : getCurrentDate(),
     timeStart:
       formAction !== "add" && scheduleData !== undefined
-        ? detailsData.timeStart!
+        ? detailsData!.timeStart!
         : "09:00",
     timeEnd:
       formAction !== "add" && scheduleData !== undefined
-        ? detailsData.timeEnd!
+        ? detailsData!.timeEnd!
         : "17:00",
     title:
       formAction !== "add" && scheduleData !== undefined
-        ? detailsData.title!
+        ? detailsData!.title!
         : "",
     description:
       formAction !== "add" && scheduleData !== undefined
-        ? detailsData.description!
+        ? detailsData!.description!
         : "",
   };
 
   // States
   const [generalInfo, setGeneralInfo] =
     useState<GeneralInfo>(initialGeneralInfo);
-
-  // Mutation
-  const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
-    mutationFn: (scheduleInfo: ScheduleInfo) => {
-      if (formAction === "edit" && scheduleData !== undefined) {
-        const ids = {
-          scheduleId: detailsData.id,
-          scheduleLocationId: detailsData.ScheduleLocation[0].id,
-        };
-        return mutateSchedule(scheduleInfo, formAction, ids.scheduleId);
-      }
-      return mutateSchedule(scheduleInfo, formAction);
-    },
-    onSuccess: (data) => {
-      onScheduleAddSuccess();
-      if (formAction === "edit" && scheduleData !== undefined) {
-        // queryClient.setQueryData([`Schedule#${detailsData.id}`], () =>
-        //   data.Response,
-        // );
-        queryClient.invalidateQueries({
-          queryKey: [`Schedule#${detailsData.id}`],
-        });
-      } else {
-        const scheduleData = data.Response[0] as TableRow<"Schedules">
-        setDate(scheduleData.date as string);
-      }
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
-    },
-  });
+  const [isPending, setIsPending] = useState<boolean | null>(null);
 
   const onScheduleAddSuccess = () => {
     const notifMessage =
@@ -141,41 +133,19 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
   };
 
   const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const fieldsToCheck = ["date", "title", "timeStart", "timeEnd", "city"];
-    const formValues: ScheduleInfo = useFormSerialize(event);
-    console.log(formValues);
-    if (scheduleFormValidate(fieldsToCheck, formValues)) {
-      console.log("valid");
-      mutate(formValues);
-    } else {
-      console.log("not valid");
-      return;
+    setIsPending(true);
+    const fieldsToCheck = ["title", "priorityLevel", "frequency"];
+    let formValues: TableInsert<"Schedules"> & { [key: string]: string } =
+      useFormSerialize(event);
+    if (!useFormValidation(fieldsToCheck, formValues, setValidation)) {
+      event.preventDefault();
+      setIsPending(false);
     }
   };
 
   const hideNotificationTimer = () => {
     const interval = setTimeout(setShowSlideNotification, 5000);
     return () => clearTimeout(interval);
-  };
-
-  const scheduleFormValidate = (
-    fieldsToCheck: Array<string>,
-    formValues: ScheduleInfo
-  ) => {
-    let isValid = true;
-    fieldsToCheck.some((field) => {
-      if (formValues[field] === "") {
-        isValid = false;
-        const validationParams = {
-          value: formValues[field],
-          stateName: field,
-        };
-        const result: validation = FormValidation(validationParams);
-        setValidation(result);
-      }
-    });
-    return isValid;
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -192,7 +162,6 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
 
     const result: validation = FormValidation(validationParams);
     setValidation(result);
-    // setValidationResult(result, setGeneralInfoValidation)
   };
 
   const handleTextareaChange = (
@@ -205,6 +174,16 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
       [name]: value,
     }));
   };
+
+  // UseEffect
+  useEffect(() => {
+    if (state.success) {
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      setIsPending(false);
+      // onScheduleAddSuccess();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   // Variants
   const popUpVariants = {
@@ -234,6 +213,7 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
         initial="hidden"
         animate="show"
         exit="hidden"
+        action={action}
         className="bg-Primary p-3 phone:w-11/12 rounded-md phone:mt-2 phone:h-max"
         onSubmit={useHandleFormSubmit}
       >
@@ -306,18 +286,26 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
             </div>
           </div>
           <LocationInput scheduleId={scheduleId} />
+          <Input
+            state={formAction}
+            type="hidden"
+            name="action"
+            placeholder="Enter the Title of your schedule"
+          />
           <div>
             <motion.button
               whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
               whileTap={{ scale: 0.95 }}
               className={`${
-                isIdle || isSuccess ? "bg-LightPrimary text-LightSecondary" : ""
+                isPending === null || isPending === false
+                  ? "bg-LightPrimary text-LightSecondary"
+                  : ""
               } ${
                 isPending && "bg-LightPrimaryDisabled text-Disabled"
               }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
               type="submit"
             >
-              {isIdle || isSuccess ? (
+              {isPending === null || isPending === false ? (
                 <>
                   <span className="w-4">
                     <FontAwesomeIcon

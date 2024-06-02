@@ -6,7 +6,7 @@ interface inputParams<T> {
   type: string;
   name: string;
   placeholder: string;
-  label: string;
+  label?: string;
   valid?: null | boolean | undefined;
   validationMessage?: string;
   autoComplete?: string,
