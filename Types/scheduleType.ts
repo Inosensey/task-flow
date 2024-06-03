@@ -21,7 +21,7 @@ export interface ScheduleInfo extends GeneralInfo {
 export type ScheduleDetails = 
   TableRow<"Schedules"> & {
     ScheduleLocation: {
-      id: number;
+      id?: number;
       namePlace: string;
       city: string;
       cityId: string;

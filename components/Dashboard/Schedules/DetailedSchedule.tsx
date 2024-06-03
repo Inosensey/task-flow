@@ -22,7 +22,6 @@ import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocation
 
 // Utils
 import { formatHourTo12 } from "@/utils/useDate";
-import { getScheduleDetails } from "@/lib/TanStackQueryFns";
 
 // Store
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
@@ -30,11 +29,12 @@ import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 // Types
 import { TableRow } from "@/Types/database.types";
 import { ScheduleDetails } from "@/Types/scheduleType";
+import { getScheduleDetails } from "@/lib/TanStackQueryFns";
 type props = {
   scheduleId: string;
   scheduleInfo?: TableRow<"Schedules">;
   setShowPopUp?: React.Dispatch<React.SetStateAction<boolean>>;
-  details: ScheduleDetails[];
+  details: reactQueryType;
 };
 type mapAttrInfo = {
   width: string;
@@ -55,6 +55,7 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
     queryKey: [`Schedule#${scheduleId}`],
     queryFn: () => getScheduleDetails(parseInt(scheduleId)),
     initialData: details,
+
   });
   // Store
   const { setFormAction } = useScheduleFormStore();
@@ -215,6 +216,7 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
           <ScheduleForm
             setShowScheduleForm={setShowScheduleForm}
             scheduleId={scheduleId}
+            scheduleData={detailsData.schedule}
           />
         )}
       </AnimatePresence>

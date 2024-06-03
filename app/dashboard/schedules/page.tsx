@@ -27,17 +27,17 @@ const Page = async () => {
   const [schedulesDataJson, locationCategoriesJson, locationKeysJson] =
     await Promise.all([
       fetch(
-        `http://www.localhost:3000/api/supabase/getSchedules?user=${userId}`,
+        `http://localhost:3000/api/supabase/getSchedules?user=${userId}`,
         {
           headers: { cookie: headerInfo.get("cookie")! },
           next: { tags: ["schedules"] },
         }
       ),
-      fetch(`http://www.localhost:3000/api/supabase/getLocationCategories`, {
+      fetch(`http://localhost:3000/api/supabase/getLocationCategories`, {
         headers: { cookie: headerInfo.get("cookie")! },
         next: { tags: ["locationCategories"] },
       }),
-      fetch(`http://www.localhost:3000/api/supabase/getLocationKeys?`, {
+      fetch(`http://localhost:3000/api/supabase/getLocationKeys`, {
         headers: { cookie: headerInfo.get("cookie")! },
         next: { tags: ["locationKeys"] },
       }),

@@ -46,12 +46,12 @@ const Page = async () => {
 
   // Fetch
   const [schedulesData ,resetTodoListResult, todoLists] = await Promise.all([
-    fetch(`http://www.localhost:3000/api/supabase/getSchedules?user=${userId}`, {
+    fetch(`http://localhost:3000/api/supabase/getSchedules?user=${userId}`, {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["schedules"] },
     }),
     resetTodoLists(),
-    fetch(`http://www.localhost:3000/api/supabase/getTodoList?user=${userId}`, {
+    fetch(`http://localhost:3000/api/supabase/getTodoList?user=${userId}`, {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["todolists"] },
     }),

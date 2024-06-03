@@ -22,9 +22,6 @@ import { faCalendarPlus } from "@fortawesome/free-regular-svg-icons";
 // Actions
 import { mutateSchedule } from "@/actions/scheduleActions";
 
-// lib
-import { getScheduleDetails } from "@/lib/TanStackQueryFns";
-
 // store
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { useDateStore } from "@/store/useDateStore";
@@ -36,12 +33,17 @@ import { getCurrentDate } from "@/utils/useDate";
 import FormValidation from "@/utils/validation";
 
 // Typescript
-import { GeneralInfo, ScheduleDetails, ScheduleInfo } from "@/Types/scheduleType";
+import {
+  GeneralInfo,
+  ScheduleDetails,
+  ScheduleInfo,
+} from "@/Types/scheduleType";
 import { useFormStateType } from "@/Types/formStates";
 import { TableInsert } from "@/Types/database.types";
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
   scheduleId: string | null;
+  scheduleData: ScheduleDetails[] | undefined | null;
 }
 
 type validation = {
@@ -50,7 +52,7 @@ type validation = {
   validationMessage: string;
 };
 interface reactQueryType {
-  schedule: ScheduleDetails[]
+  schedule: ScheduleDetails[];
 }
 
 // Initials
@@ -61,7 +63,11 @@ const useFormStateInitials: useFormStateType = {
   data: [],
 };
 
-const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
+const ScheduleForm = ({
+  setShowScheduleForm,
+  scheduleId,
+  scheduleData,
+}: props) => {
   // Initial use query
   const queryClient = useQueryClient();
 
@@ -74,26 +80,13 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
   // UseFormState
   const [state, action] = useFormState(mutateSchedule, useFormStateInitials);
 
-  // Use query
-  const {
-    data: data,
-    error: scheduleError,
-    isFetched: scheduleIsFetched,
-  } = useQuery({
-    queryKey: [`Schedule#${scheduleId}`],
-    queryFn: () => getScheduleDetails(parseInt(scheduleId!)),
-    enabled: formAction === "edit",
-  });
-
   // Initial Schedule Info
-  const scheduleData = data as unknown as reactQueryType
-  const detailsData =
-    scheduleData ? scheduleData.schedule[0] : undefined;
+  const detailsData = scheduleData ? scheduleData[0] : undefined;
   const initialGeneralInfo: GeneralInfo = {
     id:
-    formAction !== "add" && scheduleData !== undefined
-      ? "1"
-      : "09:00",
+      formAction !== "add" && scheduleData !== undefined
+        ? detailsData!.id.toString()
+        : "",
     date:
       formAction !== "add" && scheduleData !== undefined
         ? detailsData!.date!
@@ -178,7 +171,11 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
   // UseEffect
   useEffect(() => {
     if (state.success) {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      if (formAction === "add") {
+        queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      } else {
+        queryClient.invalidateQueries({ queryKey: [`Schedule#${scheduleId}`] });
+      }
       setIsPending(false);
       // onScheduleAddSuccess();
     }
@@ -290,6 +287,12 @@ const ScheduleForm = ({ setShowScheduleForm, scheduleId }: props) => {
             state={formAction}
             type="hidden"
             name="action"
+            placeholder="Enter the Title of your schedule"
+          />
+          <Input
+            state={generalInfo.id}
+            type="hidden"
+            name="scheduleId"
             placeholder="Enter the Title of your schedule"
           />
           <div>

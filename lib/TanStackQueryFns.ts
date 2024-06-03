@@ -20,7 +20,7 @@ export const getSchedules = async () => {
       return [];
     }
     const response = schedules;
-    return response;
+    return {response};
   } catch (error) {
     console.log("There is an error getting the Schedules", error);
     return [];
@@ -40,7 +40,7 @@ export const getScheduleDetails = async (scheduleId: number) => {
       console.log("There is an error getting the Schedule Details", error);
       return undefined;
     }
-    return schedule;
+    return {schedule: schedule};
   } catch (error) {
     console.log("There is an error getting the Schedule Details", error);
     return undefined;
@@ -59,7 +59,7 @@ export const getLocationCategories = async () => {
       return [];
     }
     const response = locationCategories;
-    return response;
+    return {response};
   } catch (error) {
     console.log("There is an error getting the Location Categories", error);
     return [];
@@ -78,7 +78,7 @@ export const getLocationKeys = async () => {
       return [];
     }
     const response = locationKeys;
-    return response;
+    return {response};
   } catch (error) {
     console.log("There is an error getting the Location Keys", error);
     return [];
@@ -190,7 +190,7 @@ export const getFrequencies = async () => {
       return [];
     }
     const response = frequencies;
-    return response;
+    return {response};
   } catch (error) {
     console.log("There is an error getting the Frequencies", error);
     return [];
@@ -210,7 +210,7 @@ export const getPriorityLevels = async () => {
       return [];
     }
     const response = priorityLevels;
-    return response;
+    return {response};
   } catch (error) {
     console.log("There is an error getting the Priority Levels", error);
     return [];

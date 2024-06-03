@@ -13,10 +13,10 @@ interface props {
 const Page = async ({ params }: props) => {
   const headerInfo = headers();
   const scheduleDetailsJson = await fetch(
-    `http://www.localhost:3000/api/supabase/getScheduleDetails?scheduleId=${params.scheduleId}`,
+    `http://localhost:3000/api/supabase/getScheduleDetails?scheduleId=${params.scheduleId}`,
     {
       headers: { cookie: headerInfo.get("cookie")! },
-      next: { tags: ["schedules"] },
+      next: { tags: [`schedule${params.scheduleId}`] },
     }
   )
   const scheduleDetails = await scheduleDetailsJson.json();

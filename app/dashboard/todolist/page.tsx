@@ -37,21 +37,21 @@ const page = async () => {
   const headerInfo = headers();
 
   const todoListJson = await fetch(
-    `http://www.localhost:3000/api/supabase/getTodoList?user=${userId}`,
+    `http://localhost:3000/api/supabase/getTodoList?user=${userId}`,
     {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["todolists"] },
     }
   );
   const frequenciesJson = await fetch(
-    `http://www.localhost:3000/api/supabase/getFrequencies`,
+    `http://localhost:3000/api/supabase/getFrequencies`,
     {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["frequencies"] },
     }
   );
   const priorityLevelsJson = await fetch(
-    `http://www.localhost:3000/api/supabase/getPriorityLevels`,
+    `http://localhost:3000/api/supabase/getPriorityLevels`,
     {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["priorityLevels"] },

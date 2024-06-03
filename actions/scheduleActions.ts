@@ -12,6 +12,7 @@ import { TableInsert, TableRow } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
 import { useFormStateType } from "@/Types/formStates";
 type ScheduleInfo = {
+  id: string,
   date: string;
   timeStart: string;
   timeEnd: string;
@@ -52,6 +53,7 @@ export const mutateSchedule = async (
     let result;
     const formAction = formData.get("action") as string;
     const scheduleData = {
+      id: formData.get("scheduleId") as string,
       title:formData.get("title") as string,
       description:formData.get("description") as string,
       date:formData.get("date") as string,
@@ -66,17 +68,18 @@ export const mutateSchedule = async (
       lat: formData.get("lat") as string,
       long: formData.get("long") as string,
     };
-    // if (formAction === "add") {
+    console.log(formAction);
+    if (formAction === "add") {
       revalidateTag("schedules");
       result = await insertSchedule(scheduleData);
-    // } else {
-    //   result = await updateSchedule(scheduleId!, scheduleData);
-    //   revalidateTag("schedules");
-    //   revalidateTag(`schedule${scuhedleId}`);
-    // }
+    } else {
+      result = await updateSchedule(scheduleData);
+      revalidateTag("schedules");
+      revalidateTag(`schedule${scheduleData.id}`);
+    }
     if (result.Status === "Success") {
       const responseData = result.Response as TableRow<"Schedules">[];
-      await mutateLocationInfo(scheduleData, responseData[0].id, formAction);
+      await mutateLocationInfo(scheduleData, scheduleData.id, formAction);
     }
     return {
       success: true,
@@ -97,18 +100,18 @@ export const mutateSchedule = async (
 
 const mutateLocationInfo = async (
   scheduleInfo: ScheduleInfo,
-  scheduleId: number,
+  scheduleId: string,
   formAction: string
 ): Promise<
   ReturnInterface<TableRow<"ScheduleLocation">> | ReturnInterface<any>
 > => {
   if (formAction === "add") {
     const result: TableRow<"ScheduleLocation"> | any =
-      await insertScheduleLocation(scheduleInfo, scheduleId);
+      await insertScheduleLocation(scheduleInfo, parseInt(scheduleId));
     return result;
   } else {
     const result: TableRow<"ScheduleLocation"> | any =
-      await updateScheduleLocation(scheduleInfo, scheduleId);
+      await updateScheduleLocation(scheduleInfo, parseInt(scheduleId));
     return result;
   }
 };
@@ -144,7 +147,6 @@ const insertSchedule = async (
 };
 
 const updateSchedule = async (
-  scheduleId: number,
   scheduleInfo: ScheduleInfo
 ): Promise<
   ReturnInterface<TableRow<"Schedules">> | ReturnInterface<any>
@@ -154,7 +156,7 @@ const updateSchedule = async (
     let result = await supabase
       .from("Schedules")
       .update<TableInsert<"Schedules">>({
-        id: scheduleId,
+        id: parseInt(scheduleInfo.id),
         title: scheduleInfo.title,
         description: scheduleInfo.description,
         date: scheduleInfo.date,
@@ -162,7 +164,7 @@ const updateSchedule = async (
         timeEnd: scheduleInfo.timeEnd,
         themeColor: "",
       })
-      .eq("id", scheduleId)
+      .eq("id", parseInt(scheduleInfo.id))
       .select();
 
     if (result.error)
