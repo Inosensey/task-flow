@@ -177,7 +177,7 @@ const ScheduleForm = ({
         queryClient.invalidateQueries({ queryKey: [`Schedule#${scheduleId}`] });
       }
       setIsPending(false);
-      // onScheduleAddSuccess();
+      onScheduleAddSuccess();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);

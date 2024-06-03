@@ -20,7 +20,7 @@ import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 import FormValidation from "@/utils/validation";
 
 // lib
-import { getScheduleDetails } from "@/lib/scheduleMethods";
+import { getScheduleDetails } from "@/lib/TanStackQueryFns";
 import { ScheduleDetails } from "@/Types/scheduleType";
 
 // Types
