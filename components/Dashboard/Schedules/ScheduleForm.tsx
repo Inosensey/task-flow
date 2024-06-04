@@ -43,7 +43,7 @@ import { TableInsert } from "@/Types/database.types";
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
   scheduleId: string | null;
-  scheduleData: ScheduleDetails[] | undefined | null;
+  scheduleData?: ScheduleDetails[] | null;
 }
 
 type validation = {

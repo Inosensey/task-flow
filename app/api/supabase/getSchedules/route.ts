@@ -1,28 +1,7 @@
-import type { NextApiResponse, NextApiRequest } from "next";
-import { apiRouteSupbaseIns, routeHandlerSupabaseIns } from "@/utils/supabaseUtils";
-
-// Utils
-import { getCurrentDay } from "@/utils/useDate";
+import {routeHandlerSupabaseIns } from "@/utils/supabaseUtils";
 
 // types
 import { todoListDetails } from "@/Types/todoListTypes";
-
-type sortedTodoListType = {
-  todoList: todoListDetails[];
-  color: string;
-};
-
-interface sortedTodoListInterface {
-  Urgent: sortedTodoListType;
-  HighPriority: sortedTodoListType;
-  MedPriority: sortedTodoListType;
-  LowPriority: sortedTodoListType;
-}
-
-interface todoListResponseInterface {
-  unsortedTodoList: todoListDetails[];
-  sortedTodoList: sortedTodoListInterface;
-}
 
 export async function GET(
   req: Request
