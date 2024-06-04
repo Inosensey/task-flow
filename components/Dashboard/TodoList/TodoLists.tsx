@@ -44,12 +44,12 @@ const TodoLists = ({ TodoLists, frequencies, priorityLevels }: props) => {
     queryFn: getTodoList,
     initialData: TodoLists,
   });
-  const { data: frequenciesData } = useQuery({
+  useQuery({
     queryKey: ["frequencies"],
     queryFn: getFrequencies,
     initialData: frequencies,
   });
-  const { data: priorityLevelsData } = useQuery({
+  useQuery({
     queryKey: ["priorityLevels"],
     queryFn: getPriorityLevels,
     initialData: priorityLevels,

@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { cookies } from "next/headers";
 import { updateSession } from "./utils/refreshSupbaseAuth";
-import { headers } from "next/headers";
 
 // Utils
-import { getCookieAuth, supabaseAuth } from "./utils/cookiesUtils";
+import { supabaseAuth } from "./utils/cookiesUtils";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
@@ -17,7 +15,6 @@ export async function middleware(request: NextRequest) {
       return NextResponse.rewrite(new URL("/", request.url));
     }
   }
-
   // const response = createCSP(request);
   // return response;
   return await updateSession(request);

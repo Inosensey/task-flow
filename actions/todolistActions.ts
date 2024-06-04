@@ -24,19 +24,18 @@ export const mutateTodoList = async (
     let result;
     const formAction = formData.get("action");
     const todoData = {
-      userId: formData.get("userId") as string,
+      id: parseInt(formData.get("todoId") as string),
       title: formData.get("title") as string,
       priorityLevel: parseInt(formData.get("priorityLevel") as string),
       frequency: parseInt(formData.get("frequency") as string),
       description: formData.get("description") as string,
     };
-    // if (formAction === "Add") {
-    result = await insertTodoList(todoData);
+    if (formAction === "Add") {
+      result = await insertTodoList(todoData);
+    } else {
+      result = await updateTodoList(todoData);
+    }
     revalidateTag("todoList");
-    // } else {
-    // result = await updateTodoList(todoListId!, todoListInfo);
-    // revalidateTag(`todoList${todoListId}`);
-    // }
     return {
       success: true,
       error: false,
@@ -92,10 +91,7 @@ const insertTodoList = async (todoListInfo: TableInsert<"TodoList">) => {
       .select();
 
     if (result.error)
-      return returnError(
-        "There is an error inserting the Todo",
-        result.error
-      );
+      return returnError("There is an error inserting the Todo", result.error);
     return returnSuccess("Todo-List Successfully Added", result.data);
   } catch (error) {
     return returnError("There is an error inserting the Todo", error);
@@ -103,7 +99,6 @@ const insertTodoList = async (todoListInfo: TableInsert<"TodoList">) => {
 };
 
 const updateTodoList = async (
-  todoListId: number,
   todoListInfo: TableInsert<"TodoList">
 ): Promise<ReturnInterface<TableRow<"TodoList">> | ReturnInterface<any>> => {
   try {
@@ -115,14 +110,11 @@ const updateTodoList = async (
         description: todoListInfo.description,
         priorityLevel: todoListInfo.priorityLevel,
       })
-      .eq("id", todoListId)
+      .eq("id", todoListInfo.id)
       .select();
 
     if (result.error)
-      return returnError(
-        "There is an error updating the Todo",
-        result.error
-      );
+      return returnError("There is an error updating the Todo", result.error);
     return returnSuccess("Todo Successfully Updated", result.data);
   } catch (error) {
     return returnError("There is an error updating the Todo", error);
@@ -144,11 +136,10 @@ export const updateTodoStatus = async (
       .select("title");
 
     if (result.error) {
-      return returnError(
-        "There is an error updating the Todo",
-        result.error
-      );
+      return returnError("There is an error updating the Todo", result.error);
     }
+
+    revalidateTag("todoList");
     return returnSuccess("Todo-List Successfully Updated", result.data);
   } catch (error) {
     return returnError("There is an error updating the Todo", error);

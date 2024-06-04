@@ -22,22 +22,29 @@ import MaterialSymbolsCalendarMonthOutlineRounded from "@/Icones/MaterialSymbols
 const Page = async () => {
   const userData = await getSupabaseUser();
   const userId = userData.data.user!.id;
-  const headerInfo = headers();
+  const headerInfo = headers();  
+  
+  let apiRootUrl;
+  if(process.env.NODE_ENV === "development") {
+    apiRootUrl = process.env.NEXT_DEV_URL
+  } else {
+    apiRootUrl = process.env.NEXT_PROD_URL
+  }
 
   const [schedulesDataJson, locationCategoriesJson, locationKeysJson] =
     await Promise.all([
       fetch(
-        `http://localhost:3000/api/supabase/getSchedules?user=${userId}`,
+        `${apiRootUrl}api/supabase/getSchedules?user=${userId}`,
         {
           headers: { cookie: headerInfo.get("cookie")! },
           next: { tags: ["schedules"] },
         }
       ),
-      fetch(`http://localhost:3000/api/supabase/getLocationCategories`, {
+      fetch(`${apiRootUrl}api/supabase/getLocationCategories`, {
         headers: { cookie: headerInfo.get("cookie")! },
         next: { tags: ["locationCategories"] },
       }),
-      fetch(`http://localhost:3000/api/supabase/getLocationKeys`, {
+      fetch(`${apiRootUrl}api/supabase/getLocationKeys`, {
         headers: { cookie: headerInfo.get("cookie")! },
         next: { tags: ["locationKeys"] },
       }),

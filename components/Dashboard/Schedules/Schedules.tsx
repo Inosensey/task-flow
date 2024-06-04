@@ -14,29 +14,31 @@ import { getCurrentDaySchedules } from "@/utils/getCurrentDaySchedules";
 import { useHours } from "@/utils/useDate";
 
 // Libs
-import { getLocationCategories, getLocationKeys, getSchedules } from "@/lib/TanStackQueryFns";
+import {
+  getLocationCategories,
+  getLocationKeys,
+  getSchedules,
+} from "@/lib/TanStackQueryFns";
 
 // Store
 import { useDateStore } from "@/store/useDateStore";
 
 interface props {
   schedules: TableRow<"Schedules">[] | [];
-  locationCategories: TableRow<"LocationCategories">[] | [],
-  locationKeys: TableRow<"LocationKeys">[] | []
+  locationCategories: TableRow<"LocationCategories">[] | [];
+  locationKeys: TableRow<"LocationKeys">[] | [];
 }
 
-const Schedules = ({schedules, locationCategories, locationKeys}: props) => {
+const Schedules = ({ schedules, locationCategories, locationKeys }: props) => {
   const { dateSelected } = useDateStore();
 
   // Use query
-  const {
-    data: scheduleData
-  } = useQuery({
+  const { data: scheduleData } = useQuery({
     queryKey: ["schedules"],
     queryFn: getSchedules,
     initialData: schedules,
   });
-   useQuery({
+  useQuery({
     queryKey: ["locationCategories"],
     queryFn: getLocationCategories,
     initialData: locationCategories,
@@ -47,7 +49,10 @@ const Schedules = ({schedules, locationCategories, locationKeys}: props) => {
     initialData: locationKeys,
   });
 
-  const currentDaySchedules = getCurrentDaySchedules(scheduleData, dateSelected);
+  const currentDaySchedules = getCurrentDaySchedules(
+    scheduleData,
+    dateSelected
+  );
   const hours = useHours();
   return (
     <div className="w-full flex">

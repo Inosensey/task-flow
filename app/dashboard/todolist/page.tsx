@@ -1,6 +1,5 @@
 "use server";
 import { headers } from "next/headers";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 // Components
 import Header from "@/components/Dashboard/Header";
@@ -10,9 +9,6 @@ import TodoLists from "@/components/Dashboard/TodoList/TodoLists";
 import IonTodayOutline from "@/Icones/IonTodayOutline";
 
 // Libs
-import { getTodoLists } from "@/lib/todolistMethods";
-
-import { ReturnInterface } from "@/Types/generalTypes";
 import { todoListDetails } from "@/Types/todoListTypes";
 import { getSupabaseUser } from "@/utils/supabaseUtils";
 
@@ -26,32 +22,35 @@ interface sortedTodoListInterface {
   MedPriority: sortedTodoListType;
   LowPriority: sortedTodoListType;
 }
-interface todoListResponseInterface {
-  unsortedTodoList: todoListDetails[];
-  sortedTodoList: sortedTodoListInterface;
-}
 
 const page = async () => {
   const userData = await getSupabaseUser();
   const userId = userData.data.user!.id;
-  const headerInfo = headers();
+  const headerInfo = headers();  
+  
+  let apiRootUrl;
+  if(process.env.NODE_ENV === "development") {
+    apiRootUrl = process.env.NEXT_DEV_URL
+  } else {
+    apiRootUrl = process.env.NEXT_PROD_URL
+  }
 
   const todoListJson = await fetch(
-    `http://localhost:3000/api/supabase/getTodoList?user=${userId}`,
+    `${apiRootUrl}api/supabase/getTodoList?user=${userId}`,
     {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["todolists"] },
     }
   );
   const frequenciesJson = await fetch(
-    `http://localhost:3000/api/supabase/getFrequencies`,
+    `${apiRootUrl}api/supabase/getFrequencies`,
     {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["frequencies"] },
     }
   );
   const priorityLevelsJson = await fetch(
-    `http://localhost:3000/api/supabase/getPriorityLevels`,
+    `${apiRootUrl}api/supabase/getPriorityLevels`,
     {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["priorityLevels"] },

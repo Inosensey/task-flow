@@ -15,8 +15,7 @@ import GgNotes from "@/Icones/GgNotes";
 import MaterialSymbolsOverviewOutline from "@/Icones/MaterialSymbolsOverviewOutline";
 
 // libs
-import { getSchedules } from "@/lib/scheduleMethods";
-import { getTodoLists, resetTodoLists } from "@/lib/todolistMethods";
+import { resetTodoLists } from "@/lib/todolistMethods";
 
 // Utils
 import {
@@ -24,19 +23,13 @@ import {
   getCurrentWeekSchedules,
 } from "@/utils/getCurrentDaySchedules";
 import { getCurrentDay } from "@/utils/useDate";
+import { getSupabaseUser } from "@/utils/supabaseUtils";
 
 // Types
 import { TableRow } from "@/Types/database.types";
-import { ReturnInterface } from "@/Types/generalTypes";
 import {
   todoListDetails,
-  todoListResponseInterface,
 } from "@/Types/todoListTypes";
-import Schedules from "@/components/Dashboard/Schedules/Schedules";
-import { getSupabaseUser } from "@/utils/supabaseUtils";
-interface schedulesInterface {
-  schedules: TableRow<"Schedules">[] | null;
-}
 
 const Page = async () => {
   const userData = await getSupabaseUser();
@@ -44,14 +37,21 @@ const Page = async () => {
   const headerInfo = headers();
   const currentDay = getCurrentDay();
 
+  let apiRootUrl;
+  if(process.env.NODE_ENV === "development") {
+    apiRootUrl = process.env.NEXT_DEV_URL
+  } else {
+    apiRootUrl = process.env.NEXT_PROD_URL
+  }
+  
   // Fetch
   const [schedulesData ,resetTodoListResult, todoLists] = await Promise.all([
-    fetch(`http://localhost:3000/api/supabase/getSchedules?user=${userId}`, {
+    fetch(`${apiRootUrl}api/supabase/getSchedules?user=${userId}`, {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["schedules"] },
     }),
     resetTodoLists(),
-    fetch(`http://localhost:3000/api/supabase/getTodoList?user=${userId}`, {
+    fetch(`${apiRootUrl}api/supabase/getTodoList?user=${userId}`, {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["todolists"] },
     }),

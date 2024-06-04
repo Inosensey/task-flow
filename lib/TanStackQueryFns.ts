@@ -4,9 +4,6 @@ import { useSupabase } from "@/utils/useSupabaseClient";
 
 // Types
 import { ScheduleDetails } from "@/Types/scheduleType";
-interface reactQueryType {
-  schedule: ScheduleDetails[]
-}
 
 export const getSchedules = async () => {
   const supabase = useSupabase;
@@ -14,13 +11,13 @@ export const getSchedules = async () => {
     let { data: schedules, error } = await supabase
     .from("Schedules")
     .select("*");
-    // console.log(auth)
+    
     if (error) {
       console.log("There is an error getting the Schedules", error);
       return [];
     }
     const response = schedules;
-    return {response};
+    return response;
   } catch (error) {
     console.log("There is an error getting the Schedules", error);
     return [];
@@ -35,7 +32,7 @@ export const getScheduleDetails = async (scheduleId: number) => {
       `*, ScheduleLocation(id, city, cityId, namePlace, long, lat, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))`
     )
     .eq("id", scheduleId);;
-    // console.log(auth)
+    
     if (error) {
       console.log("There is an error getting the Schedule Details", error);
       return undefined;
@@ -53,13 +50,13 @@ export const getLocationCategories = async () => {
     let { data: locationCategories, error } = await supabase
     .from("LocationCategories")
     .select("*");
-    // console.log(auth)
+    
     if (error) {
       console.log("There is an error getting the Location Categories", error);
       return [];
     }
     const response = locationCategories;
-    return {response};
+    return response;
   } catch (error) {
     console.log("There is an error getting the Location Categories", error);
     return [];
@@ -72,13 +69,13 @@ export const getLocationKeys = async () => {
     let { data: locationKeys, error } = await supabase
     .from("LocationKeys")
     .select("*");
-    // console.log(auth)
+    
     if (error) {
       console.log("There is an error getting the Location Keys", error);
       return [];
     }
     const response = locationKeys;
-    return {response};
+    return response;
   } catch (error) {
     console.log("There is an error getting the Location Keys", error);
     return [];
@@ -154,7 +151,7 @@ export const getTodoList = async () => {
         "id, title, description, PriorityLevel(level, description, color), Frequencies(id, frequency), TodoListStatus(id, status)"
       )
       .eq("userId", `${userId}`);
-    // console.log(auth)
+    
     if (result.error) {
       console.log("There is an error getting the Todo-Lists", result.error);
       return {
@@ -184,13 +181,13 @@ export const getFrequencies = async () => {
     let { data: frequencies, error } = await supabase
     .from("Frequencies")
     .select("*");
-    // console.log(auth)
+    
     if (error) {
       console.log("There is an error getting the Frequencies", error);
       return [];
     }
     const response = frequencies;
-    return {response};
+    return response;
   } catch (error) {
     console.log("There is an error getting the Frequencies", error);
     return [];
@@ -204,13 +201,13 @@ export const getPriorityLevels = async () => {
     let { data: priorityLevels, error } = await supabase
     .from("PriorityLevel")
     .select("*");
-    // console.log(auth)
+    
     if (error) {
       console.log("There is an error getting the Priority Levels", error);
       return [];
     }
     const response = priorityLevels;
-    return {response};
+    return response;
   } catch (error) {
     console.log("There is an error getting the Priority Levels", error);
     return [];

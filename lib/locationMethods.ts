@@ -15,25 +15,3 @@ export const GetListOfPlaces = async (place: string, categories: string) => {
   const ListOfPlaces = await res.json();
   return ListOfPlaces;
 };
-
-export const getLocationKeys = async () => {
-  const res = await fetch(
-    "http://localhost:3000/api/supabase/getLocationKeys",
-    {
-      next: { tags: ["LocationKeys"], revalidate: 300 },
-    }
-  );
-  const LocationKeys: TableRow<"LocationKeys">[] = await res.json();
-  return LocationKeys;
-};
-
-export const getLocationCategories = async () => {
-  const res = await fetch(
-    "http://localhost:3000/api/supabase/getLocationCategories",
-    {
-      next: { tags: ["LocationCategories"], revalidate: 300 },
-    }
-  );
-  const LocationCategories: TableRow<"LocationCategories">[] = await res.json();
-  return LocationCategories;
-};

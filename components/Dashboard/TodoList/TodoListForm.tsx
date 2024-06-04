@@ -22,7 +22,7 @@ import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 
 // types
 import { TableInsert, TableRow } from "@/Types/database.types";
-import { getFrequencies, getPriorityLevel } from "@/lib/todolistMethods";
+import { getFrequencies, getPriorityLevels } from "@/lib/TanStackQueryFns";
 import CustomSelect, {
   MobileSelectOptions,
 } from "@/components/ReusableComponents/inputs/CustomSelect";
@@ -63,18 +63,22 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
 
   // TodoList Initialize
   const initializeTodoListInput = (): TableInsert<"TodoList"> => ({
-    title: action !== "add" && data ? data.title : "",
-    description: action !== "add" && data ? data.description : "",
+    id: action !== "add" && data !== undefined ? data.id : 0,
+    title: action !== "add" && data !== undefined ? data.title : "",
+    description: action !== "add" && data !== undefined ? data.description : "",
     priorityLevel:
-      action !== "add" && data ? data.PriorityLevel.level! : undefined,
-    frequency: action !== "add" && data ? data.Frequencies.id : undefined,
+      action !== "add" && data !== undefined
+        ? data.PriorityLevel.level!
+        : undefined,
+    frequency:
+      action !== "add" && data !== undefined ? data.Frequencies.id : undefined,
   });
 
   // Use query
   const queryClient = useQueryClient();
   const { data: priorityLevels } = useQuery({
     queryKey: ["priorityLevels"],
-    queryFn: () => getPriorityLevel(),
+    queryFn: () => getPriorityLevels(),
   });
   const { data: frequencies } = useQuery({
     queryKey: ["frequencies"],
@@ -242,7 +246,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 selected={
                   todoListInput.priorityLevel === undefined
                     ? "Priority Levels"
-                    : priorityLevels.find(
+                    : priorityLevels!.find(
                         (priorityLevelInfo: TableRow<"PriorityLevel">) =>
                           priorityLevelInfo.level ===
                             todoListInput.priorityLevel &&
@@ -255,7 +259,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                   setMobileOptionHeader("Priority Levels");
                 }}
                 setSelectedMobileOptions={() => {
-                  setSelectedMobileOptions(priorityLevels);
+                  setSelectedMobileOptions(priorityLevels!);
                 }}
                 placeHolder={"Priority Levels"}
                 showChoices={togglePrioritySelect}
@@ -290,12 +294,12 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 Choose how frequent your Todo
               </label>
               <CustomSelect
-                valid={validations?.frequency.valid}
+                valid={validations?.frequency?.valid}
                 validationMessage={validations?.frequency?.validationMessage}
                 selected={
                   todoListInput.frequency === undefined
                     ? "Frequencies"
-                    : frequencies.find(
+                    : frequencies!.find(
                         (frequency: TableRow<"Frequencies">) =>
                           frequency.id === todoListInput?.frequency &&
                           frequency.frequency
@@ -313,7 +317,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                   setMobileOptionHeader("Frequencies");
                 }}
                 setSelectedMobileOptions={() => {
-                  setSelectedMobileOptions(frequencies);
+                  setSelectedMobileOptions(frequencies!);
                 }}
               >
                 {windowCurrentWidth >= 769 &&
@@ -373,14 +377,21 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 valid={null}
                 validationMessage={""}
               />
-              
-            <Input
-              state={action}
-              type="hidden"
-              name="action"
-              placeholder="Enter the Title of your schedule"
-              label="Title"
-            />
+
+              <Input
+                state={action}
+                type="hidden"
+                name="action"
+                placeholder="Enter the Title of your schedule"
+                label="Title"
+              />
+              <Input
+                state={todoListInput.id!.toString()}
+                type="hidden"
+                name="todoId"
+                placeholder="Enter the Title of your schedule"
+                label="Title"
+              />
             </div>
             <div>
               <motion.button

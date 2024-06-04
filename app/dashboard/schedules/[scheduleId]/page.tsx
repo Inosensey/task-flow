@@ -3,17 +3,22 @@
 import DetailedSchedule from "@/components/Dashboard/Schedules/DetailedSchedule";
 import { headers } from "next/headers";
 
-// lib
-import { getScheduleDetails } from "@/lib/scheduleMethods";
-
 interface props {
   params: { scheduleId: string };
 }
 
 const Page = async ({ params }: props) => {
-  const headerInfo = headers();
+  const headerInfo = headers();  
+
+  let apiRootUrl;
+  if(process.env.NODE_ENV === "development") {
+    apiRootUrl = process.env.NEXT_DEV_URL
+  } else {
+    apiRootUrl = process.env.NEXT_PROD_URL
+  }
+  
   const scheduleDetailsJson = await fetch(
-    `http://localhost:3000/api/supabase/getScheduleDetails?scheduleId=${params.scheduleId}`,
+    `${apiRootUrl}api/supabase/getScheduleDetails?scheduleId=${params.scheduleId}`,
     {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: [`schedule${params.scheduleId}`] },
