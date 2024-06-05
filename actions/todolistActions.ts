@@ -145,3 +145,20 @@ export const updateTodoStatus = async (
     return returnError("There is an error updating the Todo", error);
   }
 };
+
+export const deleteTodo = async (todoId: number): Promise<ReturnInterface<TableRow<"TodoList">> | ReturnInterface<any>> => {
+  try {
+    const supabase = createClient();
+    const userData = await getSupabaseUser();
+    const userId = userData.data.user!.id;
+    let result = await supabase.from("TodoList").delete().eq("id", todoId).eq("userId", userId).select();
+    if (result.error) {
+      return returnError("There is an error deleting the Todo", result.error);
+    }
+
+    revalidateTag("todoList");
+    return returnSuccess("Todo-List Successfully Deleted", result.data);
+  } catch (error) {
+    return returnError("There is an error deleting the Todo", error);
+  }
+}

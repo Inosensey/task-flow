@@ -15,6 +15,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.rewrite(new URL("/", request.url));
     }
   }
+  // console.log(auth);
   // const response = createCSP(request);
   // return response;
   return await updateSession(request);

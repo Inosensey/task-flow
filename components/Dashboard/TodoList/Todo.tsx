@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 // Actions
-import { updateTodoStatus } from "@/actions/todolistActions";
+import { updateTodoStatus, deleteTodo } from "@/actions/todolistActions";
 
 // store
 import { useNotificationStore } from "@/store/useNotificationStore";
@@ -43,7 +43,7 @@ export default function Todo({ details }: props) {
   >(undefined);
 
   // Mutation
-  const { mutate, isIdle, isPending, isSuccess } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: ({
       todoListId = 0,
       statusId = 0,
@@ -52,15 +52,28 @@ export default function Todo({ details }: props) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["todolists"] });
-      onTodoListAddSuccess(data.Response[0].title);
+      onTodoListActionSuccess(`TodoList: ${data.Response[0].title}, Updated`);
+    },
+    onError: (data) => {
+      console.log(data);
+    },
+  });
+  const { mutate: deleteMutate, isPending: deleting } = useMutation({
+    mutationFn: (todoListId: number) => {
+      return deleteTodo(todoListId);
+    },
+    onSuccess: (data) => {
+      console.log(data);
+      queryClient.invalidateQueries({ queryKey: ["todolists"] });
+      onTodoListActionSuccess(`TodoList: ${data.Response[0].title}, Deleted`);
     },
     onError: (data) => {
       console.log(data);
     },
   });
 
-  const onTodoListAddSuccess = (todoListTile: string) => {
-    const notifMessage = `TodoList: ${todoListTile}, Updated`;
+  const onTodoListActionSuccess = (message: string) => {
+    const notifMessage = message;
     setMessage(notifMessage);
     setShowSlideNotification();
     hideNotificationTimer();
@@ -125,11 +138,18 @@ export default function Todo({ details }: props) {
               />
             </span>
           )}
-
-          <span className="cursor-pointer w-4">
+          <span
+            onClick={() => {
+              deleteMutate(details.id);
+            }}
+            className={`cursor-pointer w-4 ${
+              deleting && "pointer-events-none"
+            }`}
+          >
             <FontAwesomeIcon
               className="phone:text-xl text-Error"
-              icon={faTrashCan}
+              icon={deleting ? faSpinner : faTrashCan}
+              spin={deleting ? true : false}
             />
           </span>
         </div>
