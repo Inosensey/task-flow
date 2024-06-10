@@ -45,13 +45,14 @@ const CustomSelect = ({
   fetching = false,
   setSelectedMobileOptions,
   valid,
-  validationMessage
+  validationMessage,
 }: props) => {
   const windowCurrentWidth = window.innerWidth;
 
   return (
     <div className="relative phone:w-11/12">
       <div
+        style={{ pointerEvents: dynamic ? (fetching ? "none" : "all") : "all" }}
         onClick={() => {
           if (windowCurrentWidth >= 280 && windowCurrentWidth <= 768) {
             setSelectedMobileOptions && setSelectedMobileOptions();
@@ -140,18 +141,18 @@ function CheckSelectType(
   }
 }
 
-export function MobileSelectOptions<T,>({
+export function MobileSelectOptions<T>({
   optionType,
   setToggleMobileOptions,
   choices,
   header,
-  setState
+  setState,
 }: MobileSelectOptionsProps<T>) {
   const mobileOptions = getMobileSelectOption({
     optionType,
     setState,
     setToggleMobileOptions,
-    choices
+    choices,
   });
   return (
     <div

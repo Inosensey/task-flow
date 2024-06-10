@@ -1,6 +1,5 @@
 import type { NextApiResponse, NextApiRequest } from "next";
 import {
-  apiRouteSupbaseIns,
   routeHandlerSupabaseIns,
 } from "@/utils/supabaseUtils";
 

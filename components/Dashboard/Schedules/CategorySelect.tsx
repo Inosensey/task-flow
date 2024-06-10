@@ -117,25 +117,26 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
   };
 
   useEffect(() => {
-    if (formAction !== "add" && !detailsData && detailsData !== null) {
+    if (formAction !== "add" && detailsData && detailsData !== null) {
       const location = scheduleData?.schedule[0].ScheduleLocation[0]
       const SelectedPlaceType = `${location.LocationKeys.key}.${location.LocationCategories.category}`;
       const setPlacesList = async () => {
+        setGettingListOfPlaces(true);
         const data = await getPlaces(
           location.cityId!,
           SelectedPlaceType
         );
-
+        setGettingListOfPlaces(false);
         if (data !== undefined) {
           setListPlace((prev) => ({ ...prev, features: data.features }));
+          console.log(data);
           setSelectedMobileOptions(data?.features);
         }
       };
       setPlacesList();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+  }, []); 
   return (
     <>
       <div className="flex flex-col gap-1">

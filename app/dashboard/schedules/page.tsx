@@ -38,15 +38,18 @@ const Page = async () => {
         {
           headers: { cookie: headerInfo.get("cookie")! },
           next: { tags: ["schedules"] },
+          cache: "force-cache"
         }
       ),
       fetch(`${apiRootUrl}api/supabase/getLocationCategories`, {
         headers: { cookie: headerInfo.get("cookie")! },
         next: { tags: ["locationCategories"] },
+        cache: "force-cache"
       }),
       fetch(`${apiRootUrl}api/supabase/getLocationKeys`, {
         headers: { cookie: headerInfo.get("cookie")! },
         next: { tags: ["locationKeys"] },
+        cache: "force-cache"
       }),
     ]);
 

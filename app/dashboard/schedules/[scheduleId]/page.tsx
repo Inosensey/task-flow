@@ -22,6 +22,7 @@ const Page = async ({ params }: props) => {
     {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: [`schedule${params.scheduleId}`] },
+      cache: "force-cache"
     }
   )
   const scheduleDetails = await scheduleDetailsJson.json();

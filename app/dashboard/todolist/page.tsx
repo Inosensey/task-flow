@@ -26,13 +26,13 @@ interface sortedTodoListInterface {
 const page = async () => {
   const userData = await getSupabaseUser();
   const userId = userData.data.user!.id;
-  const headerInfo = headers();  
-  
+  const headerInfo = headers();
+
   let apiRootUrl;
-  if(process.env.NODE_ENV === "development") {
-    apiRootUrl = process.env.NEXT_DEV_URL
+  if (process.env.NODE_ENV === "development") {
+    apiRootUrl = process.env.NEXT_DEV_URL;
   } else {
-    apiRootUrl = process.env.NEXT_PROD_URL
+    apiRootUrl = process.env.NEXT_PROD_URL;
   }
 
   const todoListJson = await fetch(
@@ -40,6 +40,7 @@ const page = async () => {
     {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["todolists"] },
+      cache: "force-cache",
     }
   );
   const frequenciesJson = await fetch(
@@ -47,6 +48,7 @@ const page = async () => {
     {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["frequencies"] },
+      cache: "force-cache",
     }
   );
   const priorityLevelsJson = await fetch(
@@ -54,6 +56,7 @@ const page = async () => {
     {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["priorityLevels"] },
+      cache: "force-cache",
     }
   );
   const todoLists = await todoListJson.json();

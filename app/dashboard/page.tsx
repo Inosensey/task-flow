@@ -49,11 +49,13 @@ const Page = async () => {
     fetch(`${apiRootUrl}api/supabase/getSchedules?user=${userId}`, {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["schedules"] },
+      cache: "force-cache"
     }),
     resetTodoLists(),
     fetch(`${apiRootUrl}api/supabase/getTodoList?user=${userId}`, {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["todolists"] },
+      cache: "force-cache"
     }),
   ]);
 
