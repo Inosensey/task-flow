@@ -149,10 +149,18 @@ const Sidebar = () => {
                   <IonTodayOutline color="#00ADB5" /> To Do List
                 </li>
               </Link>
-              <li className="select-none">
-                <GgNotes color="#00ADB5" />
-                Notes
-              </li>
+              <Link href={"/dashboard/notes"}>
+                <li
+                  onClick={() => {
+                    sidebarAnimation.start("hidden");
+                    setShowSideBar(false);
+                  }}
+                  className="select-none"
+                >
+                  <GgNotes color="#00ADB5" />
+                  Notes
+                </li>
+              </Link>
             </ul>
           </div>
           <div className="px-3">
