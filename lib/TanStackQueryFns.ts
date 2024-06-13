@@ -213,3 +213,22 @@ export const getPriorityLevels = async () => {
     return [];
   }
 }
+
+export const getNotes = async () => {
+  const supabase = useSupabase;
+  try {
+    let { data: notes, error } = await supabase
+    .from("Notes")
+    .select(`*`)
+    
+    if (error) {
+      console.log("There is an error getting the Notes", error);
+      return [];
+    }
+    const response = notes;
+    return response;
+  } catch (error) {
+    console.log("There is an error getting the Notes", error);
+    return [];
+  }
+}

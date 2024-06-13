@@ -2,16 +2,46 @@
 
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 
 // Components
 import { CheckBoxInput } from "@/components/ReusableComponents/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+// Libs
+import { getNotes, getSchedules, getTodoList } from "@/lib/TanStackQueryFns";
+
 // Icons
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import NoteForm from "./NoteForm";
 
-const Notes = () => {
+//Types
+import { TableRow } from "@/Types/database.types";
+import { todoListResponseInterface } from "@/Types/todoListTypes";
+interface props {
+  schedules: TableRow<"Schedules">[] | []
+  todoList: todoListResponseInterface,
+  notes: TableRow<"Notes">[] | []
+}
+
+const Notes = ({notes, schedules, todoList}:props) => {  
+  // Use query
+  const { data: scheduleData } = useQuery({
+    queryKey: ["schedules"],
+    queryFn: getSchedules,
+    initialData: schedules,
+  })
+  const { data: todoListsData } = useQuery({
+    queryKey: ["todolists"],
+    queryFn: getTodoList,
+    initialData: todoList,
+  });
+  const { data: notesData } = useQuery({
+    queryKey: ["notes"],
+    queryFn: getNotes,
+    initialData: notes
+  });
+
   // States
   const [formAction, setFormAction] = useState<string>("Add");
   const [showNoteForm, setShowNoteForm] = useState<boolean>(false);
