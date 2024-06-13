@@ -17,7 +17,6 @@ import { getCurrentDate } from "@/utils/useDate";
 
 // types
 import TodoListForm from "./TodoListForm";
-import { ReturnInterface } from "@/Types/generalTypes";
 import {
   sortedTodoListInterface,
   todoListDetails,
