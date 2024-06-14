@@ -65,7 +65,29 @@ export const getMobileSelectOption = <T,>({
           ))}
         </>
       );
-
+    case "noteType":
+      options = choices as TableRow<"NoteType">[];
+      return (
+        <>
+          {options.map((noteTypeInfo: TableRow<"NoteType">) => (
+            <div
+              key={noteTypeInfo.id}
+              onClick={() => {
+                setState((prev: T) => ({
+                  ...prev,
+                  noteType: noteTypeInfo.id,
+                }));
+                setToggleMobileOptions(false);
+              }}
+              className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
+            >
+              <div className="flex flex-col">
+                <p className="phone:text-sm select-none">{noteTypeInfo.type}</p>
+              </div>
+            </div>
+          ))}
+        </>
+      );
     default:
       break;
   }

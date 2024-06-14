@@ -9,7 +9,7 @@ import { CheckBoxInput } from "@/components/ReusableComponents/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Libs
-import { getNotes, getSchedules, getTodoList } from "@/lib/TanStackQueryFns";
+import { getNoteTypes, getNotes, getSchedules, getTodoList } from "@/lib/TanStackQueryFns";
 
 // Icons
 import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
@@ -21,10 +21,11 @@ import { todoListResponseInterface } from "@/Types/todoListTypes";
 interface props {
   schedules: TableRow<"Schedules">[] | []
   todoList: todoListResponseInterface,
-  notes: TableRow<"Notes">[] | []
+  notes: TableRow<"Notes">[] | [],
+  noteTypes: TableRow<"NoteType">[] | []
 }
 
-const Notes = ({notes, schedules, todoList}:props) => {  
+const Notes = ({notes, schedules, todoList, noteTypes}:props) => {  
   // Use query
   const { data: scheduleData } = useQuery({
     queryKey: ["schedules"],
@@ -41,20 +42,25 @@ const Notes = ({notes, schedules, todoList}:props) => {
     queryFn: getNotes,
     initialData: notes
   });
+  const {data: noteTypesData} = useQuery({
+    queryKey: ["noteTypes"],
+    queryFn: getNoteTypes,
+    initialData: noteTypes
+  })
 
   // States
   const [formAction, setFormAction] = useState<string>("Add");
   const [showNoteForm, setShowNoteForm] = useState<boolean>(false);
-  const [selectedNoteType, setSelectedNoteType] =
+  const [selectedFilter, setSelectedFilter] =
   useState<string>("All");
-  const [noteTypes] = useState<Array<string>>([
+  const [filters] = useState<Array<string>>([
     "All",
     "Schedules",
     "Todo-List",
   ]);
 
   const toggleFilter = (value: string) => {
-    setSelectedNoteType(value);
+    setSelectedFilter(value);
   };
   
   const handleCheckBoxOnChange = (
@@ -62,7 +68,7 @@ const Notes = ({notes, schedules, todoList}:props) => {
   ) => {
     const { value } = event.target;
 
-    setSelectedNoteType(value);
+    setSelectedFilter(value);
   };
 
   return (
@@ -85,12 +91,12 @@ const Notes = ({notes, schedules, todoList}:props) => {
           </motion.button>
         </div>
         <div className="flex mt-5 gap-8 items-center justify-center">
-          {noteTypes.map((status: string) => (
+          {filters.map((status: string) => (
             <CheckBoxInput
               key={status}
               label={status}
-              selected={selectedNoteType}
-              setSelected={setSelectedNoteType}
+              selected={selectedFilter}
+              setSelected={setSelectedFilter}
               name="todo-list-status"
               customFunc={toggleFilter}
               onChange={handleCheckBoxOnChange}

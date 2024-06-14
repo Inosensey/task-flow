@@ -20,7 +20,7 @@ const page = async () => {
   }
 
   // Fetch
-  const [schedulesData, todoLists, notesData] = await Promise.all([
+  const [schedulesData, todoLists, notesData, noteTypesData] = await Promise.all([
     fetch(`${apiRootUrl}api/supabase/getSchedules?user=${userId}`, {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["schedules"] },
@@ -33,7 +33,12 @@ const page = async () => {
     }),
     fetch(`${apiRootUrl}api/supabase/getNotes?user=${userId}`, {
       headers: { cookie: headerInfo.get("cookie")! },
-      next: { tags: ["schedules"] },
+      next: { tags: ["notes"] },
+      cache: "force-cache",
+    }),
+    fetch(`${apiRootUrl}api/supabase/getNoteTypes`, {
+      headers: { cookie: headerInfo.get("cookie")! },
+      next: { tags: ["noteTypes"] },
       cache: "force-cache",
     }),
   ]);
@@ -41,6 +46,7 @@ const page = async () => {
   const todoList = await todoLists.json();
   const schedules = await schedulesData.json();
   const notes = await notesData.json();
+  const noteTypes = await noteTypesData.json();
 
   return (
     <div className="w-full">
@@ -50,6 +56,7 @@ const page = async () => {
           notes={notes.response}
           schedules={schedules.schedules}
           todoList={todoList.response}
+          noteTypes={noteTypes.response}
         />
       </div>
     </div>

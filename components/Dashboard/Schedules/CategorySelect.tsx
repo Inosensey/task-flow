@@ -27,7 +27,7 @@ import {
   LocationInfoInput,
   ScheduleDetails,
 } from "@/Types/scheduleType";
-import { DesktopSelectOptions } from "./DesktopSelectCatOptions";
+import { DesktopSelectCatOptions } from "./DesktopSelectCatOptions";
 interface props {
   place_id: string;
   scheduleId: string | null;
@@ -155,13 +155,11 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             setShowPlacesType(false)
             setShowPlaceList(false)
             setOptionType("Key");
-          }}
-          setSelectedMobileOptions={() => {
             setSelectedMobileOptions(locationKeyData);
           }}
         >
           {windowCurrentWidth >= 769 && optionType === "Key" && (
-            <DesktopSelectOptions
+            <DesktopSelectCatOptions
               placeId={place_id}
               optionType={optionType}
               locationInfo={locationInfo}
@@ -189,13 +187,11 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
               setShowChoices(false)
               setShowPlaceList(false)
               setOptionType("Categories");
-            }}
-            setSelectedMobileOptions={() => {
               setSelectedMobileOptions(locationCategoriesData);
             }}
           >
             {windowCurrentWidth >= 769 && optionType === "Categories" && (
-              <DesktopSelectOptions
+              <DesktopSelectCatOptions
                 placeId={place_id}
                 optionType={optionType}
                 locationInfo={locationInfo}
@@ -225,15 +221,13 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
               setShowPlacesType(false)
               setShowChoices(false)
               setOptionType("listPlace");
-            }}
-            setSelectedMobileOptions={() => {
               setSelectedMobileOptions(listPlace?.features);
             }}
             dynamic={true}
             fetching={gettingListOfPlaces}
           >
             {windowCurrentWidth >= 769 && optionType === "listPlace" && (
-              <DesktopSelectOptions
+              <DesktopSelectCatOptions
                 placeId={place_id}
                 optionType={optionType}
                 locationInfo={locationInfo}

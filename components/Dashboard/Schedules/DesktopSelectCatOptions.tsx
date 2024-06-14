@@ -30,7 +30,7 @@ interface props {
   header?: string;
 }
 
-export function DesktopSelectOptions({
+export function DesktopSelectCatOptions({
   choices,
   placeId,
   optionType,

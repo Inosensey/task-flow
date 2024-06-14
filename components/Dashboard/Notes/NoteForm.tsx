@@ -1,12 +1,16 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+
+// libs
+import { getNoteTypes } from "@/lib/TanStackQueryFns";
 
 // Components
 import Overlay from "@/components/ReusableComponents/Overlay";
+import CustomSelect, { MobileSelectOptions } from "@/components/ReusableComponents/inputs/CustomSelect";
 
 // Store
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
-import { TableInsert } from "@/Types/database.types";
 
 // Variants
 const popUpVariants = {
@@ -31,6 +35,7 @@ const popUpVariants = {
 };
 
 // Types
+import { TableInsert } from "@/Types/database.types";
 interface props {
   setShowNoteForm: React.Dispatch<React.SetStateAction<boolean>>;
   action: string;
@@ -46,9 +51,21 @@ const noteInitial: TableInsert<"Notes"> = {
 };
 
 const NoteForm = ({ setShowNoteForm, action, data }: props) => {
+  // Queries
+  const {data: noteTypesData} = useQuery({
+    queryKey: ["noteTypes"],
+    queryFn: getNoteTypes,
+  })
+
   // States
   const [noteInput, setNoteInput] = useState<TableInsert<"Notes">>(noteInitial);
-
+  const [toggleNoteTypeSelect, setToggleNoteTypeSelect] = useState<boolean>(false);
+  const [toggleScheduleSelect, setToggleScheduleSelect] = useState<boolean>(false);
+  const [toggleTodoSelect, setToggleSelect] = useState<boolean>(false);
+  const [optionType, setOptionType] = useState<string>("")
+  const [toggleMobileOptions, setToggleMobileOptions] = useState<boolean>(false);
+  const [mobileOptionHeader, setMobileOptionHeader] = useState<string>("");
+  const [selectedMobileOptions, setSelectedMobileOptions] = useState<any[] | undefined>(undefined)
   // Zustand Store
   const { resetValidation } = useScheduleFormStore();
 
@@ -75,7 +92,43 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               X
             </p>
           </div>
+          <div>
+              <label className="phone:text-sm">
+                Choose where you want to put your Note
+              </label>
+              <CustomSelect
+                selected={"Note Types"
+                }
+                placeHolder={"Note Types"}
+                showChoices={toggleNoteTypeSelect}
+                setToggleDesktopOptions={() => {
+                  setToggleNoteTypeSelect((prev) => !prev);
+                  setOptionType("noteType");
+                }}
+                setToggleMobileOptions={() => {
+                  setToggleMobileOptions((prev) => !prev);
+                  setOptionType("noteType");
+                  setMobileOptionHeader("Note Type");
+                  setSelectedMobileOptions(noteTypesData!);
+                }}
+              >wew</CustomSelect>
+            </div>
         </motion.form>
+        <AnimatePresence
+          initial={false}
+          mode="wait"
+          onExitComplete={() => null}
+        >
+          {toggleMobileOptions && (
+            <MobileSelectOptions
+              setToggleMobileOptions={setToggleMobileOptions}
+              choices={selectedMobileOptions}
+              optionType={optionType}
+              header={mobileOptionHeader}
+              setState={setNoteInput}
+            />
+          )}
+        </AnimatePresence>
       </Overlay>
     </>
   );

@@ -19,7 +19,6 @@ interface props {
   showChoices: boolean;
   setToggleDesktopOptions?: () => void;
   setToggleMobileOptions?: () => void;
-  setSelectedMobileOptions?: () => void;
   dynamic?: boolean;
   fetching?: boolean;
   valid?: null | boolean | undefined;
@@ -43,7 +42,6 @@ const CustomSelect = ({
   setToggleMobileOptions,
   dynamic = false,
   fetching = false,
-  setSelectedMobileOptions,
   valid,
   validationMessage,
 }: props) => {
@@ -55,7 +53,6 @@ const CustomSelect = ({
         style={{ pointerEvents: dynamic ? (fetching ? "none" : "all") : "all" }}
         onClick={() => {
           if (windowCurrentWidth >= 280 && windowCurrentWidth <= 768) {
-            setSelectedMobileOptions && setSelectedMobileOptions();
             setToggleMobileOptions && setToggleMobileOptions();
           } else {
             setToggleDesktopOptions && setToggleDesktopOptions();

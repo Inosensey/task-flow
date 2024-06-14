@@ -232,3 +232,21 @@ export const getNotes = async () => {
     return [];
   }
 }
+export const getNoteTypes = async () => {
+  const supabase = useSupabase;
+  try {
+    let { data: noteTypes, error } = await supabase
+    .from("NoteType")
+    .select(`*`)
+    
+    if (error) {
+      console.log("There is an error getting the Note Types", error);
+      return [];
+    }
+    const response = noteTypes;
+    return response;
+  } catch (error) {
+    console.log("There is an error getting the Note Types", error);
+    return [];
+  }
+}

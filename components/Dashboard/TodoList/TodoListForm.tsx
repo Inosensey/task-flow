@@ -257,8 +257,6 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                   setToggleMobileOptions((prev) => !prev);
                   setOptionType("PriorityLevel");
                   setMobileOptionHeader("Priority Levels");
-                }}
-                setSelectedMobileOptions={() => {
                   setSelectedMobileOptions(priorityLevels!);
                 }}
                 placeHolder={"Priority Levels"}
@@ -315,8 +313,6 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                   setToggleMobileOptions((prev) => !prev);
                   setOptionType("Frequencies");
                   setMobileOptionHeader("Frequencies");
-                }}
-                setSelectedMobileOptions={() => {
                   setSelectedMobileOptions(frequencies!);
                 }}
               >
