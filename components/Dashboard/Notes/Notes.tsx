@@ -9,29 +9,35 @@ import { CheckBoxInput } from "@/components/ReusableComponents/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Libs
-import { getNoteTypes, getNotes, getSchedules, getTodoList } from "@/lib/TanStackQueryFns";
+import {
+  getNoteTypes,
+  getNotes,
+  getSchedules,
+  getTodoList,
+} from "@/lib/TanStackQueryFns";
 
 // Icons
-import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import { faCirclePlus, faClock } from "@fortawesome/free-solid-svg-icons";
 import NoteForm from "./NoteForm";
 
 //Types
 import { TableRow } from "@/Types/database.types";
 import { todoListResponseInterface } from "@/Types/todoListTypes";
+import Link from "next/link";
 interface props {
-  schedules: TableRow<"Schedules">[] | []
-  todoList: todoListResponseInterface,
-  notes: TableRow<"Notes">[] | [],
-  noteTypes: TableRow<"NoteType">[] | []
+  schedules: TableRow<"Schedules">[] | [];
+  todoList: todoListResponseInterface;
+  notes: TableRow<"Notes">[] | [];
+  noteTypes: TableRow<"NoteType">[] | [];
 }
 
-const Notes = ({notes, schedules, todoList, noteTypes}:props) => {  
+const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
   // Use query
   const { data: scheduleData } = useQuery({
     queryKey: ["schedules"],
     queryFn: getSchedules,
     initialData: schedules,
-  })
+  });
   const { data: todoListsData } = useQuery({
     queryKey: ["todolists"],
     queryFn: getTodoList,
@@ -40,29 +46,26 @@ const Notes = ({notes, schedules, todoList, noteTypes}:props) => {
   const { data: notesData } = useQuery({
     queryKey: ["notes"],
     queryFn: getNotes,
-    initialData: notes
+    initialData: notes,
   });
-  const {data: noteTypesData} = useQuery({
+  const { data: noteTypesData } = useQuery({
     queryKey: ["noteTypes"],
     queryFn: getNoteTypes,
-    initialData: noteTypes
-  })
+    initialData: noteTypes,
+  });
+
+  console.log(notesData);
 
   // States
   const [formAction, setFormAction] = useState<string>("Add");
   const [showNoteForm, setShowNoteForm] = useState<boolean>(false);
-  const [selectedFilter, setSelectedFilter] =
-  useState<string>("All");
-  const [filters] = useState<Array<string>>([
-    "All",
-    "Schedules",
-    "Todo-List",
-  ]);
+  const [selectedFilter, setSelectedFilter] = useState<string>("All");
+  const [filters] = useState<Array<string>>(["All", "Schedules", "Todo-List"]);
 
   const toggleFilter = (value: string) => {
     setSelectedFilter(value);
   };
-  
+
   const handleCheckBoxOnChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -103,13 +106,45 @@ const Notes = ({notes, schedules, todoList, noteTypes}:props) => {
             />
           ))}
         </div>
+        <div className="flex flex-wrap items-center justify-between px-2 gap-2 mt-6">
+          {notesData?.map(
+            (
+              info: TableRow<"Notes"> & { Schedules: TableRow<"Schedules"> },
+              index: number
+            ) => (
+              <div
+                key={index}
+                className="bg-SmoothDark p-3 flex flex-col gap-1 rounded-lg text-LightSecondary mdphone:w-[49%]"
+              >
+                <p className="font-semibold ">
+                  {info.Schedules ? "Schedule:" : "Todo:"}{" "}
+                </p>
+                <p className="font-semibold text-sm">{info.Schedules.title}</p>
+                <div className="w-full h-20 line-clamp-4 text-sm">
+                  <p className="font-semibold ">Note:</p>
+                  <p>
+                    {info.note}
+                  </p>
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                  whileTap={{ scale: 0.9 }}
+                  // onClick={() => {
+                  //   setShowDetailedSchedule((prev) => !prev);
+                  //   setSelectedSchedule(info);
+                  // }}
+                  className="cursor-pointer bg-Secondary rounded-md text-LightSecondary mt-2 phone:text-sm phone:w-28 phone:py-1"
+                >
+                  More Details
+                </motion.button>
+              </div>
+            )
+          )}
+        </div>
       </div>
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
         {showNoteForm && (
-          <NoteForm
-            setShowNoteForm={setShowNoteForm}
-            action={formAction}
-          />
+          <NoteForm setShowNoteForm={setShowNoteForm} action={formAction} />
         )}
       </AnimatePresence>
     </>

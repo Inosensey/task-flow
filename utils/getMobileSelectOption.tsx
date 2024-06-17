@@ -1,18 +1,20 @@
 //Types
 import { TableRow } from "@/Types/database.types";
-interface MobileSelectOptionsProps<T> {
-  choices?: Array<any>;
+interface MobileSelectOptionsProps<T, M> {
   setState: React.Dispatch<React.SetStateAction<T>>;
-  setToggleMobileOptions: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelected: React.Dispatch<React.SetStateAction<M>>;
+  choices?: Array<any>;
+  setToggleOptions: React.Dispatch<React.SetStateAction<boolean>>;
   optionType: string;
 }
 
-export const getMobileSelectOption = <T,>({
+export const getMobileSelectOption = <T, M>({
   optionType,
   setState,
-  setToggleMobileOptions,
+  setSelected,
+  setToggleOptions,
   choices,
-}: MobileSelectOptionsProps<T>) => {
+}: MobileSelectOptionsProps<T, M>) => {
   let options;
   switch (optionType) {
     case "PriorityLevel":
@@ -26,7 +28,11 @@ export const getMobileSelectOption = <T,>({
                   ...prev,
                   priorityLevel: priorityLevelInfo.level,
                 }));
-                setToggleMobileOptions(false);
+                setSelected((prev: M) => ({
+                  ...prev,
+                  selectedPriorityLevel: priorityLevelInfo.description,
+                }));
+                setToggleOptions(false);
               }}
               key={priorityLevelInfo.id}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -51,7 +57,11 @@ export const getMobileSelectOption = <T,>({
                   ...prev,
                   frequency: frequencyInfo.id,
                 }));
-                setToggleMobileOptions(false);
+                setSelected((prev: M) => ({
+                  ...prev,
+                  selectedFrequency: frequencyInfo.frequency,
+                }));
+                setToggleOptions(false);
               }}
               key={frequencyInfo.id}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -76,13 +86,75 @@ export const getMobileSelectOption = <T,>({
                 setState((prev: T) => ({
                   ...prev,
                   noteType: noteTypeInfo.id,
+                  scheduleId: null,
+                  todoId: null,
                 }));
-                setToggleMobileOptions(false);
+                setSelected((prev: M) => ({
+                  ...prev,
+                  selectedNoteType: noteTypeInfo.type,
+                }));
+                setToggleOptions(false);
               }}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >
               <div className="flex flex-col">
                 <p className="phone:text-sm select-none">{noteTypeInfo.type}</p>
+              </div>
+            </div>
+          ))}
+        </>
+      );
+    case "setSchedulesNote":
+      options = choices as TableRow<"Schedules">[];
+      return (
+        <>
+          {options.map((scheduleInfo: TableRow<"Schedules">) => (
+            <div
+              key={scheduleInfo.id}
+              onClick={() => {
+                setState((prev: T) => ({
+                  ...prev,
+                  scheduleId: scheduleInfo.id,
+                }));
+                setSelected((prev: M) => ({
+                  ...prev,
+                  selectedSchedule: scheduleInfo.title,
+                }));
+                setToggleOptions(false);
+              }}
+              className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
+            >
+              <div className="flex flex-col">
+                <p className="phone:text-sm select-none">
+                  {scheduleInfo.title}
+                </p>
+              </div>
+            </div>
+          ))}
+        </>
+      );
+    case "setTodosNote":
+      options = choices as TableRow<"TodoList">[];
+      return (
+        <>
+          {options.map((todoInfo: TableRow<"TodoList">) => (
+            <div
+              key={todoInfo.id}
+              onClick={() => {
+                setState((prev: T) => ({
+                  ...prev,
+                  todoId: todoInfo.id,
+                }));
+                setSelected((prev: M) => ({
+                  ...prev,
+                  selectedTodo: todoInfo.title,
+                }));
+                setToggleOptions(false);
+              }}
+              className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
+            >
+              <div className="flex flex-col">
+                <p className="phone:text-sm select-none">{todoInfo.title}</p>
               </div>
             </div>
           ))}

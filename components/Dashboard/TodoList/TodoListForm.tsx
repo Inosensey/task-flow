@@ -38,6 +38,7 @@ import FormValidation from "@/utils/validation";
 // Types
 import { todoListDetails } from "@/Types/todoListTypes";
 import { useFormStateType } from "@/Types/formStates";
+import { getMobileSelectOption } from "@/utils/getMobileSelectOption";
 interface props {
   setShowTodoListForm: React.Dispatch<React.SetStateAction<boolean>>;
   action: string;
@@ -49,6 +50,10 @@ type validation = {
   valid: null | boolean;
   validationMessage: string;
 };
+type selectedTypes = {
+  selectedFrequency: string;
+  selectedPriorityLevel: string;
+};
 
 // Initials
 const useFormStateInitials: useFormStateType = {
@@ -56,6 +61,10 @@ const useFormStateInitials: useFormStateType = {
   error: null,
   message: "",
   data: [],
+};
+const selectedInitials: selectedTypes = {
+  selectedPriorityLevel: "Priority Levels",
+  selectedFrequency: "Frequencies",
 };
 
 const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
@@ -100,6 +109,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   const [todoListInput, setTodoListInput] = useState<TableInsert<"TodoList">>(
     initializeTodoListInput
   );
+  const [selected, setSelected] = useState<selectedTypes>(selectedInitials);
   const [togglePrioritySelect, setTogglePrioritySelect] = useState(false);
   const [toggleFrequentSelect, setToggleFrequentSelect] = useState(false);
   const [isPending, setIsPending] = useState<boolean | null>(null);
@@ -243,16 +253,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 validationMessage={
                   validations?.priorityLevel?.validationMessage
                 }
-                selected={
-                  todoListInput.priorityLevel === undefined
-                    ? "Priority Levels"
-                    : priorityLevels!.find(
-                        (priorityLevelInfo: TableRow<"PriorityLevel">) =>
-                          priorityLevelInfo.level ===
-                            todoListInput.priorityLevel &&
-                          priorityLevelInfo.description
-                      ).description
-                }
+                selected={selected.selectedPriorityLevel}
                 setToggleMobileOptions={() => {
                   setToggleMobileOptions((prev) => !prev);
                   setOptionType("PriorityLevel");
@@ -268,23 +269,13 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
               >
                 {windowCurrentWidth >= 769 &&
                   optionType === "PriorityLevel" &&
-                  priorityLevels?.map((level: TableRow<"PriorityLevel">) => (
-                    <div
-                      onClick={() => {
-                        setTodoListInput((prev) => ({
-                          ...prev,
-                          priorityLevel: level.level,
-                        }));
-                        setTogglePrioritySelect(false);
-                      }}
-                      key={level.level}
-                      className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
-                    >
-                      <p className="select-none">
-                        {level.level} - {level.description}
-                      </p>
-                    </div>
-                  ))}
+                  getMobileSelectOption<TableInsert<"TodoList">, selectedTypes>({
+                    optionType,
+                    setSelected: setSelected,
+                    setState: setTodoListInput,
+                    setToggleOptions: setTogglePrioritySelect,
+                    choices: priorityLevels!,
+                  })}
               </CustomSelect>
             </div>
             <div>
@@ -294,15 +285,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
               <CustomSelect
                 valid={validations?.frequency?.valid}
                 validationMessage={validations?.frequency?.validationMessage}
-                selected={
-                  todoListInput.frequency === undefined
-                    ? "Frequencies"
-                    : frequencies!.find(
-                        (frequency: TableRow<"Frequencies">) =>
-                          frequency.id === todoListInput?.frequency &&
-                          frequency.frequency
-                      ).frequency
-                }
+                selected={selected.selectedFrequency}
                 placeHolder={"Frequencies"}
                 showChoices={toggleFrequentSelect}
                 setToggleDesktopOptions={() => {
@@ -318,21 +301,13 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
               >
                 {windowCurrentWidth >= 769 &&
                   optionType === "Frequencies" &&
-                  frequencies?.map((frequency: TableRow<"Frequencies">) => (
-                    <div
-                      onClick={() => {
-                        setTodoListInput((prev) => ({
-                          ...prev,
-                          frequency: frequency.id,
-                        }));
-                        setToggleFrequentSelect(false);
-                      }}
-                      key={frequency.frequency}
-                      className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
-                    >
-                      <p className="select-none">{frequency.frequency}</p>
-                    </div>
-                  ))}
+                  getMobileSelectOption<TableInsert<"TodoList">, selectedTypes>({
+                    optionType,
+                    setSelected: setSelected,
+                    setState: setTodoListInput,
+                    setToggleOptions: setToggleFrequentSelect,
+                    choices: frequencies!,
+                  })}
               </CustomSelect>
             </div>
             <TextareaInput
@@ -378,14 +353,14 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 state={action}
                 type="hidden"
                 name="action"
-                placeholder="Enter the Title of your schedule"
+                placeholder=""
                 label="Title"
               />
               <Input
                 state={todoListInput.id!.toString()}
                 type="hidden"
                 name="todoId"
-                placeholder="Enter the Title of your schedule"
+                placeholder=""
                 label="Title"
               />
             </div>
@@ -432,7 +407,8 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
         >
           {toggleMobileOptions && (
             <MobileSelectOptions
-              setToggleMobileOptions={setToggleMobileOptions}
+              setSelected={setSelected}
+              setToggleOptions={setToggleMobileOptions}
               choices={selectedMobileOptions}
               optionType={optionType}
               header={mobileOptionHeader}

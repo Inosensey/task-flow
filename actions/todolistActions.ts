@@ -1,6 +1,11 @@
 "use server";
 import { revalidateTag } from "next/cache";
 
+// Utils
+import { returnError, returnSuccess } from "@/utils/formUtils";
+import { createClient } from "@/utils/supabaseSSR";
+import { getSupabaseUser } from "@/utils/supabaseUtils";
+
 // Types
 import { TableInsert, TableRow } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
@@ -9,11 +14,6 @@ interface mutateTodoListProps {
   formAction: string;
   todoListId?: number;
 }
-
-// Utils
-import { returnError, returnSuccess } from "@/utils/formUtils";
-import { createClient } from "@/utils/supabaseSSR";
-import { getSupabaseUser } from "@/utils/supabaseUtils";
 import { useFormStateType } from "@/Types/formStates";
 
 export const mutateTodoList = async (

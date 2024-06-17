@@ -15,7 +15,7 @@ import { getMobileSelectOption } from "@/utils/getMobileSelectOption";
 interface props {
   placeHolder: string;
   children: React.ReactNode;
-  selected: string;
+  selected?: string;
   showChoices: boolean;
   setToggleDesktopOptions?: () => void;
   setToggleMobileOptions?: () => void;
@@ -25,10 +25,11 @@ interface props {
   validationMessage?: string;
 }
 
-interface MobileSelectOptionsProps<T> {
+interface MobileSelectOptionsProps<T, M> {
   choices?: Array<any>;
   setState: React.Dispatch<React.SetStateAction<T>>;
-  setToggleMobileOptions: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelected: React.Dispatch<React.SetStateAction<M>>;
+  setToggleOptions: React.Dispatch<React.SetStateAction<boolean>>;
   optionType: string;
   header?: string;
 }
@@ -60,7 +61,7 @@ const CustomSelect = ({
         }}
         className="rounded-md bg-Secondary flex justify-between px-2 items-center cursor-pointer phone:h-9 "
       >
-        {CheckSelectType(dynamic, fetching, selected, placeHolder, showChoices)}
+        {CheckSelectType(dynamic, fetching, selected!, placeHolder, showChoices)}
       </div>
       <div
         style={{ maxHeight: showChoices ? "224px" : "0px" }}
@@ -138,23 +139,25 @@ function CheckSelectType(
   }
 }
 
-export function MobileSelectOptions<T>({
+export function MobileSelectOptions<T, M>({
   optionType,
-  setToggleMobileOptions,
+  setToggleOptions,
   choices,
   header,
   setState,
-}: MobileSelectOptionsProps<T>) {
+  setSelected
+}: MobileSelectOptionsProps<T, M>) {
   const mobileOptions = getMobileSelectOption({
     optionType,
     setState,
-    setToggleMobileOptions,
-    choices,
+    setSelected,
+    setToggleOptions,
+    choices
   });
   return (
     <div
       onClick={() => {
-        setToggleMobileOptions(false);
+        setToggleOptions(false);
       }}
       className="h-screen w-screen flex justify-center absolute top-0 -left-[0.1px] bg-black/[.54] table:items-center "
     >

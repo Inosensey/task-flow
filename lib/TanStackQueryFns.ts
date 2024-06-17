@@ -219,7 +219,7 @@ export const getNotes = async () => {
   try {
     let { data: notes, error } = await supabase
     .from("Notes")
-    .select(`*`)
+    .select(`*, Schedules:scheduleId(id, title), TodoList:todoId(id, title)`)
     
     if (error) {
       console.log("There is an error getting the Notes", error);
