@@ -21,7 +21,7 @@ import { useNotificationStore } from "@/store/useNotificationStore";
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 
 // types
-import { TableInsert, TableRow } from "@/Types/database.types";
+import { TableInsert } from "@/Types/database.types";
 import { getFrequencies, getPriorityLevels } from "@/lib/TanStackQueryFns";
 import CustomSelect, {
   MobileSelectOptions,
@@ -50,6 +50,11 @@ type validation = {
   valid: null | boolean;
   validationMessage: string;
 };
+type toggleTypes = {
+  toggleFrequency: boolean;
+  togglePriorityLevel: boolean;
+  toggleMobileOptions: boolean;
+};
 type selectedTypes = {
   selectedFrequency: string;
   selectedPriorityLevel: string;
@@ -62,25 +67,33 @@ const useFormStateInitials: useFormStateType = {
   message: "",
   data: [],
 };
-const selectedInitials: selectedTypes = {
-  selectedPriorityLevel: "Priority Levels",
-  selectedFrequency: "Frequencies",
+const toggleInitials: toggleTypes = {
+  toggleFrequency: false,
+  togglePriorityLevel: false,
+  toggleMobileOptions: false,
 };
 
 const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   const windowCurrentWidth = window.innerWidth;
 
   // TodoList Initialize
+  const selectedInitials: selectedTypes = {
+    selectedPriorityLevel:
+      action !== "add" && data !== undefined
+        ? data.PriorityLevel.description
+        : "Priority Levels",
+    selectedFrequency:
+      action !== "add" && data !== undefined
+        ? data.Frequencies.frequency
+        : "Frequencies",
+  };
   const initializeTodoListInput = (): TableInsert<"TodoList"> => ({
     id: action !== "add" && data !== undefined ? data.id : 0,
     title: action !== "add" && data !== undefined ? data.title : "",
     description: action !== "add" && data !== undefined ? data.description : "",
     priorityLevel:
-      action !== "add" && data !== undefined
-        ? data.PriorityLevel.level!
-        : undefined,
-    frequency:
-      action !== "add" && data !== undefined ? data.Frequencies.id : undefined,
+      action !== "add" && data !== undefined ? data.PriorityLevel.level! : 0,
+    frequency: action !== "add" && data !== undefined ? data.Frequencies.id : 0,
   });
 
   // Use query
@@ -110,8 +123,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
     initializeTodoListInput
   );
   const [selected, setSelected] = useState<selectedTypes>(selectedInitials);
-  const [togglePrioritySelect, setTogglePrioritySelect] = useState(false);
-  const [toggleFrequentSelect, setToggleFrequentSelect] = useState(false);
+  const [toggle, setToggle] = useState<toggleTypes>(toggleInitials);
   const [isPending, setIsPending] = useState<boolean | null>(null);
 
   // Toggle mobile options UI
@@ -119,7 +131,6 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   const [selectedMobileOptions, setSelectedMobileOptions] = useState<
     any[] | undefined
   >(undefined);
-  const [toggleMobileOptions, setToggleMobileOptions] = useState(false);
   const [mobileOptionHeader, setMobileOptionHeader] = useState("");
 
   const onTodoListAddSuccess = () => {
@@ -255,25 +266,35 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 }
                 selected={selected.selectedPriorityLevel}
                 setToggleMobileOptions={() => {
-                  setToggleMobileOptions((prev) => !prev);
+                  setToggle((prev) => ({
+                    ...prev,
+                    toggleMobileOptions: !prev,
+                  }));
                   setOptionType("PriorityLevel");
                   setMobileOptionHeader("Priority Levels");
                   setSelectedMobileOptions(priorityLevels!);
                 }}
                 placeHolder={"Priority Levels"}
-                showChoices={togglePrioritySelect}
+                showChoices={toggle.togglePriorityLevel}
                 setToggleDesktopOptions={() => {
-                  setTogglePrioritySelect((prev) => !prev);
+                  setToggle((prev) => ({
+                    ...prev,
+                    togglePriorityLevel: !prev,
+                  }));
                   setOptionType("PriorityLevel");
                 }}
               >
                 {windowCurrentWidth >= 769 &&
                   optionType === "PriorityLevel" &&
-                  getMobileSelectOption<TableInsert<"TodoList">, selectedTypes>({
+                  getMobileSelectOption<
+                    TableInsert<"TodoList">,
+                    selectedTypes,
+                    toggleTypes
+                  >({
                     optionType,
                     setSelected: setSelected,
                     setState: setTodoListInput,
-                    setToggleOptions: setTogglePrioritySelect,
+                    setToggleOptions: setToggle,
                     choices: priorityLevels!,
                   })}
               </CustomSelect>
@@ -287,13 +308,19 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 validationMessage={validations?.frequency?.validationMessage}
                 selected={selected.selectedFrequency}
                 placeHolder={"Frequencies"}
-                showChoices={toggleFrequentSelect}
+                showChoices={toggle.toggleFrequency}
                 setToggleDesktopOptions={() => {
-                  setToggleFrequentSelect((prev) => !prev);
+                  setToggle((prev) => ({
+                    ...prev,
+                    toggleFrequency: !prev,
+                  }));
                   setOptionType("Frequencies");
                 }}
                 setToggleMobileOptions={() => {
-                  setToggleMobileOptions((prev) => !prev);
+                  setToggle((prev) => ({
+                    ...prev,
+                    toggleMobileOptions: !prev,
+                  }));
                   setOptionType("Frequencies");
                   setMobileOptionHeader("Frequencies");
                   setSelectedMobileOptions(frequencies!);
@@ -301,11 +328,15 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
               >
                 {windowCurrentWidth >= 769 &&
                   optionType === "Frequencies" &&
-                  getMobileSelectOption<TableInsert<"TodoList">, selectedTypes>({
+                  getMobileSelectOption<
+                    TableInsert<"TodoList">,
+                    selectedTypes,
+                    toggleTypes
+                  >({
                     optionType,
                     setSelected: setSelected,
                     setState: setTodoListInput,
-                    setToggleOptions: setToggleFrequentSelect,
+                    setToggleOptions: setToggle,
                     choices: frequencies!,
                   })}
               </CustomSelect>
@@ -321,12 +352,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
             />
             <div className="hidden">
               <Input
-                state={
-                  todoListInput.priorityLevel === undefined ||
-                  todoListInput.priorityLevel === null
-                    ? "0"
-                    : todoListInput.priorityLevel.toString()
-                }
+                state={todoListInput!.priorityLevel!.toString()}
                 type="hidden"
                 name="priorityLevel"
                 placeholder=""
@@ -335,12 +361,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 validationMessage={""}
               />
               <Input
-                state={
-                  todoListInput.frequency === undefined ||
-                  todoListInput.frequency === null
-                    ? "0"
-                    : todoListInput.frequency.toString()
-                }
+                state={todoListInput!.frequency!.toString()}
                 type="hidden"
                 name="frequency"
                 placeholder=""
@@ -405,10 +426,10 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
           mode="wait"
           onExitComplete={() => null}
         >
-          {toggleMobileOptions && (
-            <MobileSelectOptions
+          {toggle.toggleMobileOptions && (
+            <MobileSelectOptions<any, selectedTypes, toggleTypes>
               setSelected={setSelected}
-              setToggleOptions={setToggleMobileOptions}
+              setToggleOptions={setToggle}
               choices={selectedMobileOptions}
               optionType={optionType}
               header={mobileOptionHeader}

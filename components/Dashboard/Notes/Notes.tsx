@@ -21,13 +21,16 @@ import { faCirclePlus, faClock } from "@fortawesome/free-solid-svg-icons";
 import NoteForm from "./NoteForm";
 
 //Types
-import { TableRow } from "@/Types/database.types";
+import { TableInsert, TableRow } from "@/Types/database.types";
 import { todoListResponseInterface } from "@/Types/todoListTypes";
-import Link from "next/link";
 interface props {
   schedules: TableRow<"Schedules">[] | [];
   todoList: todoListResponseInterface;
-  notes: TableRow<"Notes">[] | [];
+  notes:
+    | (TableInsert<"Notes"> & { Schedules: TableRow<"Schedules"> } & {
+        TodoList: TableRow<"TodoList">;
+      } & { NoteType: TableRow<"NoteType"> }[])
+    | [];
   noteTypes: TableRow<"NoteType">[] | [];
 }
 
@@ -61,6 +64,12 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
   const [showNoteForm, setShowNoteForm] = useState<boolean>(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [filters] = useState<Array<string>>(["All", "Schedules", "Todo-List"]);
+  const [selectedNote, setSelectedNote] = useState<
+    | (TableInsert<"Notes"> & { Schedules: TableRow<"Schedules"> } & {
+        TodoList: TableRow<"TodoList">;
+      } & { NoteType: TableRow<"NoteType"> })
+    | undefined
+  >(undefined);
 
   const toggleFilter = (value: string) => {
     setSelectedFilter(value);
@@ -109,7 +118,9 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
         <div className="flex flex-wrap items-center justify-between px-2 gap-2 mt-6">
           {notesData?.map(
             (
-              info: TableRow<"Notes"> & { Schedules: TableRow<"Schedules"> },
+              info: TableRow<"Notes"> & { Schedules: TableRow<"Schedules"> } & {
+                TodoList: TableRow<"TodoList">;
+              } & { NoteType: TableRow<"NoteType"> },
               index: number
             ) => (
               <div
@@ -122,17 +133,18 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
                 <p className="font-semibold text-sm">{info.Schedules.title}</p>
                 <div className="w-full h-20 line-clamp-4 text-sm">
                   <p className="font-semibold ">Note:</p>
-                  <p>
-                    {info.note}
-                  </p>
+                  <p>{info.note}</p>
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
                   whileTap={{ scale: 0.9 }}
-                  // onClick={() => {
-                  //   setShowDetailedSchedule((prev) => !prev);
-                  //   setSelectedSchedule(info);
-                  // }}
+                  onClick={() => {
+                    setSelectedNote(info);
+                    setFormAction("Edit");
+                    setShowNoteForm((prev) => !prev);
+                    //   setShowDetailedSchedule((prev) => !prev);
+                    //   setSelectedSchedule(info);
+                  }}
                   className="cursor-pointer bg-Secondary rounded-md text-LightSecondary mt-2 phone:text-sm phone:w-28 phone:py-1"
                 >
                   More Details
@@ -144,7 +156,11 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
       </div>
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
         {showNoteForm && (
-          <NoteForm setShowNoteForm={setShowNoteForm} action={formAction} />
+          <NoteForm
+            setShowNoteForm={setShowNoteForm}
+            action={formAction}
+            data={selectedNote}
+          />
         )}
       </AnimatePresence>
     </>

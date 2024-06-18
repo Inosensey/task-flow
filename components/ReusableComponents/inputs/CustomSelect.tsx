@@ -25,11 +25,11 @@ interface props {
   validationMessage?: string;
 }
 
-interface MobileSelectOptionsProps<T, M> {
+interface MobileSelectOptionsProps<T, M, N> {
   choices?: Array<any>;
   setState: React.Dispatch<React.SetStateAction<T>>;
   setSelected: React.Dispatch<React.SetStateAction<M>>;
-  setToggleOptions: React.Dispatch<React.SetStateAction<boolean>>;
+  setToggleOptions: React.Dispatch<React.SetStateAction<N>>;
   optionType: string;
   header?: string;
 }
@@ -139,15 +139,15 @@ function CheckSelectType(
   }
 }
 
-export function MobileSelectOptions<T, M>({
+export function MobileSelectOptions<T, M, N>({
   optionType,
   setToggleOptions,
   choices,
   header,
   setState,
   setSelected
-}: MobileSelectOptionsProps<T, M>) {
-  const mobileOptions = getMobileSelectOption({
+}: MobileSelectOptionsProps<T, M, N>) {
+  const mobileOptions = getMobileSelectOption<T, M, N>({
     optionType,
     setState,
     setSelected,
@@ -157,7 +157,9 @@ export function MobileSelectOptions<T, M>({
   return (
     <div
       onClick={() => {
-        setToggleOptions(false);
+        setToggleOptions((prev: N) => ({
+          ...prev, toggleMobileOptions: !prev
+        }));
       }}
       className="h-screen w-screen flex justify-center absolute top-0 -left-[0.1px] bg-black/[.54] table:items-center "
     >

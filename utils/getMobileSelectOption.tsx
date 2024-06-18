@@ -1,20 +1,20 @@
 //Types
 import { TableRow } from "@/Types/database.types";
-interface MobileSelectOptionsProps<T, M> {
+interface MobileSelectOptionsProps<T, M, N> {
   setState: React.Dispatch<React.SetStateAction<T>>;
   setSelected: React.Dispatch<React.SetStateAction<M>>;
+  setToggleOptions: React.Dispatch<React.SetStateAction<N>>;
   choices?: Array<any>;
-  setToggleOptions: React.Dispatch<React.SetStateAction<boolean>>;
   optionType: string;
 }
 
-export const getMobileSelectOption = <T, M>({
+export const getMobileSelectOption = <T, M, N>({
   optionType,
   setState,
   setSelected,
   setToggleOptions,
   choices,
-}: MobileSelectOptionsProps<T, M>) => {
+}: MobileSelectOptionsProps<T, M, N>) => {
   let options;
   switch (optionType) {
     case "PriorityLevel":
@@ -32,7 +32,7 @@ export const getMobileSelectOption = <T, M>({
                   ...prev,
                   selectedPriorityLevel: priorityLevelInfo.description,
                 }));
-                setToggleOptions(false);
+                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: !prev}));
               }}
               key={priorityLevelInfo.id}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -61,7 +61,7 @@ export const getMobileSelectOption = <T, M>({
                   ...prev,
                   selectedFrequency: frequencyInfo.frequency,
                 }));
-                setToggleOptions(false);
+                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: !prev}));
               }}
               key={frequencyInfo.id}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -93,7 +93,7 @@ export const getMobileSelectOption = <T, M>({
                   ...prev,
                   selectedNoteType: noteTypeInfo.type,
                 }));
-                setToggleOptions(false);
+                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: !prev}));
               }}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >
@@ -120,7 +120,7 @@ export const getMobileSelectOption = <T, M>({
                   ...prev,
                   selectedSchedule: scheduleInfo.title,
                 }));
-                setToggleOptions(false);
+                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: !prev}));
               }}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >
@@ -149,7 +149,7 @@ export const getMobileSelectOption = <T, M>({
                   ...prev,
                   selectedTodo: todoInfo.title,
                 }));
-                setToggleOptions(false);
+                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: !prev}));
               }}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >

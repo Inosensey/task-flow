@@ -54,17 +54,25 @@ const popUpVariants = {
 };
 
 // Types
-import { TableInsert } from "@/Types/database.types";
+import { TableInsert, TableRow } from "@/Types/database.types";
 import { useFormStateType } from "@/Types/formStates";
 type selectedTypes = {
   selectedNoteType: string | undefined;
   selectedSchedule: string | undefined;
   selectedTodo: string | undefined;
 };
+type toggleTypes = {
+  toggleNoteTypeSelect: boolean;
+  toggleScheduleSelect: boolean;
+  toggleTodoSelect: boolean;
+  toggleMobileOptions: boolean;
+};
 interface props {
   setShowNoteForm: React.Dispatch<React.SetStateAction<boolean>>;
   action: string;
-  data?: TableInsert<"Notes">;
+  data?: TableInsert<"Notes"> & { Schedules: TableRow<"Schedules"> } & {
+    TodoList: TableRow<"TodoList">;
+  } & { NoteType: TableRow<"NoteType"> };
 }
 
 // Initials
@@ -74,19 +82,28 @@ const useFormStateInitials: useFormStateType = {
   message: "",
   data: [],
 };
-const noteDataInitial: TableInsert<"Notes"> = {
-  noteType: null,
-  scheduleId: null,
-  todoId: null,
-  note: "",
-};
-const selectedInitials: selectedTypes = {
-  selectedNoteType: "Assign Notes to",
-  selectedSchedule: "Schedules",
-  selectedTodo: "Todos",
+const toggleInitials: toggleTypes = {
+  toggleNoteTypeSelect: false,
+  toggleScheduleSelect: false,
+  toggleTodoSelect: false,
+  toggleMobileOptions: false,
 };
 
 const NoteForm = ({ setShowNoteForm, action, data }: props) => {
+  // Note Initial
+  const selectedInitials: selectedTypes = {
+    selectedNoteType: data ? data.NoteType.type! : "Assign Notes to",
+    selectedSchedule: data?.scheduleId ? data.Schedules.title! : "Schedules",
+    selectedTodo: data?.todoId ? data.TodoList.title! : "Todos",
+  };
+  const noteDataInitial: TableInsert<"Notes"> = {
+    id: data ? data?.id! : 0,
+    noteType: data ? data?.noteType! : 0,
+    scheduleId: data?.scheduleId ? data?.scheduleId! : 0,
+    todoId: data?.todoId ? data?.todoId! : 0,
+    note: data ? data?.note! : "",
+  };
+
   const windowCurrentWidth = window.innerWidth;
 
   // Queries
@@ -110,14 +127,8 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
   const [noteInput, setNoteInput] =
     useState<TableInsert<"Notes">>(noteDataInitial);
   const [selected, setSelected] = useState<selectedTypes>(selectedInitials);
-  const [toggleNoteTypeSelect, setToggleNoteTypeSelect] =
-    useState<boolean>(false);
-  const [toggleScheduleSelect, setToggleScheduleSelect] =
-    useState<boolean>(false);
-  const [toggleTodoSelect, setToggleTodoSelect] = useState<boolean>(false);
+  const [toggle, setToggle] = useState<toggleTypes>(toggleInitials);
   const [optionType, setOptionType] = useState<string>("");
-  const [toggleMobileOptions, setToggleMobileOptions] =
-    useState<boolean>(false);
   const [mobileOptionHeader, setMobileOptionHeader] = useState<string>("");
   const [selectedMobileOptions, setSelectedMobileOptions] = useState<
     any[] | undefined
@@ -191,13 +202,13 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
             <CustomSelect
               selected={selected.selectedNoteType}
               placeHolder={"Assign Notes to"}
-              showChoices={toggleNoteTypeSelect}
+              showChoices={toggle.toggleNoteTypeSelect}
               setToggleDesktopOptions={() => {
-                setToggleNoteTypeSelect((prev) => !prev);
+                setToggle((prev) => ({ ...prev, toggleNoteTypeSelect: !prev }));
                 setOptionType("noteType");
               }}
               setToggleMobileOptions={() => {
-                setToggleMobileOptions((prev) => !prev);
+                setToggle((prev) => ({ ...prev, toggleMobileOptions: !prev }));
                 setOptionType("noteType");
                 setMobileOptionHeader("Assign Notes to");
                 setSelectedMobileOptions(noteTypesData!);
@@ -205,11 +216,15 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
             >
               {windowCurrentWidth >= 769 &&
                 optionType === "noteType" &&
-                getMobileSelectOption<TableInsert<"Notes">, selectedTypes>({
+                getMobileSelectOption<
+                  TableInsert<"Notes">,
+                  selectedTypes,
+                  toggleTypes
+                >({
                   optionType,
                   setSelected: setSelected,
                   setState: setNoteInput,
-                  setToggleOptions: setToggleNoteTypeSelect,
+                  setToggleOptions: setToggle,
                   choices: noteTypesData!,
                 })}
             </CustomSelect>
@@ -222,13 +237,19 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               <CustomSelect
                 selected={selected.selectedSchedule}
                 placeHolder={"Schedules"}
-                showChoices={toggleScheduleSelect}
+                showChoices={toggle.toggleScheduleSelect}
                 setToggleDesktopOptions={() => {
-                  setToggleScheduleSelect((prev) => !prev);
+                  setToggle((prev) => ({
+                    ...prev,
+                    toggleScheduleSelect: !prev,
+                  }));
                   setOptionType("setSchedulesNote");
                 }}
                 setToggleMobileOptions={() => {
-                  setToggleMobileOptions((prev) => !prev);
+                  setToggle((prev) => ({
+                    ...prev,
+                    toggleMobileOptions: !prev,
+                  }));
                   setOptionType("setSchedulesNote");
                   setMobileOptionHeader("Schedules");
                   setSelectedMobileOptions(schedulesData!);
@@ -236,11 +257,15 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               >
                 {windowCurrentWidth >= 769 &&
                   optionType === "setSchedulesNote" &&
-                  getMobileSelectOption<TableInsert<"Notes">, selectedTypes>({
+                  getMobileSelectOption<
+                    TableInsert<"Notes">,
+                    selectedTypes,
+                    toggleTypes
+                  >({
                     optionType,
                     setSelected: setSelected,
                     setState: setNoteInput,
-                    setToggleOptions: setToggleScheduleSelect,
+                    setToggleOptions: setToggle,
                     choices: schedulesData!,
                   })}
               </CustomSelect>
@@ -254,13 +279,16 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               <CustomSelect
                 selected={selected.selectedTodo}
                 placeHolder={"Todos"}
-                showChoices={toggleTodoSelect}
+                showChoices={toggle.toggleTodoSelect}
                 setToggleDesktopOptions={() => {
-                  setToggleTodoSelect((prev) => !prev);
+                  setToggle((prev) => ({ ...prev, toggleTodoSelect: !prev }));
                   setOptionType("setTodosNote");
                 }}
                 setToggleMobileOptions={() => {
-                  setToggleMobileOptions((prev) => !prev);
+                  setToggle((prev) => ({
+                    ...prev,
+                    toggleMobileOptions: !prev,
+                  }));
                   setOptionType("setTodosNote");
                   setMobileOptionHeader("Todos");
                   setSelectedMobileOptions(todoListsData?.unsortedTodoList!);
@@ -268,11 +296,15 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               >
                 {windowCurrentWidth >= 769 &&
                   optionType === "setTodosNote" &&
-                  getMobileSelectOption<TableInsert<"Notes">, selectedTypes>({
+                  getMobileSelectOption<
+                    TableInsert<"Notes">,
+                    selectedTypes,
+                    toggleTypes
+                  >({
                     optionType,
                     setSelected: setSelected,
                     setState: setNoteInput,
-                    setToggleOptions: setToggleTodoSelect,
+                    setToggleOptions: setToggle,
                     choices: todoListsData?.unsortedTodoList!,
                   })}
               </CustomSelect>
@@ -293,11 +325,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
           )}
           <div className="hidden">
             <Input
-              state={
-                noteInput.noteType === undefined || noteInput.noteType === null
-                  ? "0"
-                  : noteInput.noteType.toString()
-              }
+              state={noteInput!.noteType!.toString()}
               type="hidden"
               name="noteType"
               placeholder=""
@@ -306,12 +334,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               validationMessage={""}
             />
             <Input
-              state={
-                noteInput.scheduleId === undefined ||
-                noteInput.scheduleId === null
-                  ? "0"
-                  : noteInput.scheduleId.toString()
-              }
+              state={noteInput!.scheduleId!.toString()}
               type="hidden"
               name="scheduleId"
               placeholder=""
@@ -320,11 +343,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               validationMessage={""}
             />
             <Input
-              state={
-                noteInput.todoId === undefined || noteInput.todoId === null
-                  ? "0"
-                  : noteInput.todoId.toString()
-              }
+              state={noteInput!.todoId!.toString()}
               type="hidden"
               name="todoId"
               placeholder=""
@@ -355,7 +374,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
             whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.95 }}
             className={`${
-              isPending === null || isPending === false
+              isPending === null || !isPending
                 ? "bg-LightPrimary text-LightSecondary"
                 : ""
             } ${
@@ -363,7 +382,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
             }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
             type="submit"
           >
-            {isPending === null || isPending === false ? (
+            {isPending === null || !isPending ? (
               <>
                 <span className="w-4">
                   <FontAwesomeIcon
@@ -386,9 +405,9 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
           mode="wait"
           onExitComplete={() => null}
         >
-          {toggleMobileOptions && (
-            <MobileSelectOptions
-              setToggleOptions={setToggleMobileOptions}
+          {toggle.toggleMobileOptions && (
+            <MobileSelectOptions<any, selectedTypes, toggleTypes>
+              setToggleOptions={setToggle}
               setSelected={setSelected}
               choices={selectedMobileOptions}
               optionType={optionType}
