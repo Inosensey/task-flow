@@ -93,7 +93,7 @@ export const getMobileSelectOption = <T, M, N>({
                   ...prev,
                   selectedNoteType: noteTypeInfo.type,
                 }));
-                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: !prev}));
+                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: false}));
               }}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >
@@ -120,7 +120,7 @@ export const getMobileSelectOption = <T, M, N>({
                   ...prev,
                   selectedSchedule: scheduleInfo.title,
                 }));
-                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: !prev}));
+                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: false}));
               }}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >
@@ -149,7 +149,7 @@ export const getMobileSelectOption = <T, M, N>({
                   ...prev,
                   selectedTodo: todoInfo.title,
                 }));
-                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: !prev}));
+                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: false}));
               }}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >

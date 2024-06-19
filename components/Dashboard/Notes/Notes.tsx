@@ -93,6 +93,7 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
             onClick={() => {
               setFormAction("Add");
               setShowNoteForm((prev) => !prev);
+              setSelectedNote(undefined)
             }}
             className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1"
           >
@@ -130,7 +131,7 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
                 <p className="font-semibold ">
                   {info.Schedules ? "Schedule:" : "Todo:"}{" "}
                 </p>
-                <p className="font-semibold text-sm">{info.Schedules.title}</p>
+                <p className="font-semibold text-sm">{info.Schedules ? info.Schedules.title : info.TodoList.title}</p>
                 <div className="w-full h-20 line-clamp-4 text-sm">
                   <p className="font-semibold ">Note:</p>
                   <p>{info.note}</p>

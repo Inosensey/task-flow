@@ -13,6 +13,9 @@ import {
   getTodoList,
 } from "@/lib/TanStackQueryFns";
 
+// Utils
+import { useFormSerialize, useFormValidation } from "@/utils/formUtils";
+
 // Components
 import Overlay from "@/components/ReusableComponents/Overlay";
 import CustomSelect, {
@@ -56,6 +59,7 @@ const popUpVariants = {
 // Types
 import { TableInsert, TableRow } from "@/Types/database.types";
 import { useFormStateType } from "@/Types/formStates";
+import { useNotificationStore } from "@/store/useNotificationStore";
 type selectedTypes = {
   selectedNoteType: string | undefined;
   selectedSchedule: string | undefined;
@@ -98,9 +102,9 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
   };
   const noteDataInitial: TableInsert<"Notes"> = {
     id: data ? data?.id! : 0,
-    noteType: data ? data?.noteType! : 0,
-    scheduleId: data?.scheduleId ? data?.scheduleId! : 0,
-    todoId: data?.todoId ? data?.todoId! : 0,
+    noteType: data ? data?.noteType! : null,
+    scheduleId: data?.scheduleId ? data?.scheduleId! : null,
+    todoId: data?.todoId ? data?.todoId! : null,
     note: data ? data?.note! : "",
   };
 
@@ -134,21 +138,41 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
     any[] | undefined
   >(undefined);
   const [isPending, setIsPending] = useState<boolean | null>(null);
+
   // Zustand Store
-  const { resetValidation } = useScheduleFormStore();
+  const { resetValidation, setValidation } = useScheduleFormStore();
+  const { setMessage, setShowSlideNotification } = useNotificationStore();
 
   // Events
   const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     // event.preventDefault();
     setIsPending(true);
-    // const fieldsToCheck = ["title", "priorityLevel", "frequency"];
-    // const formValues: TableInsert<"TodoList"> & { [key: string]: string } =
-    //   useFormSerialize(event);
-    // if (!useFormValidation(fieldsToCheck, formValues, setValidation)) {
-    //   event.preventDefault();
-    //   setIsPending(false);
-    // }
+    const fieldsToCheck = ["note", "noteType"];
+    const formValues: TableInsert<"Notes"> & { [key: string]: string } =
+      useFormSerialize(event);
+    if (!useFormValidation(fieldsToCheck, formValues, setValidation)) {
+      event.preventDefault();
+      setIsPending(false);
+    }
   };
+
+  const onNoteActionSuccess = () => {
+    const notifMessage =
+      action === "Add"
+        ? "Note Successfully Added"
+        : "Note Successfully Updated";
+    setMessage(notifMessage);
+    setShowSlideNotification();
+    hideNotificationTimer();
+    setShowNoteForm(false);
+    setNoteInput(noteDataInitial);
+  };
+
+  const hideNotificationTimer = () => {
+    const interval = setTimeout(setShowSlideNotification, 5000);
+    return () => clearTimeout(interval);
+  };
+
   const handleTextareaChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
@@ -166,7 +190,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
     if (state.success) {
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       setIsPending(false);
-      // onTodoListAddSuccess();
+      onNoteActionSuccess();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
@@ -175,6 +199,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
     <>
       <Overlay>
         <motion.form
+          onSubmit={useHandleFormSubmit}
           action={formAction}
           variants={popUpVariants}
           initial="hidden"
@@ -190,6 +215,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               onClick={() => {
                 setShowNoteForm((prev) => !prev);
                 resetValidation();
+                setNoteInput(noteDataInitial);
               }}
             >
               X
@@ -204,11 +230,17 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               placeHolder={"Assign Notes to"}
               showChoices={toggle.toggleNoteTypeSelect}
               setToggleDesktopOptions={() => {
-                setToggle((prev) => ({ ...prev, toggleNoteTypeSelect: !prev }));
+                setToggle((prev) => ({
+                  ...prev,
+                  toggleNoteTypeSelect: !prev.toggleNoteTypeSelect,
+                }));
                 setOptionType("noteType");
               }}
               setToggleMobileOptions={() => {
-                setToggle((prev) => ({ ...prev, toggleMobileOptions: !prev }));
+                setToggle((prev) => ({
+                  ...prev,
+                  toggleMobileOptions: !prev.toggleMobileOptions,
+                }));
                 setOptionType("noteType");
                 setMobileOptionHeader("Assign Notes to");
                 setSelectedMobileOptions(noteTypesData!);
@@ -241,14 +273,14 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
                 setToggleDesktopOptions={() => {
                   setToggle((prev) => ({
                     ...prev,
-                    toggleScheduleSelect: !prev,
+                    toggleScheduleSelect: !prev.toggleScheduleSelect,
                   }));
                   setOptionType("setSchedulesNote");
                 }}
                 setToggleMobileOptions={() => {
                   setToggle((prev) => ({
                     ...prev,
-                    toggleMobileOptions: !prev,
+                    toggleMobileOptions: !prev.toggleMobileOptions,
                   }));
                   setOptionType("setSchedulesNote");
                   setMobileOptionHeader("Schedules");
@@ -281,13 +313,13 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
                 placeHolder={"Todos"}
                 showChoices={toggle.toggleTodoSelect}
                 setToggleDesktopOptions={() => {
-                  setToggle((prev) => ({ ...prev, toggleTodoSelect: !prev }));
+                  setToggle((prev) => ({ ...prev, toggleTodoSelect: !prev.toggleTodoSelect }));
                   setOptionType("setTodosNote");
                 }}
                 setToggleMobileOptions={() => {
                   setToggle((prev) => ({
                     ...prev,
-                    toggleMobileOptions: !prev,
+                    toggleMobileOptions: !prev.toggleMobileOptions,
                   }));
                   setOptionType("setTodosNote");
                   setMobileOptionHeader("Todos");
@@ -310,7 +342,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               </CustomSelect>
             </div>
           )}
-          {noteInput.scheduleId !== null || noteInput.todoId ? (
+          {noteInput.todoId || noteInput.scheduleId ? (
             <TextareaInput
               name="note"
               label="Note"
@@ -325,7 +357,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
           )}
           <div className="hidden">
             <Input
-              state={noteInput!.noteType!.toString()}
+              state={noteInput.noteType ? noteInput.noteType!.toString() : "0"}
               type="hidden"
               name="noteType"
               placeholder=""
@@ -334,7 +366,9 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               validationMessage={""}
             />
             <Input
-              state={noteInput!.scheduleId!.toString()}
+              state={
+                noteInput.scheduleId ? noteInput.scheduleId!.toString() : "0"
+              }
               type="hidden"
               name="scheduleId"
               placeholder=""
@@ -343,7 +377,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               validationMessage={""}
             />
             <Input
-              state={noteInput!.todoId!.toString()}
+              state={noteInput.todoId ? noteInput.todoId!.toString() : "0"}
               type="hidden"
               name="todoId"
               placeholder=""
@@ -359,46 +393,46 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               label="Title"
             />
             <Input
-              state={
-                noteInput.id === undefined || noteInput.id === null
-                  ? "0"
-                  : noteInput.id.toString()
-              }
-              type="hidden"
-              name="todoId"
+              state={noteInput.id ? noteInput.id!.toString() : "0"}
+              type="text"
+              name="id"
               placeholder=""
               label="Title"
             />
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-            whileTap={{ scale: 0.95 }}
-            className={`${
-              isPending === null || !isPending
-                ? "bg-LightPrimary text-LightSecondary"
-                : ""
-            } ${
-              isPending && "bg-LightPrimaryDisabled text-Disabled"
-            }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
-            type="submit"
-          >
-            {isPending === null || !isPending ? (
-              <>
-                <span className="w-4">
-                  <FontAwesomeIcon
-                    className="text-sm"
-                    icon={faClipboardCheck}
-                  />
-                </span>
-                Save Note
-              </>
-            ) : (
-              <>
-                <SvgSpinnersBlocksShuffle3 color="#00ADB5" />
-                Saving Note
-              </>
-            )}
-          </motion.button>
+          {noteInput.todoId || noteInput.scheduleId ? (
+            <motion.button
+              whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.95 }}
+              className={`mt-3 ${
+                isPending === null || !isPending
+                  ? "bg-LightPrimary text-LightSecondary"
+                  : ""
+              } ${
+                isPending && "bg-LightPrimaryDisabled text-Disabled"
+              }  w-max px-4 py-1 rounded-md items-center flex gap-1 my-0 mx-auto`}
+              type="submit"
+            >
+              {isPending === null || !isPending ? (
+                <>
+                  <span className="w-4">
+                    <FontAwesomeIcon
+                      className="text-sm"
+                      icon={faClipboardCheck}
+                    />
+                  </span>
+                  Save Note
+                </>
+              ) : (
+                <>
+                  <SvgSpinnersBlocksShuffle3 color="#00ADB5" />
+                  Saving Note
+                </>
+              )}
+            </motion.button>
+          ) : (
+            ""
+          )}
         </motion.form>
         <AnimatePresence
           initial={false}

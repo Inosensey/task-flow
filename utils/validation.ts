@@ -31,6 +31,7 @@ const FormValidation = (data: params): validationInfo => {
     case "contactNumber":
     case "priorityLevel":
     case "frequency":
+    case "noteType":
       return validateNumber(data);
     case "date":
     case "timeStart":
@@ -40,6 +41,7 @@ const FormValidation = (data: params): validationInfo => {
     case "country":
     case "state":
     case "city":
+    case "note":
       return validateString(data);
     case "username":
       return validateUsername(data);
