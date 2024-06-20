@@ -146,12 +146,19 @@ export const updateTodoStatus = async (
   }
 };
 
-export const deleteTodo = async (todoId: number): Promise<ReturnInterface<TableRow<"TodoList">> | ReturnInterface<any>> => {
+export const deleteTodo = async (
+  todoId: number
+): Promise<ReturnInterface<TableRow<"TodoList">> | ReturnInterface<any>> => {
   try {
     const supabase = createClient();
     const userData = await getSupabaseUser();
     const userId = userData.data.user!.id;
-    let result = await supabase.from("TodoList").delete().eq("id", todoId).eq("userId", userId).select();
+    let result = await supabase
+      .from("TodoList")
+      .delete()
+      .eq("id", todoId)
+      .eq("userId", userId)
+      .select();
     if (result.error) {
       return returnError("There is an error deleting the Todo", result.error);
     }
@@ -161,4 +168,4 @@ export const deleteTodo = async (todoId: number): Promise<ReturnInterface<TableR
   } catch (error) {
     return returnError("There is an error deleting the Todo", error);
   }
-}
+};

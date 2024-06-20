@@ -63,7 +63,6 @@ export default function Todo({ details }: props) {
       return deleteTodo(todoListId);
     },
     onSuccess: (data) => {
-      console.log(data);
       queryClient.invalidateQueries({ queryKey: ["todolists"] });
       onTodoListActionSuccess(`TodoList: ${data.Response[0].title}, Deleted`);
     },
@@ -77,7 +76,6 @@ export default function Todo({ details }: props) {
     setMessage(notifMessage);
     setShowSlideNotification();
     hideNotificationTimer();
-    setShowTodoListForm(false);
   };
 
   const hideNotificationTimer = () => {

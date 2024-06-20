@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 // Components
 import { CheckBoxInput } from "@/components/ReusableComponents/inputs/Input";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import NoteForm from "./NoteForm";
 
 // Libs
 import {
@@ -17,24 +18,21 @@ import {
 } from "@/lib/TanStackQueryFns";
 
 // Icons
-import { faCirclePlus, faClock } from "@fortawesome/free-solid-svg-icons";
-import NoteForm from "./NoteForm";
-
+import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 //Types
-import { TableInsert, TableRow } from "@/Types/database.types";
+import { TableRow } from "@/Types/database.types";
 import { todoListResponseInterface } from "@/Types/todoListTypes";
+import { noteType } from "@/Types/noteTypes";
+import Note from "./Note";
 interface props {
   schedules: TableRow<"Schedules">[] | [];
   todoList: todoListResponseInterface;
-  notes:
-    | (TableInsert<"Notes"> & { Schedules: TableRow<"Schedules"> } & {
-        TodoList: TableRow<"TodoList">;
-      } & { NoteType: TableRow<"NoteType"> }[])
-    | [];
+  notes: noteType[];
   noteTypes: TableRow<"NoteType">[] | [];
 }
 
 const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
+
   // Use query
   const { data: scheduleData } = useQuery({
     queryKey: ["schedules"],
@@ -57,23 +55,18 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
     initialData: noteTypes,
   });
 
-  console.log(notesData);
-
   // States
   const [formAction, setFormAction] = useState<string>("Add");
   const [showNoteForm, setShowNoteForm] = useState<boolean>(false);
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [filters] = useState<Array<string>>(["All", "Schedules", "Todo-List"]);
-  const [selectedNote, setSelectedNote] = useState<
-    | (TableInsert<"Notes"> & { Schedules: TableRow<"Schedules"> } & {
-        TodoList: TableRow<"TodoList">;
-      } & { NoteType: TableRow<"NoteType"> })
-    | undefined
-  >(undefined);
+  const [selectedNote, setSelectedNote] = useState<noteType | undefined>(
+    undefined
+  );
 
   const toggleFilter = (value: string) => {
     setSelectedFilter(value);
-  };
+  }
 
   const handleCheckBoxOnChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -93,7 +86,7 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
             onClick={() => {
               setFormAction("Add");
               setShowNoteForm((prev) => !prev);
-              setSelectedNote(undefined)
+              setSelectedNote(undefined);
             }}
             className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1"
           >
@@ -117,42 +110,29 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
           ))}
         </div>
         <div className="flex flex-wrap items-center justify-between px-2 gap-2 mt-6">
-          {notesData?.map(
-            (
-              info: TableRow<"Notes"> & { Schedules: TableRow<"Schedules"> } & {
-                TodoList: TableRow<"TodoList">;
-              } & { NoteType: TableRow<"NoteType"> },
-              index: number
-            ) => (
-              <div
-                key={index}
-                className="bg-SmoothDark p-3 flex flex-col gap-1 rounded-lg text-LightSecondary mdphone:w-[49%]"
-              >
-                <p className="font-semibold ">
-                  {info.Schedules ? "Schedule:" : "Todo:"}{" "}
-                </p>
-                <p className="font-semibold text-sm">{info.Schedules ? info.Schedules.title : info.TodoList.title}</p>
-                <div className="w-full h-20 line-clamp-4 text-sm">
-                  <p className="font-semibold ">Note:</p>
-                  <p>{info.note}</p>
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => {
-                    setSelectedNote(info);
-                    setFormAction("Edit");
-                    setShowNoteForm((prev) => !prev);
-                    //   setShowDetailedSchedule((prev) => !prev);
-                    //   setSelectedSchedule(info);
-                  }}
-                  className="cursor-pointer bg-Secondary rounded-md text-LightSecondary mt-2 phone:text-sm phone:w-28 phone:py-1"
-                >
-                  More Details
-                </motion.button>
-              </div>
-            )
-          )}
+          {notesData?.map((info: noteType, index: number) => {
+            let data: noteType | undefined = undefined;
+            if (selectedFilter === "Schedules" && info.Schedules !== null) {
+              data = info;
+            }
+            if (selectedFilter === "Todo-List" && info.TodoList !== null) {
+              data = info;
+            }
+            if (selectedFilter === "All") {
+              data = info;
+            }
+            return (
+              data && (
+                <Note
+                  key={index}
+                  info={data}
+                  setFormAction={setFormAction}
+                  setSelectedNote={setSelectedNote}
+                  setShowNoteForm={setShowNoteForm}
+                />
+              )
+            );
+          })}
         </div>
       </div>
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>

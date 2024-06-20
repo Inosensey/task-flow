@@ -60,6 +60,7 @@ const popUpVariants = {
 import { TableInsert, TableRow } from "@/Types/database.types";
 import { useFormStateType } from "@/Types/formStates";
 import { useNotificationStore } from "@/store/useNotificationStore";
+import { noteType } from "@/Types/noteTypes";
 type selectedTypes = {
   selectedNoteType: string | undefined;
   selectedSchedule: string | undefined;
@@ -74,9 +75,7 @@ type toggleTypes = {
 interface props {
   setShowNoteForm: React.Dispatch<React.SetStateAction<boolean>>;
   action: string;
-  data?: TableInsert<"Notes"> & { Schedules: TableRow<"Schedules"> } & {
-    TodoList: TableRow<"TodoList">;
-  } & { NoteType: TableRow<"NoteType"> };
+  data?: noteType;
 }
 
 // Initials
@@ -175,6 +174,16 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
 
   const handleTextareaChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+
+    setNoteInput((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = event.target;
 
@@ -364,6 +373,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               label=""
               valid={null}
               validationMessage={""}
+              onChange={handleInputChange}
             />
             <Input
               state={
@@ -375,6 +385,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               label=""
               valid={null}
               validationMessage={""}
+              onChange={handleInputChange}
             />
             <Input
               state={noteInput.todoId ? noteInput.todoId!.toString() : "0"}
@@ -384,6 +395,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               label=""
               valid={null}
               validationMessage={""}
+              onChange={handleInputChange}
             />
             <Input
               state={action}
@@ -391,6 +403,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               name="action"
               placeholder=""
               label="Title"
+              onChange={handleInputChange}
             />
             <Input
               state={noteInput.id ? noteInput.id!.toString() : "0"}
@@ -398,6 +411,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               name="id"
               placeholder=""
               label="Title"
+              onChange={handleInputChange}
             />
           </div>
           {noteInput.todoId || noteInput.scheduleId ? (

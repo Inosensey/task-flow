@@ -6,7 +6,7 @@ import { getSupabaseUser } from "@/utils/supabaseUtils";
 import { returnError, returnSuccess } from "@/utils/formUtils";
 
 // Types
-import { Table, TableInsert, TableUpdate } from "@/Types/database.types";
+import { Table, TableInsert, TableRow, TableUpdate } from "@/Types/database.types";
 import { useFormStateType } from "@/Types/formStates";
 import { ReturnInterface } from "@/Types/generalTypes";
 import { revalidateTag } from "next/cache";
@@ -92,5 +92,28 @@ const updateNote = async (noteInfo: TableUpdate<"Notes">) => {
     return returnSuccess("Note Successfully Updated", result.data);
   } catch (error) {
     return returnError("There is an error Updating the Note", error);
+  }
+};
+
+export const deleteNote = async (
+  noteId: number
+): Promise<ReturnInterface<TableRow<"Notes">> | ReturnInterface<any>> => {
+  try {
+    const supabase = createClient();
+    const userData = await getSupabaseUser();
+    const userId = userData.data.user!.id;
+    let result = await supabase
+      .from("Notes")
+      .delete()
+      .eq("id", noteId)
+      .eq("userId", userId)
+      .select();
+    revalidateTag("notes");
+    if (result.error) {
+      return returnError("There is an error deleting the Note", result.error);
+    }
+    return returnSuccess("Note Successfully Deleted", result.data);
+  } catch (error) {
+    return returnError("There is an error deleting the Note", error);
   }
 };
