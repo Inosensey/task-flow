@@ -24,6 +24,7 @@ import { TableRow } from "@/Types/database.types";
 import { todoListResponseInterface } from "@/Types/todoListTypes";
 import { noteType } from "@/Types/noteTypes";
 import Note from "./Note";
+import NoData from "@/components/ReusableComponents/NoData";
 interface props {
   schedules: TableRow<"Schedules">[] | [];
   todoList: todoListResponseInterface;
@@ -32,7 +33,6 @@ interface props {
 }
 
 const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
-
   // Use query
   const { data: scheduleData } = useQuery({
     queryKey: ["schedules"],
@@ -66,7 +66,7 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
 
   const toggleFilter = (value: string) => {
     setSelectedFilter(value);
-  }
+  };
 
   const handleCheckBoxOnChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -90,7 +90,7 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
             }}
             className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1"
           >
-            Add Notes
+            Add Note
             <span className="w-4">
               <FontAwesomeIcon className="text-sm" icon={faCirclePlus} />
             </span>
@@ -110,29 +110,36 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
           ))}
         </div>
         <div className="flex flex-wrap items-center justify-between px-2 gap-2 mt-6">
-          {notesData?.map((info: noteType, index: number) => {
-            let data: noteType | undefined = undefined;
-            if (selectedFilter === "Schedules" && info.Schedules !== null) {
-              data = info;
-            }
-            if (selectedFilter === "Todo-List" && info.TodoList !== null) {
-              data = info;
-            }
-            if (selectedFilter === "All") {
-              data = info;
-            }
-            return (
-              data && (
-                <Note
-                  key={index}
-                  info={data}
-                  setFormAction={setFormAction}
-                  setSelectedNote={setSelectedNote}
-                  setShowNoteForm={setShowNoteForm}
-                />
-              )
-            );
-          })}
+          {notesData?.length !== 0 ? (
+            notesData?.map((info: noteType, index: number) => {
+              let data: noteType | undefined = undefined;
+              if (selectedFilter === "Schedules" && info.Schedules !== null) {
+                data = info;
+              }
+              if (selectedFilter === "Todo-List" && info.TodoList !== null) {
+                data = info;
+              }
+              if (selectedFilter === "All") {
+                data = info;
+              }
+              return (
+                data && (
+                  <Note
+                    key={index}
+                    info={data}
+                    setFormAction={setFormAction}
+                    setSelectedNote={setSelectedNote}
+                    setShowNoteForm={setShowNoteForm}
+                  />
+                )
+              );
+            })
+          ) : (
+            <NoData
+              setShowForm={setShowNoteForm}
+              ButtonName="Add Note"
+            />
+          )}
         </div>
       </div>
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>

@@ -20,6 +20,7 @@ import { TableRow } from "@/Types/database.types";
 // Stpre
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 import { useDateStore } from "@/store/useDateStore";
+import NoData from "@/components/ReusableComponents/NoData";
 
 // Props
 type props = {
@@ -36,7 +37,7 @@ type schedule = {
 const Schedule = ({ scheduleData }: props) => {
   // Store
   const { setFormAction } = useScheduleFormStore();
-  const { dateSelected } = useDateStore()
+  const { dateSelected } = useDateStore();
 
   const date = new Date(dateSelected);
   const days = getDays();
@@ -147,50 +148,57 @@ const Schedule = ({ scheduleData }: props) => {
 
         {/* Mobile */}
         <div className="flex flex-wrap items-center justify-between px-2 gap-2 mt-2 ">
-          {scheduleData?.map((info: TableRow<"Schedules">, index: number) => (
-            <div
-              key={index}
-              className="bg-SmoothDark p-3 flex flex-col gap-2 rounded-lg text-LightSecondary mdphone:w-[49%]"
-            >
-              <div className="phone:w-10/12 flex items-center gap-1">
-                <span className="w-4">
-                  <FontAwesomeIcon
-                    className="text-sm text-LightPrimary"
-                    icon={faClock}
-                  />
-                </span>
-                <div className="flex gap-1 text-sm">
-                  <p>{formatHourTo12(info.timeStart)}</p>
-                  {info.timeEnd !== "" && (
-                    <span className="w-4">
-                      <FontAwesomeIcon
-                        className="text-sm"
-                        icon={faArrowRight}
-                      />
-                    </span>
-                  )}
-                  <p>{formatHourTo12(info.timeEnd)}</p>
+          {scheduleData?.length !== 0 ? (
+            scheduleData?.map((info: TableRow<"Schedules">, index: number) => (
+              <div
+                key={index}
+                className="bg-SmoothDark p-3 flex flex-col gap-2 rounded-lg text-LightSecondary mdphone:w-[49%]"
+              >
+                <div className="phone:w-10/12 flex items-center gap-1">
+                  <span className="w-4">
+                    <FontAwesomeIcon
+                      className="text-sm text-LightPrimary"
+                      icon={faClock}
+                    />
+                  </span>
+                  <div className="flex gap-1 text-sm">
+                    <p>{formatHourTo12(info.timeStart)}</p>
+                    {info.timeEnd !== "" && (
+                      <span className="w-4">
+                        <FontAwesomeIcon
+                          className="text-sm"
+                          icon={faArrowRight}
+                        />
+                      </span>
+                    )}
+                    <p>{formatHourTo12(info.timeEnd)}</p>
+                  </div>
                 </div>
+                <p className="font-semibold">{info.title}</p>
+                <div className="w-full h-20 line-clamp-4">
+                  <p className="text-sm">{info.description}</p>
+                </div>
+                <Link href={`/dashboard/schedules/${info.id}`}>
+                  <motion.button
+                    whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => {
+                      setShowDetailedSchedule((prev) => !prev);
+                      setSelectedSchedule(info);
+                    }}
+                    className="cursor-pointer bg-Secondary rounded-md text-LightSecondary phone:text-sm phone:w-28 phone:py-1"
+                  >
+                    More Details
+                  </motion.button>
+                </Link>
               </div>
-              <p className="font-semibold">{info.title}</p>
-              <div className="w-full h-20 line-clamp-4">
-                <p className="text-sm">{info.description}</p>
-              </div>
-              <Link href={`/dashboard/schedules/${info.id}`}>
-                <motion.button
-                  whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => {
-                    setShowDetailedSchedule((prev) => !prev);
-                    setSelectedSchedule(info);
-                  }}
-                  className="cursor-pointer bg-Secondary rounded-md text-LightSecondary phone:text-sm phone:w-28 phone:py-1"
-                >
-                  More Details
-                </motion.button>
-              </Link>
-            </div>
-          ))}
+            ))
+          ) : (
+            <NoData
+              setShowForm={setShowScheduleForm}
+              ButtonName="Add schedule"
+            />
+          )}
         </div>
       </div>
       {/* Detailed Schedule */}
