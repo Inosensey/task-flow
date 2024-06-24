@@ -39,7 +39,8 @@ import {
   ScheduleInfo,
 } from "@/Types/scheduleType";
 import { useFormStateType } from "@/Types/formStates";
-import { TableInsert } from "@/Types/database.types";
+import { TableInsert, TableRow } from "@/Types/database.types";
+import Loading from "@/components/ReusableComponents/Loading/Loading";
 interface props {
   setShowScheduleForm: React.Dispatch<React.SetStateAction<boolean>>;
   scheduleId: string | null;
@@ -172,7 +173,9 @@ const ScheduleForm = ({
   useEffect(() => {
     if (state.success) {
       if (formAction === "add") {
+        const data = state.data[0] as TableRow<"Schedules">;
         queryClient.invalidateQueries({ queryKey: ["schedules"] });
+        setDate(data!.date!);
       } else {
         queryClient.invalidateQueries({ queryKey: [`Schedule#${scheduleId}`] });
       }

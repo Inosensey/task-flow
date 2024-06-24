@@ -65,8 +65,6 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
   const [mapToggle, setMapToggle] = useState<boolean>(false);
   const [showScheduleForm, setShowScheduleForm] = useState<boolean>(false);
 
-  console.log(data)
-
   const detailsData = data as unknown as reactQueryType
   const locationDetails = detailsData.schedule[0].ScheduleLocation[0];
 

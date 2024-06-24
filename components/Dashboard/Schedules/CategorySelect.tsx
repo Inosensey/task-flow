@@ -136,7 +136,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
       setPlacesList();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); 
+  }, []);
   return (
     <>
       <div className="flex flex-col gap-1">
@@ -149,13 +149,13 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
             setToggleMobileOptions((prev) => !prev);
             setOptionType("Key");
             setMobileOptionHeader("Places");
+            setSelectedMobileOptions(locationKeyData);
           }}
           setToggleDesktopOptions={() => {
             setShowChoices((prev) => !prev);
             setShowPlacesType(false)
             setShowPlaceList(false)
             setOptionType("Key");
-            setSelectedMobileOptions(locationKeyData);
           }}
         >
           {windowCurrentWidth >= 769 && optionType === "Key" && (
@@ -181,13 +181,13 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
               setToggleMobileOptions((prev) => !prev);
               setOptionType("Categories");
               setMobileOptionHeader("Type of Place");
+              setSelectedMobileOptions(locationCategoriesData);
             }}
             setToggleDesktopOptions={() => {
               setShowPlacesType((prev) => !prev);
               setShowChoices(false)
               setShowPlaceList(false)
               setOptionType("Categories");
-              setSelectedMobileOptions(locationCategoriesData);
             }}
           >
             {windowCurrentWidth >= 769 && optionType === "Categories" && (
@@ -215,13 +215,13 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
               setToggleMobileOptions((prev) => !prev);
               setOptionType("listPlace");
               setMobileOptionHeader("Found Places");
+              setSelectedMobileOptions(listPlace?.features);
             }}
             setToggleDesktopOptions={() => {
               setShowPlaceList((prev) => !prev);
               setShowPlacesType(false)
               setShowChoices(false)
               setOptionType("listPlace");
-              setSelectedMobileOptions(listPlace?.features);
             }}
             dynamic={true}
             fetching={gettingListOfPlaces}

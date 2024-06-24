@@ -1,10 +1,10 @@
 "use server";
 import { revalidateTag } from "next/cache";
+import { redirect } from "next/navigation";
 
 // Utils
 import { returnError, returnSuccess } from "@/utils/formUtils";
 import { createClient } from "@/utils/supabaseSSR";
-import { getCookieAuth } from "@/utils/cookiesUtils";
 import { getSupabaseUser } from "@/utils/supabaseUtils";
 
 // Types
@@ -51,6 +51,7 @@ export const mutateSchedule = async (
 )=> {
   try {
     let result;
+    let scheduleId:number = 0;
     const formAction = formData.get("action") as string;
     const scheduleData = {
       id: formData.get("scheduleId") as string,
@@ -70,21 +71,23 @@ export const mutateSchedule = async (
     };
     console.log(formAction);
     if (formAction === "add") {
-      revalidateTag("schedules");
       result = await insertSchedule(scheduleData);
+      const responseData = result.Response as TableRow<"Schedules">[];
+      scheduleId = responseData[0].id;
+      revalidateTag("schedules");
     } else {
       result = await updateSchedule(scheduleData);
+      scheduleId = parseInt(scheduleData.id);
       revalidateTag("schedules");
       revalidateTag(`schedule${scheduleData.id}`);
     }
     if (result.Status === "Success") {
-      const responseData = result.Response as TableRow<"Schedules">[];
-      await mutateLocationInfo(scheduleData, scheduleData.id, formAction);
+      await mutateLocationInfo(scheduleData, scheduleId, formAction);
     }
     return {
       success: true,
       error: false,
-      data: [],
+      data: result.Response as TableRow<"Schedules">[],
       message: "",
     };
   } catch (e) {
@@ -100,18 +103,18 @@ export const mutateSchedule = async (
 
 const mutateLocationInfo = async (
   scheduleInfo: ScheduleInfo,
-  scheduleId: string,
+  scheduleId: number,
   formAction: string
 ): Promise<
   ReturnInterface<TableRow<"ScheduleLocation">> | ReturnInterface<any>
 > => {
   if (formAction === "add") {
     const result: TableRow<"ScheduleLocation"> | any =
-      await insertScheduleLocation(scheduleInfo, parseInt(scheduleId));
+      await insertScheduleLocation(scheduleInfo, scheduleId);
     return result;
   } else {
     const result: TableRow<"ScheduleLocation"> | any =
-      await updateScheduleLocation(scheduleInfo, parseInt(scheduleId));
+      await updateScheduleLocation(scheduleInfo, scheduleId);
     return result;
   }
 };
