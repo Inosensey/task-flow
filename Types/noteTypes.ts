@@ -1,7 +1,7 @@
 import { TableInsert, TableRow } from "@/Types/database.types";
 
-export type noteType = TableInsert<"Notes"> & {
-  Schedules: TableRow<"Schedules">;
+export type noteType = TableRow<"Notes"> & {
+  Schedules: TableRow<"Schedules"> | null;
 } & {
-  TodoList: TableRow<"TodoList">;
+  TodoList: TableRow<"TodoList"> | null;
 } & { NoteType: TableRow<"NoteType"> };

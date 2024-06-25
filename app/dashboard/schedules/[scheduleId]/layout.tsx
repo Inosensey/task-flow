@@ -13,7 +13,7 @@ export default function DetailedLayout({
   params: { scheduleId: string }
 }) {
   return (
-    <section className="flex bg-Primary relative">
+    <section className="flex bg-Primary relative w-full">
       <Suspense fallback={<Loading />}>{children}</Suspense>
     </section>
   );

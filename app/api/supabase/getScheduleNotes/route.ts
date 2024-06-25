@@ -9,7 +9,7 @@ export async function GET(req: Request) {
     let { data: notes, error } = await supabase
       .from("Notes")
       .select(
-        `*, NoteType:noteType(id, type), Schedules:scheduleId(id, title), TodoList:todoId(id, title)`
+        `id, note, NoteType:noteType(id, type), Schedules:scheduleId(id, title), TodoList:todoId(id, title)`
       )
       .eq("userId", `${userId}`)
       .eq("scheduleId", `${scheduleId}`);

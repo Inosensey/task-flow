@@ -10,6 +10,7 @@ import {
   faArrowRight,
   faCheck,
   faXmark,
+  faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
@@ -21,7 +22,7 @@ import DisplayMap from "@/components/ReusableComponents/DisplayMap";
 import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocationCityRounded";
 
 // Utils
-import { formatHourTo12 } from "@/utils/useDate";
+import { formatHourTo12, formatSelectedDate } from "@/utils/useDate";
 
 // Store
 import { useScheduleFormStore } from "@/store/useScheduleFormStore";
@@ -29,12 +30,14 @@ import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 // Types
 import { TableRow } from "@/Types/database.types";
 import { ScheduleDetails } from "@/Types/scheduleType";
-import { getScheduleDetails } from "@/lib/TanStackQueryFns";
+import { getScheduleDetails, getScheduleNotes } from "@/lib/TanStackQueryFns";
+import { noteType } from "@/Types/noteTypes";
 type props = {
   scheduleId: string;
   scheduleInfo?: TableRow<"Schedules">;
   setShowPopUp?: React.Dispatch<React.SetStateAction<boolean>>;
   details: reactQueryType;
+  notes: noteType[];
 };
 type mapAttrInfo = {
   width: string;
@@ -44,19 +47,25 @@ type mapAttrInfo = {
   iconType: string;
 };
 interface reactQueryType {
-  schedule: ScheduleDetails[]
+  schedule: ScheduleDetails[];
 }
 
-const DetailedSchedule = ({ details, scheduleId }: props) => {
+const DetailedSchedule = ({ details, scheduleId, notes }: props) => {
+  const scheduleDate = new Date(details.schedule[0].date!);
+
   // Use query
-  const {
-    data: data,
-  } = useQuery({
+  const { data: data } = useQuery({
     queryKey: [`Schedule#${scheduleId}`],
     queryFn: () => getScheduleDetails(parseInt(scheduleId)),
     initialData: details,
-
   });
+  const { data: noteList } = useQuery({
+    queryKey: [`ScheduleNotes#${scheduleId}`],
+    queryFn: () => getScheduleNotes(parseInt(scheduleId)),
+    initialData: notes,
+  });
+  console.log(notes);
+  console.log(noteList);
   // Store
   const { setFormAction } = useScheduleFormStore();
 
@@ -65,7 +74,7 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
   const [mapToggle, setMapToggle] = useState<boolean>(false);
   const [showScheduleForm, setShowScheduleForm] = useState<boolean>(false);
 
-  const detailsData = data as unknown as reactQueryType
+  const detailsData = data as unknown as reactQueryType;
   const locationDetails = detailsData.schedule[0].ScheduleLocation[0];
 
   const mapAttrInfo: mapAttrInfo = {
@@ -104,57 +113,79 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
             Schedules
           </motion.button>
         </Link>
-        <div className="mt-2 flex flex-col">
-          <div className="bg-Secondary p-2 rounded-md">
-            <p className="text-LightPrimary font-semibold text-lg">
-              {detailsData.schedule[0].title}
-            </p>
-            <div className="font-semibold text-sm text-LightSecondary">
-              <p className="flex items-center">
-                <MaterialSymbolsLocationCityRounded color="#00ADB5" />
-                {locationDetails.namePlace},
+        <div className="mt-2 mx-auto flex flex-col phone:w-11/12 laptop:max-w-[500px]">
+          <div className=" flex flex-col gap-2">
+            <div className="p-2 bg-Secondary rounded-md">
+              <p className="text-LightPrimary font-semibold text-base">
+                {detailsData.schedule[0].title}
               </p>
-              <p className="flex items-center">
-                <MaterialSymbolsLocationCityRounded color="#00ADB5" />
-                {locationDetails.city}
-              </p>
-            </div>
-            <div className="phone:w-10/12 flex items-center gap-1">
-              <span className="w-4">
-                <FontAwesomeIcon
-                  className="text-sm text-LightPrimary"
-                  icon={faClock}
-                />
-              </span>
-              <div className="flex gap-1 text-sm">
-                <p>{formatHourTo12(detailsData.schedule[0].timeStart)}</p>
-                {detailsData.schedule[0].timeEnd !== "" && (
-                  <span className="w-4">
-                    <FontAwesomeIcon className="text-sm" icon={faArrowRight} />
-                  </span>
-                )}
-                <p>{formatHourTo12(detailsData.schedule[0].timeEnd)}</p>
+              <div className="phone:w-10/12 flex items-center gap-1 text-sm">
+                <span className="w-4">
+                  <FontAwesomeIcon
+                    className="text-sm text-LightPrimary"
+                    icon={faCalendarAlt}
+                  />
+                </span>
+                <p>
+                  {formatSelectedDate(details.schedule[0].date!)}{" "}
+                  {scheduleDate.getFullYear()}
+                </p>
+              </div>
+              <div className="phone:w-10/12 flex items-center gap-1">
+                <span className="w-4">
+                  <FontAwesomeIcon
+                    className="text-sm text-LightPrimary"
+                    icon={faClock}
+                  />
+                </span>
+                <div className="flex gap-1 text-sm">
+                  <p>{formatHourTo12(detailsData.schedule[0].timeStart)}</p>
+                  {detailsData.schedule[0].timeEnd !== "" && (
+                    <span className="w-4">
+                      <FontAwesomeIcon
+                        className="text-sm"
+                        icon={faArrowRight}
+                      />
+                    </span>
+                  )}
+                  <p>{formatHourTo12(detailsData.schedule[0].timeEnd)}</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-[0.9rem] font-semibold">Description:</p>
+                <p className="text-sm text-justify leading-5">
+                  {detailsData.schedule[0].description}
+                </p>
               </div>
             </div>
-            <motion.button
-              className="text-xs bg-LightPrimary w-max px-3 py-[0.2rem] rounded-md flex gap-1 mt-3"
-              whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => {
-                setMapToggle((prev) => !prev);
-              }}
-            >
-              View Map
-            </motion.button>
-          </div>
-          <div className="p-2">
-            <p className="text-lg font-semibold text-LightPrimary">
-              Description
-            </p>
-            <p className="text-justify leading-6">{detailsData.schedule[0].description}</p>
+            <div className="p-2 bg-Secondary rounded-md">
+              <p className="text-LightPrimary font-semibold text-base">
+                Location:
+              </p>
+              <div className="font-semibold text-sm text-LightSecondary">
+                <p className="flex items-center">
+                  <MaterialSymbolsLocationCityRounded color="#00ADB5" />
+                  {locationDetails.namePlace},
+                </p>
+                <p className="flex items-center">
+                  <MaterialSymbolsLocationCityRounded color="#00ADB5" />
+                  {locationDetails.city}
+                </p>
+              </div>
+              <motion.button
+                className="text-xs bg-LightPrimary w-max px-3 py-[0.2rem] rounded-md flex gap-1 mt-3"
+                whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  setMapToggle((prev) => !prev);
+                }}
+              >
+                View Map
+              </motion.button>
+            </div>
           </div>
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-between w-11/12 mx-auto">
           {isEditing ? (
             <div className="flex w-full justify-between">
               <motion.button
@@ -204,8 +235,30 @@ const DetailedSchedule = ({ details, scheduleId }: props) => {
             </motion.button>
           )}
         </div>
+        <div className="mx-auto px-2 flex flex-col phone:w-11/12 laptop:max-w-[500px] gap-1 mt-4">
+          <div className="flex justify-between items-end">
+            <p className="text-LightPrimary font-semibold text-lg">Notes</p>
+            <motion.button
+              className="text-xs bg-LightPrimary w-max px-3 py-[0.2rem] rounded-md flex gap-1 mt-3"
+              whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.9 }}
+            >
+              Add Note
+            </motion.button>
+          </div>
+          <div className="flex flex-col gap-1">
+            {noteList?.map((noteDetails: TableRow<"Notes">, index) => (
+              <div
+                key={noteDetails.id}
+                className="text-base bg-SmoothDark p-3 rounded-lg text-LightSecondary"
+              >
+                <p>Note #{index + 1}</p>
+                <p>{noteDetails.note}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </motion.div>
-
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
         {mapToggle && (
           <DisplayMap setMapToggle={setMapToggle} mapAttrInfo={mapAttrInfo} />

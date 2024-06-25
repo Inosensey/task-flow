@@ -4,6 +4,7 @@ import { useSupabase } from "@/utils/useSupabaseClient";
 
 // Types
 import { ScheduleDetails } from "@/Types/scheduleType";
+import { noteType } from "@/Types/noteTypes";
 
 export const getSchedules = async () => {
   const supabase = useSupabase;
@@ -247,6 +248,28 @@ export const getNoteTypes = async () => {
     return response;
   } catch (error) {
     console.log("There is an error getting the Note Types", error);
+    return [];
+  }
+}
+
+export const getScheduleNotes = async (scheduleId:number) => {
+  const supabase = useSupabase;
+  try {
+    let { data: noteList, error } = await supabase
+    .from("Notes")
+    .select(
+      `id, note, NoteType:noteType(id, type), Schedules:scheduleId(id, title), TodoList:todoId(id, title)`
+    )
+    .eq("scheduleId", `${scheduleId}`);
+    
+    if (error) {
+      console.log("There is an error getting the Notes", error);
+      return [];
+    }
+    const response = noteList;
+    return response as unknown as noteType[];
+  } catch (error) {
+    console.log("There is an error getting the Notes", error);
     return [];
   }
 }

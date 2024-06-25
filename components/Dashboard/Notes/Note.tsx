@@ -66,7 +66,7 @@ const Note = ({
         {info.Schedules ? "Schedule:" : "Todo:"}{" "}
       </p>
       <p className="font-semibold text-sm">
-        {info.Schedules ? info.Schedules.title : info.TodoList.title}
+        {info.Schedules ? info.Schedules.title : info.TodoList!.title}
       </p>
       <div className="w-full h-20 line-clamp-4 text-sm">
         <p className="font-semibold ">Note:</p>

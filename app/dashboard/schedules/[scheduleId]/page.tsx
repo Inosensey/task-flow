@@ -42,9 +42,10 @@ const Page = async ({ params }: props) => {
   const notesDetails = await notesJson.json();
 
   return (
-    <div>
+    <div className="w-full">
       <DetailedSchedule
         details={scheduleDetails}
+        notes={notesDetails.response}
         scheduleId={params.scheduleId}
       />
     </div>
