@@ -61,6 +61,8 @@ import { TableInsert, TableRow } from "@/Types/database.types";
 import { useFormStateType } from "@/Types/formStates";
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { noteType } from "@/Types/noteTypes";
+import { ScheduleDetails } from "@/Types/scheduleType";
+import { todoListDetails } from "@/Types/todoListTypes";
 type selectedTypes = {
   selectedNoteType: string | undefined;
   selectedSchedule: string | undefined;
@@ -76,6 +78,10 @@ interface props {
   setShowNoteForm: React.Dispatch<React.SetStateAction<boolean>>;
   action: string;
   data?: noteType;
+  selectedSchedule?: {
+    schedule: ScheduleDetails[];
+  };
+  selectedTodo?: todoListDetails;
 }
 
 // Initials
@@ -92,12 +98,20 @@ const toggleInitials: toggleTypes = {
   toggleMobileOptions: false,
 };
 
-const NoteForm = ({ setShowNoteForm, action, data }: props) => {
+const NoteForm = ({
+  setShowNoteForm,
+  action,
+  data,
+  selectedSchedule,
+  selectedTodo,
+}: props) => {
   // Note Initial
   const selectedInitials: selectedTypes = {
     selectedNoteType: data ? data.NoteType.type! : "Assign Notes to",
-    selectedSchedule: data?.scheduleId ? data.Schedules.title! : "Schedules",
-    selectedTodo: data?.todoId ? data.TodoList.title! : "Todos",
+    selectedSchedule:
+      data && data.scheduleId !== null ? data.Schedules!.title! : "Schedules",
+    selectedTodo:
+      data && data.todoId !== null ? data.TodoList!.title! : "Todos",
   };
   const noteDataInitial: TableInsert<"Notes"> = {
     id: data ? data?.id! : 0,
@@ -118,10 +132,12 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
   const { data: schedulesData } = useQuery({
     queryKey: ["schedules"],
     queryFn: getSchedules,
+    enabled: selectedSchedule === undefined && selectedTodo === undefined,
   });
   const { data: todoListsData } = useQuery({
     queryKey: ["todolists"],
     queryFn: getTodoList,
+    enabled: selectedSchedule === undefined && selectedTodo === undefined,
   });
   // UseFormState
   const [state, formAction] = useFormState(mutateNote, useFormStateInitials);
@@ -182,9 +198,7 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
       [name]: value,
     }));
   };
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
     setNoteInput((prev) => ({
@@ -195,9 +209,32 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
 
   // UseEffect
   useEffect(() => {
-    console.log(state);
+    if (selectedSchedule) {
+      setNoteInput((prev) => ({
+        ...prev,
+        noteType: 1,
+        scheduleId: selectedSchedule.schedule[0].id,
+      }));
+    }
+    if (selectedTodo) {
+      setNoteInput((prev) => ({
+        ...prev,
+        noteType: 2,
+        todoId: selectedTodo.id,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
     if (state.success) {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      if (!selectedTodo && selectedSchedule!) {
+        queryClient.invalidateQueries({ queryKey: ["notes"] });
+      }
+      if (selectedSchedule) {
+        queryClient.invalidateQueries({
+          queryKey: [`ScheduleNotes#${selectedSchedule.schedule[0].id}`],
+        });
+      }
       setIsPending(false);
       onNoteActionSuccess();
     }
@@ -230,127 +267,137 @@ const NoteForm = ({ setShowNoteForm, action, data }: props) => {
               X
             </p>
           </div>
-          <div>
-            <label className="phone:text-sm">
-              Choose where you want to put your Note
-            </label>
-            <CustomSelect
-              selected={selected.selectedNoteType}
-              placeHolder={"Assign Notes to"}
-              showChoices={toggle.toggleNoteTypeSelect}
-              setToggleDesktopOptions={() => {
-                setToggle((prev) => ({
-                  ...prev,
-                  toggleNoteTypeSelect: !prev.toggleNoteTypeSelect,
-                }));
-                setOptionType("noteType");
-              }}
-              setToggleMobileOptions={() => {
-                setToggle((prev) => ({
-                  ...prev,
-                  toggleMobileOptions: !prev.toggleMobileOptions,
-                }));
-                setOptionType("noteType");
-                setMobileOptionHeader("Assign Notes to");
-                setSelectedMobileOptions(noteTypesData!);
-              }}
-            >
-              {windowCurrentWidth >= 769 &&
-                optionType === "noteType" &&
-                getMobileSelectOption<
-                  TableInsert<"Notes">,
-                  selectedTypes,
-                  toggleTypes
-                >({
-                  optionType,
-                  setSelected: setSelected,
-                  setState: setNoteInput,
-                  setToggleOptions: setToggle,
-                  choices: noteTypesData!,
-                })}
-            </CustomSelect>
-          </div>
-          {noteInput.noteType === 1 && (
-            <div>
-              <label className="phone:text-sm">
-                Choose a schedule to assign your Note
-              </label>
-              <CustomSelect
-                selected={selected.selectedSchedule}
-                placeHolder={"Schedules"}
-                showChoices={toggle.toggleScheduleSelect}
-                setToggleDesktopOptions={() => {
-                  setToggle((prev) => ({
-                    ...prev,
-                    toggleScheduleSelect: !prev.toggleScheduleSelect,
-                  }));
-                  setOptionType("setSchedulesNote");
-                }}
-                setToggleMobileOptions={() => {
-                  setToggle((prev) => ({
-                    ...prev,
-                    toggleMobileOptions: !prev.toggleMobileOptions,
-                  }));
-                  setOptionType("setSchedulesNote");
-                  setMobileOptionHeader("Schedules");
-                  setSelectedMobileOptions(schedulesData!);
-                }}
-              >
-                {windowCurrentWidth >= 769 &&
-                  optionType === "setSchedulesNote" &&
-                  getMobileSelectOption<
-                    TableInsert<"Notes">,
-                    selectedTypes,
-                    toggleTypes
-                  >({
-                    optionType,
-                    setSelected: setSelected,
-                    setState: setNoteInput,
-                    setToggleOptions: setToggle,
-                    choices: schedulesData!,
-                  })}
-              </CustomSelect>
-            </div>
+          {!selectedSchedule && !selectedTodo && (
+            <>
+              <div>
+                <label className="phone:text-sm">
+                  Choose where you want to put your Note
+                </label>
+                <CustomSelect
+                  selected={selected.selectedNoteType}
+                  placeHolder={"Assign Notes to"}
+                  showChoices={toggle.toggleNoteTypeSelect}
+                  setToggleDesktopOptions={() => {
+                    setToggle((prev) => ({
+                      ...prev,
+                      toggleNoteTypeSelect: !prev.toggleNoteTypeSelect,
+                    }));
+                    setOptionType("noteType");
+                  }}
+                  setToggleMobileOptions={() => {
+                    setToggle((prev) => ({
+                      ...prev,
+                      toggleMobileOptions: !prev.toggleMobileOptions,
+                    }));
+                    setOptionType("noteType");
+                    setMobileOptionHeader("Assign Notes to");
+                    setSelectedMobileOptions(noteTypesData!);
+                  }}
+                >
+                  {windowCurrentWidth >= 769 &&
+                    optionType === "noteType" &&
+                    getMobileSelectOption<
+                      TableInsert<"Notes">,
+                      selectedTypes,
+                      toggleTypes
+                    >({
+                      optionType,
+                      setSelected: setSelected,
+                      setState: setNoteInput,
+                      setToggleOptions: setToggle,
+                      choices: noteTypesData!,
+                    })}
+                </CustomSelect>
+              </div>
+              {noteInput.noteType === 1 && (
+                <div>
+                  <label className="phone:text-sm">
+                    Choose a schedule to assign your Note
+                  </label>
+                  <CustomSelect
+                    selected={selected.selectedSchedule}
+                    placeHolder={"Schedules"}
+                    showChoices={toggle.toggleScheduleSelect}
+                    setToggleDesktopOptions={() => {
+                      setToggle((prev) => ({
+                        ...prev,
+                        toggleScheduleSelect: !prev.toggleScheduleSelect,
+                      }));
+                      setOptionType("setSchedulesNote");
+                    }}
+                    setToggleMobileOptions={() => {
+                      setToggle((prev) => ({
+                        ...prev,
+                        toggleMobileOptions: !prev.toggleMobileOptions,
+                      }));
+                      setOptionType("setSchedulesNote");
+                      setMobileOptionHeader("Schedules");
+                      setSelectedMobileOptions(schedulesData!);
+                    }}
+                  >
+                    {windowCurrentWidth >= 769 &&
+                      optionType === "setSchedulesNote" &&
+                      getMobileSelectOption<
+                        TableInsert<"Notes">,
+                        selectedTypes,
+                        toggleTypes
+                      >({
+                        optionType,
+                        setSelected: setSelected,
+                        setState: setNoteInput,
+                        setToggleOptions: setToggle,
+                        choices: schedulesData!,
+                      })}
+                  </CustomSelect>
+                </div>
+              )}
+              {noteInput.noteType === 2 && (
+                <div>
+                  <label className="phone:text-sm">
+                    Choose a Todo to assign your Note
+                  </label>
+                  <CustomSelect
+                    selected={selected.selectedTodo}
+                    placeHolder={"Todos"}
+                    showChoices={toggle.toggleTodoSelect}
+                    setToggleDesktopOptions={() => {
+                      setToggle((prev) => ({
+                        ...prev,
+                        toggleTodoSelect: !prev.toggleTodoSelect,
+                      }));
+                      setOptionType("setTodosNote");
+                    }}
+                    setToggleMobileOptions={() => {
+                      setToggle((prev) => ({
+                        ...prev,
+                        toggleMobileOptions: !prev.toggleMobileOptions,
+                      }));
+                      setOptionType("setTodosNote");
+                      setMobileOptionHeader("Todos");
+                      setSelectedMobileOptions(
+                        todoListsData?.unsortedTodoList!
+                      );
+                    }}
+                  >
+                    {windowCurrentWidth >= 769 &&
+                      optionType === "setTodosNote" &&
+                      getMobileSelectOption<
+                        TableInsert<"Notes">,
+                        selectedTypes,
+                        toggleTypes
+                      >({
+                        optionType,
+                        setSelected: setSelected,
+                        setState: setNoteInput,
+                        setToggleOptions: setToggle,
+                        choices: todoListsData?.unsortedTodoList!,
+                      })}
+                  </CustomSelect>
+                </div>
+              )}
+            </>
           )}
-          {noteInput.noteType === 2 && (
-            <div>
-              <label className="phone:text-sm">
-                Choose a Todo to assign your Note
-              </label>
-              <CustomSelect
-                selected={selected.selectedTodo}
-                placeHolder={"Todos"}
-                showChoices={toggle.toggleTodoSelect}
-                setToggleDesktopOptions={() => {
-                  setToggle((prev) => ({ ...prev, toggleTodoSelect: !prev.toggleTodoSelect }));
-                  setOptionType("setTodosNote");
-                }}
-                setToggleMobileOptions={() => {
-                  setToggle((prev) => ({
-                    ...prev,
-                    toggleMobileOptions: !prev.toggleMobileOptions,
-                  }));
-                  setOptionType("setTodosNote");
-                  setMobileOptionHeader("Todos");
-                  setSelectedMobileOptions(todoListsData?.unsortedTodoList!);
-                }}
-              >
-                {windowCurrentWidth >= 769 &&
-                  optionType === "setTodosNote" &&
-                  getMobileSelectOption<
-                    TableInsert<"Notes">,
-                    selectedTypes,
-                    toggleTypes
-                  >({
-                    optionType,
-                    setSelected: setSelected,
-                    setState: setNoteInput,
-                    setToggleOptions: setToggle,
-                    choices: todoListsData?.unsortedTodoList!,
-                  })}
-              </CustomSelect>
-            </div>
-          )}
+
           {noteInput.todoId || noteInput.scheduleId ? (
             <TextareaInput
               name="note"

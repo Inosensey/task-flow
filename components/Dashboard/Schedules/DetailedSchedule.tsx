@@ -30,8 +30,15 @@ import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 // Types
 import { TableRow } from "@/Types/database.types";
 import { ScheduleDetails } from "@/Types/scheduleType";
-import { getScheduleDetails, getScheduleNotes } from "@/lib/TanStackQueryFns";
+import {
+  getScheduleDetails,
+  getScheduleNotes,
+  getSchedules,
+  getTodoList,
+} from "@/lib/TanStackQueryFns";
 import { noteType } from "@/Types/noteTypes";
+import { DisplayNotes } from "@/components/ReusableComponents/DisplayNotes";
+import NoteForm from "../Notes/NoteForm";
 type props = {
   scheduleId: string;
   scheduleInfo?: TableRow<"Schedules">;
@@ -64,15 +71,19 @@ const DetailedSchedule = ({ details, scheduleId, notes }: props) => {
     queryFn: () => getScheduleNotes(parseInt(scheduleId)),
     initialData: notes,
   });
-  console.log(notes);
-  console.log(noteList);
+
   // Store
   const { setFormAction } = useScheduleFormStore();
 
   // State
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [mapToggle, setMapToggle] = useState<boolean>(false);
   const [showScheduleForm, setShowScheduleForm] = useState<boolean>(false);
+
+  const [noteFormAction, setNoteFormAction] = useState<string>("Add");
+  const [showNoteForm, setShowNoteForm] = useState<boolean>(false);
+  const [selectedNote, setSelectedNote] = useState<noteType | undefined>(
+    undefined
+  );
 
   const detailsData = data as unknown as reactQueryType;
   const locationDetails = detailsData.schedule[0].ScheduleLocation[0];
@@ -116,9 +127,28 @@ const DetailedSchedule = ({ details, scheduleId, notes }: props) => {
         <div className="mt-2 mx-auto flex flex-col phone:w-11/12 laptop:max-w-[500px]">
           <div className=" flex flex-col gap-2">
             <div className="p-2 bg-Secondary rounded-md">
-              <p className="text-LightPrimary font-semibold text-base">
-                {detailsData.schedule[0].title}
-              </p>
+              <div className="flex justify-between items-center">
+                <p className="text-LightPrimary font-semibold text-base">
+                  {detailsData.schedule[0].title}
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                  whileTap={{ scale: 0.9 }}
+                  className="bg-LightPrimary w-max px-4 py-[0.2rem] rounded-md flex gap-1 text-[0.8rem]"
+                  onClick={() => {
+                    setShowScheduleForm((prev) => !prev);
+                    setFormAction("edit");
+                  }}
+                >
+                  <span className="w-4">
+                    <FontAwesomeIcon
+                      className="text-sm text-LightSecondary"
+                      icon={faPenToSquare}
+                    />
+                  </span>
+                  Edit
+                </motion.button>
+              </div>
               <div className="phone:w-10/12 flex items-center gap-1 text-sm">
                 <span className="w-4">
                   <FontAwesomeIcon
@@ -185,79 +215,13 @@ const DetailedSchedule = ({ details, scheduleId, notes }: props) => {
             </div>
           </div>
         </div>
-        <div className="flex justify-between w-11/12 mx-auto">
-          {isEditing ? (
-            <div className="flex w-full justify-between">
-              <motion.button
-                whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-                whileTap={{ scale: 0.9 }}
-                className="bg-Success w-max px-3 py-[0.1rem] rounded-md flex gap-1 mt-3 items-center"
-              >
-                <span className="w-4">
-                  <FontAwesomeIcon
-                    className="text-sm text-LightSecondary"
-                    icon={faCheck}
-                  />
-                </span>
-                Save
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-                whileTap={{ scale: 0.9 }}
-                className="border-2 border-Error w-max px-3 py-[0.1rem] rounded-md flex gap-1 mt-3 text-Error"
-                onClick={() => {
-                  setIsEditing((prev) => !prev);
-                }}
-              >
-                <span className="w-4">
-                  <FontAwesomeIcon className="text-sm" icon={faXmark} />
-                </span>
-                Cancel
-              </motion.button>
-            </div>
-          ) : (
-            <motion.button
-              whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.9 }}
-              className="bg-LightPrimary w-max px-4 py-[0.1rem] rounded-md flex gap-1 mt-3"
-              onClick={() => {
-                setShowScheduleForm((prev) => !prev);
-                setFormAction("edit");
-              }}
-            >
-              <span className="w-4">
-                <FontAwesomeIcon
-                  className="text-sm text-LightSecondary"
-                  icon={faPenToSquare}
-                />
-              </span>
-              Edit
-            </motion.button>
-          )}
-        </div>
-        <div className="mx-auto px-2 flex flex-col phone:w-11/12 laptop:max-w-[500px] gap-1 mt-4">
-          <div className="flex justify-between items-end">
-            <p className="text-LightPrimary font-semibold text-lg">Notes</p>
-            <motion.button
-              className="text-xs bg-LightPrimary w-max px-3 py-[0.2rem] rounded-md flex gap-1 mt-3"
-              whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.9 }}
-            >
-              Add Note
-            </motion.button>
-          </div>
-          <div className="flex flex-col gap-1">
-            {noteList?.map((noteDetails: TableRow<"Notes">, index) => (
-              <div
-                key={noteDetails.id}
-                className="text-base bg-SmoothDark p-3 rounded-lg text-LightSecondary"
-              >
-                <p>Note #{index + 1}</p>
-                <p>{noteDetails.note}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <div className="flex justify-between w-11/12 mx-auto"></div>
+        <DisplayNotes
+          setSelectedNote={setSelectedNote}
+          setShowNoteForm={setShowNoteForm}
+          notes={noteList}
+          setNoteFormAction={setNoteFormAction}
+        />
       </motion.div>
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
         {mapToggle && (
@@ -268,6 +232,16 @@ const DetailedSchedule = ({ details, scheduleId, notes }: props) => {
             setShowScheduleForm={setShowScheduleForm}
             scheduleId={scheduleId}
             scheduleData={detailsData.schedule}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
+        {showNoteForm && (
+          <NoteForm
+            setShowNoteForm={setShowNoteForm}
+            action={noteFormAction}
+            data={selectedNote}
+            selectedSchedule={detailsData}
           />
         )}
       </AnimatePresence>
