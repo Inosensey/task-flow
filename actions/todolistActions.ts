@@ -139,7 +139,7 @@ export const updateTodoStatus = async (
       return returnError("There is an error updating the Todo", result.error);
     }
 
-    revalidateTag("todoList");
+    revalidateTag("todolists");
     return returnSuccess("Todo-List Successfully Updated", result.data);
   } catch (error) {
     return returnError("There is an error updating the Todo", error);

@@ -18,6 +18,8 @@ export const mutateNote = async (
   try {
     let result;
     const formAction = formData.get("action");
+    const preFilledSchedule = formData.get("preFilledSchedule");
+    const preFilledTodo = formData.get("preFilledTodo");
     const noteData: TableInsert<"Notes"> = {
       id: parseInt(formData.get("id") as string),
       noteType: parseInt(formData.get("noteType") as string),
@@ -34,7 +36,12 @@ export const mutateNote = async (
     } else {
       result = await updateNote(noteData);
     }
-    revalidateTag("notes");
+    
+    if(preFilledSchedule) {
+      revalidateTag(`scheduleNotes${noteData.scheduleId}`);
+    } else {
+      revalidateTag("notes");
+    }
     return {
       success: true,
       error: false,

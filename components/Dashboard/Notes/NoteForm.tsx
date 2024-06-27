@@ -413,6 +413,26 @@ const NoteForm = ({
           )}
           <div className="hidden">
             <Input
+              state={selectedSchedule ? "True" : "False"}
+              type="hidden"
+              name="preFilledSchedule"
+              placeholder=""
+              label=""
+              valid={null}
+              validationMessage={""}
+              onChange={handleInputChange}
+            />
+            <Input
+              state={selectedTodo ? "True" : "False"}
+              type="hidden"
+              name="preFilledTodo"
+              placeholder=""
+              label=""
+              valid={null}
+              validationMessage={""}
+              onChange={handleInputChange}
+            />
+            <Input
               state={noteInput.noteType ? noteInput.noteType!.toString() : "0"}
               type="hidden"
               name="noteType"

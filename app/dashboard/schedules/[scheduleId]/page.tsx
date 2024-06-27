@@ -33,7 +33,7 @@ const Page = async ({ params }: props) => {
       `${apiRootUrl}api/supabase/getScheduleNotes?user=${userId}&scheduleId=${params.scheduleId}`,
       {
         headers: { cookie: headerInfo.get("cookie")! },
-        next: { tags: [`schedule${params.scheduleId}`] },
+        next: { tags: [`scheduleNotes${params.scheduleId}`] },
         cache: "force-cache"
       }
     )
