@@ -14,6 +14,7 @@ import { todoListDetails } from "@/Types/todoListTypes";
 import { Table, TableRow } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
 import { getSupabaseUser } from "@/utils/supabaseUtils";
+import { revalidateTag } from "next/cache";
 
 type sortedTodoListType = {
   todoList: todoListDetails[];
@@ -90,29 +91,36 @@ const handleTodoListSort = (todoLists: todoListDetails[]) => {
 };
 
 export const resetTodoLists = async () => {
-  const todoLists = await getTodoLists();
-  const formattedDate = getCurrentDate();
-  const dailyResets = await getResetDates(formattedDate);
-  const currentDay = getCurrentDay();
+  try {
+    const todoLists = await getTodoLists();
+    const formattedDate = getCurrentDate();
+    const dailyResets = await getResetDates(formattedDate);
+    const currentDay = getCurrentDay();
 
-  const unsortedTodoLists: todoListDetails[] | undefined =
-    todoLists.unsortedTodoList;
-  if (unsortedTodoLists === undefined) return;
+    const unsortedTodoLists: todoListDetails[] | undefined =
+      todoLists.unsortedTodoList;
+    if (unsortedTodoLists === undefined) return;
 
-  if (dailyResets.Response.length === 0) {
-    await addDailyReset();
-    for (let index = 0; index < unsortedTodoLists.length; index++) {
-      const todoDetails: todoListDetails = unsortedTodoLists[index];
-      const todoFrequency = todoDetails.Frequencies.frequency;
-      if (todoFrequency === currentDay) {
-        const res = await updateTodoStatus(todoDetails.id, 1);
-        console.log(res);
+    if (dailyResets.Response.length === 0) {
+      await addDailyReset();
+      for (let index = 0; index < unsortedTodoLists.length; index++) {
+        const todoDetails: todoListDetails = unsortedTodoLists[index];
+        const todoFrequency = todoDetails.Frequencies.frequency;
+        if (todoFrequency === currentDay) {
+          const res = await updateTodoStatus(todoDetails.id, 1);
+          console.log(res);
+        }
+        if (todoFrequency === "Everyday") {
+          const res = await updateTodoStatus(todoDetails.id, 1);
+          console.log(res);
+        }
       }
-      if (todoFrequency === "Everyday") {
-        const res = await updateTodoStatus(todoDetails.id, 1);
-        console.log(res);
-      }
+      revalidateTag("todolists");
     }
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
   }
 };
 

@@ -45,22 +45,40 @@ const Page = async () => {
   }
   
   // Fetch
-  const [schedulesData ,resetTodoListResult, todoLists] = await Promise.all([
-    fetch(`${apiRootUrl}api/supabase/getSchedules?user=${userId}`, {
-      headers: { cookie: headerInfo.get("cookie")! },
-      next: { tags: ["schedules"] },
-      cache: "force-cache"
-    }),
-    resetTodoLists(),
-    fetch(`${apiRootUrl}api/supabase/getTodoList?user=${userId}`, {
-      headers: { cookie: headerInfo.get("cookie")! },
-      next: { tags: ["todolists"] },
-      cache: "force-cache"
-    }),
-  ]);
-
-  const todoList = await todoLists.json();
-  const schedules = await schedulesData.json();
+  const resetTodoListRes = await resetTodoLists();
+  let todoList;
+  let schedules;
+  if(resetTodoListRes) {
+    const [schedulesData, todoLists] = await Promise.all([
+      fetch(`${apiRootUrl}api/supabase/getSchedules?user=${userId}`, {
+        headers: { cookie: headerInfo.get("cookie")! },
+        next: { tags: ["schedules"] },
+        cache: "force-cache"
+      }),
+      fetch(`${apiRootUrl}api/supabase/getTodoList?user=${userId}`, {
+        headers: { cookie: headerInfo.get("cookie")! },
+        next: { tags: ["todolists"] },
+        cache: "force-cache"
+      }),
+    ]);
+    todoList = await todoLists.json();
+    schedules = await schedulesData.json();
+  } else {
+    const [schedulesData, todoLists] = await Promise.all([
+      fetch(`${apiRootUrl}api/supabase/getSchedules?user=${userId}`, {
+        headers: { cookie: headerInfo.get("cookie")! },
+        next: { tags: ["schedules"] },
+        cache: "force-cache"
+      }),
+      fetch(`${apiRootUrl}api/supabase/getTodoList?user=${userId}`, {
+        headers: { cookie: headerInfo.get("cookie")! },
+        next: { tags: ["todolists"] },
+        cache: "force-cache"
+      }),
+    ]);
+    todoList = await todoLists.json();
+    schedules = await schedulesData.json();
+  }
 
   const unsortedTodoList: todoListDetails[] = todoList.response.unsortedTodoList;
   const formattedTodoList = unsortedTodoList.filter(
