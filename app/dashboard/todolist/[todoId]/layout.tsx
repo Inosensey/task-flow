@@ -10,7 +10,7 @@ export default function DetailedLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { scheduleId: string };
+  params: { todoId: string };
 }) {
   return (
     <section className="flex bg-Primary relative w-full">

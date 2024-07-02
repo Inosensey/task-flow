@@ -34,6 +34,7 @@ export const mutateTodoList = async (
       result = await insertTodoList(todoData);
     } else {
       result = await updateTodoList(todoData);
+      revalidateTag(`todo${todoData.id}`);
     }
     revalidateTag("todoList");
     return {

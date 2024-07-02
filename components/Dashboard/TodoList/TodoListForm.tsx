@@ -190,7 +190,11 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   // UseEffect
   useEffect(() => {
     if (state.success) {
-      queryClient.invalidateQueries({ queryKey: ["todolists"] });
+      if (action === "Add") {
+        queryClient.invalidateQueries({ queryKey: ["todolists"] });
+      } else {
+        queryClient.invalidateQueries({ queryKey: [`todo#${data?.id}`], });
+      }
       setIsPending(false);
       onTodoListAddSuccess();
     }

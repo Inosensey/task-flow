@@ -1,5 +1,4 @@
-import type { NextApiResponse, NextApiRequest } from "next";
-import { apiRouteSupbaseIns, routeHandlerSupabaseIns } from "@/utils/supabaseUtils";
+import { routeHandlerSupabaseIns } from "@/utils/supabaseUtils";
 
 // Utils
 import { getCurrentDay } from "@/utils/useDate";

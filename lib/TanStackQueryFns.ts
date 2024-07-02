@@ -176,6 +176,29 @@ export const getTodoList = async () => {
     };
   }
 }
+
+export const getTodoDetails = async (todoId: number) => {
+  const supabase = useSupabase;
+  try {
+    
+    let { data: todo, error } = await supabase
+      .from("TodoList")
+      .select(
+        "id, title, description, PriorityLevel(level, description, color), Frequencies(id, frequency), TodoListStatus(id, status)"
+      )
+      .eq("id", `${todoId}`)
+      
+    if (error) {
+      console.log("There is an error getting the Todo Details", error);
+      return [];
+    }
+    const response = todo![0] as unknown as todoListDetails;
+    return response;
+  } catch (error) {
+    console.log("There is an error getting the Todo Details", error);
+    return [];
+  }
+}
 export const getFrequencies = async () => {
   const supabase = useSupabase;
   try {

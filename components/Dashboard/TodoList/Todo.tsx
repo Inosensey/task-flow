@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { AnimatePresence } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -92,15 +93,18 @@ export default function Todo({ details }: props) {
         <div
           onClick={() => {
             setSelectedTodoList(details);
-            setFormAction("Edit");
-            setShowTodoListForm((prev) => !prev);
+            // setFormAction("Edit");
+            // setShowTodoListForm((prev) => !prev);
           }}
           className="max-h-[3.3rem] w-10/12 line-clamp-2"
         >
           <div className="flex gap-1">
+            
+          <Link href={`/dashboard/todolist/${details.id}`}>
             <p className="phone:text-sm underline cursor-pointer">
               {details.title}
             </p>
+            </Link>
             <p className="phone:text-sm text-LightPrimary">
               {details.Frequencies.frequency}
             </p>
