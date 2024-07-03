@@ -229,11 +229,15 @@ const NoteForm = ({
     if (state.success) {
       if (!selectedTodo && selectedSchedule!) {
         queryClient.invalidateQueries({ queryKey: ["notes"] });
-      }
-      if (selectedSchedule) {
+      } else if (selectedSchedule) {
         queryClient.invalidateQueries({
           queryKey: [`ScheduleNotes#${selectedSchedule.schedule[0].id}`],
         });
+      } else if (selectedTodo) {
+        queryClient.invalidateQueries({
+          queryKey: [`TodoNotes#${selectedTodo.id}`],
+        })
+        
       }
       setIsPending(false);
       onNoteActionSuccess();
@@ -474,7 +478,7 @@ const NoteForm = ({
             />
             <Input
               state={noteInput.id ? noteInput.id!.toString() : "0"}
-              type="text"
+              type="hidden"
               name="id"
               placeholder=""
               label="Title"

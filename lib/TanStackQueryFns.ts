@@ -190,13 +190,13 @@ export const getTodoDetails = async (todoId: number) => {
       
     if (error) {
       console.log("There is an error getting the Todo Details", error);
-      return [];
+      return undefined;
     }
     const response = todo![0] as unknown as todoListDetails;
     return response;
   } catch (error) {
     console.log("There is an error getting the Todo Details", error);
-    return [];
+    return undefined;
   }
 }
 export const getFrequencies = async () => {
@@ -281,9 +281,31 @@ export const getScheduleNotes = async (scheduleId:number) => {
     let { data: noteList, error } = await supabase
     .from("Notes")
     .select(
-      `id, note, scheduleId, todoId, NoteType:noteType(id, type), Schedules:scheduleId(id, title), TodoList:todoId(id, title)`
+      `id, note, scheduleId, todoId, NoteType:noteType(id, type), Schedules:scheduleId(id, title)`
     )
     .eq("scheduleId", `${scheduleId}`);
+    
+    if (error) {
+      console.log("There is an error getting the Notes", error);
+      return [];
+    }
+    const response = noteList;
+    return response as unknown as noteType[];
+  } catch (error) {
+    console.log("There is an error getting the Notes", error);
+    return [];
+  }
+}
+
+export const getTodoNotes = async (todoId: number) => {  
+  const supabase = useSupabase;
+  try {
+    let { data: noteList, error } = await supabase
+    .from("Notes")
+    .select(
+      `id, note, scheduleId, todoId, NoteType:noteType(id, type), TodoList:todoId(id, title)`
+    )
+    .eq("todoId", `${todoId}`);
     
     if (error) {
       console.log("There is an error getting the Notes", error);

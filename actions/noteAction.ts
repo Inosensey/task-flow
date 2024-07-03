@@ -37,8 +37,10 @@ export const mutateNote = async (
       result = await updateNote(noteData);
     }
     
-    if(preFilledSchedule) {
+    if(preFilledSchedule === "True") {
       revalidateTag(`scheduleNotes${noteData.scheduleId}`);
+    } else if(preFilledTodo === "True") {
+      revalidateTag(`todoNotes${noteData.todoId}`);
     } else {
       revalidateTag("notes");
     }

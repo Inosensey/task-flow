@@ -4,11 +4,13 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { getTodoDetails, getTodoNotes } from "@/lib/TanStackQueryFns";
 import Link from "next/link";
 
 // Components
 import { DisplayNotes } from "@/components/ReusableComponents/DisplayNotes";
 import NoteForm from "@/components/Dashboard/Notes/NoteForm";
+import TodoListForm from "./TodoListForm";
 
 // Icons
 import { faAngleDoubleLeft } from "@fortawesome/free-solid-svg-icons";
@@ -17,8 +19,6 @@ import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 // Types
 import { noteType } from "@/Types/noteTypes";
 import { todoListDetails } from "@/Types/todoListTypes";
-import TodoListForm from "./TodoListForm";
-import { getTodoDetails } from "@/lib/TanStackQueryFns";
 interface props {
   todoDetails: todoListDetails;
   notes: noteType[];
@@ -36,11 +36,16 @@ const popUpVariants = {
 
 export default function DetailedTodo({ notes, todoDetails }: props) {
   // Use query
-  const { data: data } = useQuery({
+  const { data: todoData } = useQuery({
     queryKey: [`todo#${todoDetails.id}`],
     queryFn: () => getTodoDetails(todoDetails.id),
     initialData: todoDetails
   });
+  const { data: noteList } = useQuery({
+    queryKey: [`TodoNotes#${todoDetails.id}`],
+    queryFn: () => getTodoNotes(todoDetails.id),
+    initialData: notes
+  })
 
   // States
   const [formAction, setFormAction] = useState<string>("Add");
@@ -78,14 +83,14 @@ export default function DetailedTodo({ notes, todoDetails }: props) {
             <div className="p-2 bg-Secondary rounded-md">
               <div className="flex justify-between items-center">
                 <p className="text-LightPrimary font-semibold text-base">
-                  {todoDetails.title}
+                  {todoData?.title}
                 </p>
                 <motion.button
                   whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
                   whileTap={{ scale: 0.9 }}
                   className="bg-LightPrimary w-max px-4 py-[0.2rem] rounded-md flex gap-1 text-[0.8rem]"
                   onClick={() => {
-                    setSelectedTodoList(todoDetails);
+                    setSelectedTodoList(todoData);
                     setFormAction("Edit");
                     setShowTodoListForm((prev) => !prev);
                   }}
@@ -102,19 +107,19 @@ export default function DetailedTodo({ notes, todoDetails }: props) {
               <div className="flex gap-2">
                 <p className="text-[0.9rem] font-semibold">Priority Level:</p>
                 <p className="text-sm text-justify leading-5">
-                  {todoDetails.PriorityLevel.description}
+                  {todoData?.PriorityLevel.description}
                 </p>
               </div>
               <div className="flex gap-2">
                 <p className="text-[0.9rem] font-semibold">Frequency:</p>
                 <p className="text-sm text-justify leading-5">
-                  {todoDetails.Frequencies.frequency}
+                  {todoData?.Frequencies.frequency}
                 </p>
               </div>
               <div>
                 <p className="text-[0.9rem] font-semibold">Description:</p>
                 <p className="text-sm text-justify leading-5">
-                  {todoDetails.description}
+                  {todoData?.description}
                 </p>
               </div>
             </div>
@@ -123,7 +128,7 @@ export default function DetailedTodo({ notes, todoDetails }: props) {
         <DisplayNotes
           setSelectedNote={setSelectedNote}
           setShowNoteForm={setShowNoteForm}
-          notes={notes}
+          notes={noteList}
           setNoteFormAction={setNoteFormAction}
         />
       </motion.div>
@@ -142,8 +147,8 @@ export default function DetailedTodo({ notes, todoDetails }: props) {
           <NoteForm
             setShowNoteForm={setShowNoteForm}
             action={noteFormAction}
-            data={selectedNote}
-            selectedTodo={todoDetails}
+            data={noteFormAction === "Add" ? undefined : selectedNote}
+            selectedTodo={todoData}
           />
         )}
       </AnimatePresence>
