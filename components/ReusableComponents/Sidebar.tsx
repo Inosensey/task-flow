@@ -168,10 +168,18 @@ const Sidebar = () => {
               <li className="select-none">
                 <IconamoonModeDark color="#00ADB5" /> Dark Mode
               </li>
-              <li className="select-none">
-                <MaterialSymbolsSettingsOutlineRounded color="#00ADB5" />
-                Settings
-              </li>
+              <Link href={"/dashboard/settings"}>
+                <li
+                  onClick={() => {
+                    sidebarAnimation.start("hidden");
+                    setShowSideBar(false);
+                  }}
+                  className="select-none"
+                >
+                  <MaterialSymbolsSettingsOutlineRounded color="#00ADB5" />
+                  Settings
+                </li>
+              </Link>
               <li className="select-none">
                 <PhSealQuestionDuotone color="#00ADB5" />
                 Help Center
