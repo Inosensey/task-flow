@@ -18,7 +18,7 @@ import ScheduleForm from "./ScheduleForm";
 import { TableRow } from "@/Types/database.types";
 
 // Stpre
-import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+import { useFormStore } from "@/store/useFormStore";
 import { useDateStore } from "@/store/useDateStore";
 import NoData from "@/components/ReusableComponents/NoData";
 
@@ -36,7 +36,7 @@ type schedule = {
 
 const Schedule = ({ scheduleData }: props) => {
   // Store
-  const { setFormAction } = useScheduleFormStore();
+  const { setFormAction } = useFormStore();
   const { dateSelected } = useDateStore();
 
   const date = new Date(dateSelected);

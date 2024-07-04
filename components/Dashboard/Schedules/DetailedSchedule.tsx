@@ -25,7 +25,7 @@ import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocation
 import { formatHourTo12, formatSelectedDate } from "@/utils/useDate";
 
 // Store
-import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+import { useFormStore } from "@/store/useFormStore";
 
 // Types
 import { TableRow } from "@/Types/database.types";
@@ -73,7 +73,7 @@ const DetailedSchedule = ({ details, scheduleId, notes }: props) => {
   });
 
   // Store
-  const { setFormAction } = useScheduleFormStore();
+  const { setFormAction } = useFormStore();
 
   // State
   const [mapToggle, setMapToggle] = useState<boolean>(false);

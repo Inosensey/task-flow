@@ -18,7 +18,7 @@ import { mutateTodoList } from "@/actions/todolistActions";
 
 // store
 import { useNotificationStore } from "@/store/useNotificationStore";
-import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+import { useFormStore } from "@/store/useFormStore";
 
 // types
 import { TableInsert } from "@/Types/database.types";
@@ -110,7 +110,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
   // Zustand Store
   const { setMessage, setShowSlideNotification } = useNotificationStore();
   const { setValidation, validations, resetValidation } =
-    useScheduleFormStore();
+    useFormStore();
 
   // UseFormState
   const [state, formAction] = useFormState(

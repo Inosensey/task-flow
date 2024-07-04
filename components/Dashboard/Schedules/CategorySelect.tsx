@@ -16,7 +16,7 @@ import Input from "@/components/ReusableComponents/inputs/Input";
 import { MobileCatSelectOptions } from "@/components/Dashboard/Schedules/MobileSelectCatOptions";
 
 //Store
-import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+import { useFormStore } from "@/store/useFormStore";
 import CustomSelect from "@/components/ReusableComponents/inputs/CustomSelect";
 
 // Types
@@ -43,7 +43,7 @@ const CategorySelect = ({ place_id, scheduleId }: props) => {
   const queryClient = useQueryClient();
 
   // Store
-  const { formAction } = useScheduleFormStore();
+  const { formAction } = useFormStore();
 
   // Use Query
   const {

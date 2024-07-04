@@ -11,7 +11,7 @@ import debounce from "@/utils/useDebounce";
 import { AutoCompleteLocation } from "@/lib/locationMethods";
 
 // Zustand Store
-import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+import { useFormStore } from "@/store/useFormStore";
 
 // Import icones
 import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocationCityRounded";
@@ -63,7 +63,7 @@ interface reactQueryType {
 
 const LocationInput = ({ scheduleId }: params) => {
   // Store
-  const { validations, setValidation, formAction } = useScheduleFormStore();
+  const { validations, setValidation, formAction } = useFormStore();
 
   // Use query
   const {

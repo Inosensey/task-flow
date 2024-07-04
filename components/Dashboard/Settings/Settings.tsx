@@ -3,11 +3,22 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
+// Components
+import Profile from "./Profile";
+import Preferences from "./Preferences";
+
 // Icons
 import PhUserCircle from "@/Icones/PhUserCircle";
 import MaterialSymbolsRoomPreferencesOutline from "@/Icones/MaterialSymbolsRoomPreferencesOutline";
 
-let tabs = [
+// Types
+interface TabTypes {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+}
+
+let tabs: TabTypes[] = [
   { id: "profile", label: "Profile", icon: <PhUserCircle color="#00ADB5" /> },
   {
     id: "preferences",
@@ -17,12 +28,27 @@ let tabs = [
 ];
 
 const Settings = () => {
-  let [activeTab, setActiveTab] = useState(tabs[0].id);
+  // useState
+  const [activeTab, setActiveTab] = useState<string>(tabs[0].id);
+
+  // Functions
+  const displayTabContent = (tab: string) => {
+    switch (tab) {
+      case "profile":
+        return <Profile />;
+      case "preferences":
+        return <Preferences />;
+
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="flex-1">
-      <div className="text-LightSecondary py-2 px-2 border-t-2 border-LightPrimary flex justify-between items-center">
+      <div className="text-LightSecondary py-2 px-2 border-t-2 border-LightPrimary flex flex-col justify-between">
         <div className="bg-SmoothSecondary w-full p-2 flex">
-          {tabs.map((tab) => (
+          {tabs.map((tab: TabTypes) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -44,6 +70,7 @@ const Settings = () => {
             </button>
           ))}
         </div>
+        {displayTabContent(activeTab)}
       </div>
     </div>
   );

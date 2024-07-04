@@ -32,7 +32,7 @@ import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons";
 import SvgSpinnersBlocksShuffle3 from "@/Icones/SvgSpinnersBlocksShuffle3";
 
 // Store
-import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+import { useFormStore } from "@/store/useFormStore";
 
 // Variants
 const popUpVariants = {
@@ -155,7 +155,7 @@ const NoteForm = ({
   const [isPending, setIsPending] = useState<boolean | null>(null);
 
   // Zustand Store
-  const { resetValidation, setValidation } = useScheduleFormStore();
+  const { resetValidation, setValidation } = useFormStore();
   const { setMessage, setShowSlideNotification } = useNotificationStore();
 
   // Events

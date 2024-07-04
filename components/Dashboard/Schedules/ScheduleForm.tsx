@@ -25,7 +25,7 @@ import { mutateSchedule } from "@/actions/scheduleActions";
 // store
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { useDateStore } from "@/store/useDateStore";
-import { useScheduleFormStore } from "@/store/useScheduleFormStore";
+import { useFormStore } from "@/store/useFormStore";
 
 // Utils
 import { useFormSerialize, useFormValidation } from "@/utils/formUtils";
@@ -75,7 +75,7 @@ const ScheduleForm = ({
   // Zustand Store
   const { setMessage, setShowSlideNotification } = useNotificationStore();
   const { setValidation, validations, resetValidation, formAction } =
-    useScheduleFormStore();
+    useFormStore();
   const { setDate } = useDateStore();
 
   // UseFormState

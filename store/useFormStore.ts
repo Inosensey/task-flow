@@ -21,7 +21,7 @@ type validationParams = {
   validationMessage: string;
 };
 
-export const useScheduleFormStore = create<StoreType>((set) => ({
+export const useFormStore = create<StoreType>((set) => ({
   formAction: "add",
   setFormAction: (action: string) => {
     set(() => ({ formAction: action }));
