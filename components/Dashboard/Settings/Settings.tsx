@@ -12,6 +12,8 @@ import PhUserCircle from "@/Icones/PhUserCircle";
 import MaterialSymbolsRoomPreferencesOutline from "@/Icones/MaterialSymbolsRoomPreferencesOutline";
 
 // Types
+import { Session, UserResponse } from "@supabase/supabase-js";
+import { TableRow } from "@/Types/database.types";
 interface TabTypes {
   id: string;
   label: string;
@@ -26,8 +28,13 @@ let tabs: TabTypes[] = [
     icon: <MaterialSymbolsRoomPreferencesOutline color="#00ADB5" />,
   },
 ];
+interface props {
+  User: UserResponse;
+  personalInfo: TableRow<"PersonalInformation">[];
+  userInfo: TableRow<"User">[];
+}
 
-const Settings = () => {
+const Settings = ({ User, personalInfo, userInfo }: props) => {
   // useState
   const [activeTab, setActiveTab] = useState<string>(tabs[0].id);
 
@@ -35,7 +42,13 @@ const Settings = () => {
   const displayTabContent = (tab: string) => {
     switch (tab) {
       case "profile":
-        return <Profile />;
+        return (
+          <Profile
+            User={User}
+            personalInfo={personalInfo}
+            userInfo={userInfo}
+          />
+        );
       case "preferences":
         return <Preferences />;
 

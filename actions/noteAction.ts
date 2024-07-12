@@ -52,8 +52,8 @@ export const mutateNote = async (
     };
   } catch (error) {
     return {
-      success: true,
-      error: false,
+      success: false,
+      error: true,
       data: [],
       message: `There is an error inserting the Todo: ${error}`,
     };
@@ -77,7 +77,7 @@ const insertNote = async (noteInfo: TableInsert<"Notes">) => {
       .select();
     if (result.error)
       return returnError("There is an error inserting the Note", result.error);
-    return returnSuccess("TNote Successfully Added", result.data);
+    return returnSuccess("Note Successfully Added", result.data);
   } catch (error) {
     return returnError("There is an error inserting the Note", error);
   }

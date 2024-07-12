@@ -5,6 +5,55 @@ import { useSupabase } from "@/utils/useSupabaseClient";
 // Types
 import { ScheduleDetails } from "@/Types/scheduleType";
 import { noteType } from "@/Types/noteTypes";
+import { TableRow } from "@/Types/database.types";
+
+export const getPersonalInfo = async () => {
+  const supabase = useSupabase;
+  const user = await supabase.auth.getUser();
+  const userId = user.data.user!.id;
+  try {
+    let { data: personalInfo, error } = await supabase
+    .from("PersonalInformation")
+    .select(
+      "firstName, lastName, age, gender, contactNumber, country, state, zip, street"
+    )
+    .eq("userId", `${userId}`);
+    
+    if (error) {
+      console.log("There is an error getting the Personal Information", error);
+      return [];
+    }
+    const response = personalInfo as unknown as TableRow<"PersonalInformation">[];;
+    return response;
+  } catch (error) {
+    console.log("There is an error getting the Personal Information", error);
+    return [];
+  }
+}
+
+export const getUserInfo = async () => {
+  const supabase = useSupabase;
+  const user = await supabase.auth.getUser();
+  const userId = user.data.user!.id;
+  try {
+    let { data: userInfo, error } = await supabase
+    .from("User")
+    .select(
+      "username"
+    )
+    .eq("userId", `${userId}`);
+    
+    if (error) {
+      console.log("There is an error getting the User Information", error);
+      return [];
+    }
+    const response = userInfo as unknown as TableRow<"User">[];;
+    return response;
+  } catch (error) {
+    console.log("There is an error getting the User Information", error);
+    return [];
+  }
+}
 
 export const getSchedules = async () => {
   const supabase = useSupabase;

@@ -34,22 +34,22 @@ interface props {
 
 const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
   // Use query
-  const { data: scheduleData } = useQuery({
-    queryKey: ["schedules"],
-    queryFn: getSchedules,
-    initialData: schedules,
-  });
-  const { data: todoListsData } = useQuery({
-    queryKey: ["todolists"],
-    queryFn: getTodoList,
-    initialData: todoList,
-  });
   const { data: notesData } = useQuery({
     queryKey: ["notes"],
     queryFn: getNotes,
     initialData: notes,
   });
-  const { data: noteTypesData } = useQuery({
+  useQuery({
+    queryKey: ["schedules"],
+    queryFn: getSchedules,
+    initialData: schedules,
+  });
+  useQuery({
+    queryKey: ["todolists"],
+    queryFn: getTodoList,
+    initialData: todoList,
+  });
+  useQuery({
     queryKey: ["noteTypes"],
     queryFn: getNoteTypes,
     initialData: noteTypes,

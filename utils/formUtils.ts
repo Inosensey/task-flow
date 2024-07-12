@@ -1,5 +1,4 @@
 
-import { useScheduleFormStore } from "@/store/useScheduleFormStore";
 import FormValidation from "./validation";
 import { validation } from "@/Types/generalTypes";
 
@@ -50,6 +49,14 @@ export const returnError = <T>(message: string, errorInfo: T): ReturnInterface<T
 export const returnSuccess = <T>(message: string, data: T): ReturnInterface<T> => {
   return {
     Status: "Success",
+    Message: message,
+    Response: data,
+  };
+};
+
+export const returnResult= <T>(status: string, message: string, data: T): ReturnInterface<T> => {
+  return {
+    Status: status,
     Message: message,
     Response: data,
   };

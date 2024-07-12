@@ -1,8 +1,10 @@
-import React, { useState, CSSProperties } from "react";
+import React, { useState, CSSProperties, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios, { Axios } from "axios";
-import HashLoader from "react-spinners/HashLoader";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+
+// Actions
+import { signIn } from "@/actions/authActions";
 
 // Components
 import FirstStep from "./SignUpSteps/FirstStep";
@@ -12,10 +14,12 @@ import Loading from "@/components/ReusableComponents/Loading/Loading";
 
 // Styles
 import styles from "@/css/HomeComponent/SignUp.module.css";
+import { useFormState } from "react-dom";
 
 // React Spinner Css Override
 
 // Set prop types
+import { useFormStateType } from "@/Types/formStates";
 interface props {
   setCurrentForm: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -45,11 +49,24 @@ interface SignUpInfo {
   accountInfo: accountInfo;
 }
 
+// Initials
+
+const useFormStateInitials: useFormStateType = {
+  success: null,
+  error: null,
+  message: "",
+  data: [],
+};
+
 const SignUp = ({ setCurrentForm }: props) => {
   // Initialize use query
   const queryClient = useQueryClient();
 
+  // UseFormState
+  const [state, formAction] = useFormState(signIn, useFormStateInitials);
+
   // States
+  const [isPending, setIsPending] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isValid, setIsValid] = useState<boolean>(false);
   const [nameInfo, setNameInfo] = useState<nameInfo>({
@@ -72,19 +89,21 @@ const SignUp = ({ setCurrentForm }: props) => {
     confirmPassword: "",
   });
 
-  // Mutations
-  const mutation = useMutation({
-    mutationFn: async (userInfo: SignUpInfo) =>
-      axios.post("/api/supabase/useSignUp", { userInfo }),
-    onSuccess: (data) => {
-      queryClient.setQueryData(["session"], data.data.userData.session);
-      console.log(data);
-    },
-  });
+  // Events
+  const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    // event.preventDefault();
+    setIsPending(true);
+  };
+
+  useEffect(() => {
+    if (state.success) {
+    setIsPending(false);
+    }
+  }, [state]);
 
   return (
     <>
-      {mutation.isPending ? (
+      {isPending ? (
         <Loading
           isLoading={true}
           message="Setting Up Your Task Command Center 🚀"
@@ -96,7 +115,7 @@ const SignUp = ({ setCurrentForm }: props) => {
         />
       )}
       <section className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:w-11/12">
-        <form>
+        <form action={formAction} onSubmit={useHandleFormSubmit}>
           <div className={`${currentStep === 1 ? "block" : "hidden"}`}>
             <FirstStep
               nameInfo={nameInfo}
@@ -122,51 +141,44 @@ const SignUp = ({ setCurrentForm }: props) => {
               currentStep={currentStep}
             />
           </div>
+          <div className="w-full mt-8 flex justify-center items-center gap-10">
+            {currentStep !== 1 && (
+              <motion.button
+                type="button"
+                onClick={() => setCurrentStep((prev) => prev - 1)}
+                whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.9 }}
+                className="py-2 px-8 bg-Secondary text-LightSecondary"
+              >
+                Back
+              </motion.button>
+            )}
+            {currentStep !== 3 && (
+              <motion.button
+                type="button"
+                disabled={isValid ? false : true}
+                onClick={() => setCurrentStep((prev) => prev + 1)}
+                whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.9 }}
+                className={`py-2 px-8 ${
+                  isValid ? "bg-LightPrimary" : "bg-Disabled"
+                } text-LightSecondary`}
+              >
+                Next
+              </motion.button>
+            )}
+            {currentStep === 3 && (
+              <motion.button
+                type="submit"
+                whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                whileTap={{ scale: 0.9 }}
+                className={`py-2 px-8 ${"bg-LightPrimary"} text-LightSecondary`}
+              >
+                Submit
+              </motion.button>
+            )}
+          </div>
         </form>
-        <div className="w-full mt-8 flex justify-center items-center gap-10">
-          {currentStep !== 1 && (
-            <motion.button
-              type="button"
-              onClick={() => setCurrentStep((prev) => prev - 1)}
-              whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.9 }}
-              className="py-2 px-8 bg-Secondary text-LightSecondary"
-            >
-              Back
-            </motion.button>
-          )}
-          {currentStep !== 3 && (
-            <motion.button
-              type="button"
-              disabled={isValid ? false : true}
-              onClick={() => setCurrentStep((prev) => prev + 1)}
-              whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.9 }}
-              className={`py-2 px-8 ${
-                isValid ? "bg-LightPrimary" : "bg-Disabled"
-              } text-LightSecondary`}
-            >
-              Next
-            </motion.button>
-          )}
-          {currentStep === 3 && (
-            <motion.button
-              type="submit"
-              whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-              whileTap={{ scale: 0.9 }}
-              className={`py-2 px-8 ${"bg-LightPrimary"} text-LightSecondary`}
-              onClick={() => {
-                mutation.mutate({
-                  nameInfo: nameInfo,
-                  additionalInfo: additionalInfo,
-                  accountInfo: accountInfo,
-                });
-              }}
-            >
-              Submit
-            </motion.button>
-          )}
-        </div>
       </section>
     </>
   );
