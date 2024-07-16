@@ -24,12 +24,12 @@ const Page = async () => {
   const [personalInfoData, userInfoData] = await Promise.all([
     fetch(`${apiRootUrl}api/supabase/getPersonalInformation?user=${userId}`, {
       headers: { cookie: headerInfo.get("cookie")! },
-      next: { tags: ["schedules"] },
+      next: { tags: ["personalInformation"] },
       cache: "force-cache",
     }),
     fetch(`${apiRootUrl}api/supabase/getUserData?user=${userId}`, {
       headers: { cookie: headerInfo.get("cookie")! },
-      next: { tags: ["schedules"] },
+      next: { tags: ["userInformation"] },
       cache: "force-cache",
     }),
   ]);

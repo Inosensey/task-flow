@@ -139,6 +139,7 @@ const NoteForm = ({
     queryFn: getTodoList,
     enabled: selectedSchedule === undefined && selectedTodo === undefined,
   });
+  
   // UseFormState
   const [state, formAction] = useFormState(mutateNote, useFormStateInitials);
 

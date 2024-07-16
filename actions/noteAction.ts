@@ -1,4 +1,5 @@
 "use server";
+import { revalidateTag } from "next/cache";
 
 // Utils
 import { createClient } from "@/utils/supabaseSSR";
@@ -9,7 +10,6 @@ import { returnError, returnSuccess } from "@/utils/formUtils";
 import { Table, TableInsert, TableRow, TableUpdate } from "@/Types/database.types";
 import { useFormStateType } from "@/Types/formStates";
 import { ReturnInterface } from "@/Types/generalTypes";
-import { revalidateTag } from "next/cache";
 
 export const mutateNote = async (
   prevState: useFormStateType,

@@ -26,7 +26,6 @@ type toggleEditingType = {
 };
 interface props {
   User: UserResponse;
-  personalInfo: TableRow<"PersonalInformation">[];
   userInfo: TableRow<"User">[];
 }
 
@@ -77,13 +76,8 @@ const isNotEditingVariants = {
   },
 };
 
-const AccountDetails = ({ User, personalInfo, userInfo }: props) => {
+const AccountDetails = ({ User, userInfo }: props) => {
   // Use query
-  const { data: personalInfoQueryData } = useQuery({
-    queryKey: ["personalInfo"],
-    queryFn: getPersonalInfo,
-    initialData: personalInfo,
-  });
   const { data: userInfoQueryData } = useQuery({
     queryKey: ["userInfo"],
     queryFn: getUserInfo,

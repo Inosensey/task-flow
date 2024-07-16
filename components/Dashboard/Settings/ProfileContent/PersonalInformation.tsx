@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useFormState } from "react-dom";
+
+// Actions
+import { mutatePersonalInformation } from "@/actions/settingsAction";
+
+// Libs
+import { getPersonalInfo, getUserInfo } from "@/lib/TanStackQueryFns";
 
 // Zustand Store
 import { useFormStore } from "@/store/useFormStore";
+import { useNotificationStore } from "@/store/useNotificationStore";
 
 // Components
 import TabContentContainer from "../TabContentContainer";
@@ -14,21 +22,25 @@ import PhNotePencilThin from "@/Icones/PhNotePencilThin";
 import SolarCloseCircleOutline from "@/Icones/SolarCloseCircleOutline";
 
 // Types
-import { Session, UserResponse } from "@supabase/supabase-js";
-import { TableRow } from "@/Types/database.types";
-import { getPersonalInfo, getUserInfo } from "@/lib/TanStackQueryFns";
+import { TableRow, TableUpdate } from "@/Types/database.types";
+import { useFormStateType } from "@/Types/formStates";
+import { useFormSerialize, useFormValidation } from "@/utils/formUtils";
 type toggleEditingType = {
-  isEditingAccountDetails: boolean;
+  isEditingPersonalInfoDetails: boolean;
 };
 interface props {
-  User: UserResponse;
   personalInfo: TableRow<"PersonalInformation">[];
-  userInfo: TableRow<"User">[];
 }
 
 // Initials
 const toggleEditingInitials: toggleEditingType = {
-  isEditingAccountDetails: false,
+  isEditingPersonalInfoDetails: false,
+};
+const useFormStateInitials: useFormStateType = {
+  success: null,
+  error: null,
+  message: "",
+  data: [],
 };
 
 // FramerMotion Variants
@@ -73,23 +85,19 @@ const isNotEditingVariants = {
   },
 };
 
-const PersonalInformation = ({ User, personalInfo, userInfo }: props) => {
+const PersonalInformation = ({ personalInfo }: props) => {
   // Use query
+  const queryClient = useQueryClient();
   const { data: personalInfoQueryData } = useQuery({
     queryKey: ["personalInfo"],
     queryFn: getPersonalInfo,
     initialData: personalInfo,
   });
-  const { data: userInfoQueryData } = useQuery({
-    queryKey: ["userInfo"],
-    queryFn: getUserInfo,
-    initialData: userInfo,
-  });
 
   // Dynamic Initials
   const personalInfoInitials: TableRow<"PersonalInformation"> = {
     id: 0,
-    userId: null,
+    userId: personalInfoQueryData[0].userId,
     firstName: personalInfoQueryData[0].firstName,
     lastName: personalInfoQueryData[0].lastName,
     age: personalInfoQueryData[0].age,
@@ -98,33 +106,86 @@ const PersonalInformation = ({ User, personalInfo, userInfo }: props) => {
     state: personalInfoQueryData[0].state,
     street: personalInfoQueryData[0].street,
     zip: personalInfoQueryData[0].zip,
-    contactNumber: personalInfoQueryData[0].contactNumber
+    contactNumber: personalInfoQueryData[0].contactNumber,
   };
 
   // Store
-  const { validations, setValidation, formAction } = useFormStore();
+  const { validations, setValidation } = useFormStore();
+  const { setMessage, setShowSlideNotification } = useNotificationStore();
+
+  // UseFormState
+  const [state, formAction] = useFormState(
+    mutatePersonalInformation,
+    useFormStateInitials
+  );
 
   // States
   const [isEditing, setIsEditing] = useState<toggleEditingType>(
     toggleEditingInitials
   );
-  const [personalInfoDetails, setPersonalInfoDetails] = useState<TableRow<"PersonalInformation">>(
-    personalInfoInitials
-  );
-
-  console.log(personalInfoQueryData)
+  const [personalInfoDetails, setPersonalInfoDetails] =
+    useState<TableRow<"PersonalInformation">>(personalInfoInitials);
+  const [isPending, setIsPending] = useState<boolean | null>(null);
 
   // Events
+  const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    // event.preventDefault();
+    setIsPending(true);
+    const fieldsToCheck = [
+      "firstName",
+      "lastName",
+      "age",
+      "gender",
+      "country",
+      "state",
+      "street",
+      "zipCode",
+    ];
+    const formValues: TableUpdate<"PersonalInformation"> & {
+      [key: string]: string;
+    } = useFormSerialize(event);
+    if (!useFormValidation(fieldsToCheck, formValues, setValidation)) {
+      event.preventDefault();
+      setIsPending(false);
+    }
+  };
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setPersonalInfoDetails((prev) => ({ ...prev, [name]: value }));
   };
+
+  const onPersonalInformationActionSuccess = () => {
+    const notifMessage = "Personal Information Successfully Updated";
+    setMessage(notifMessage);
+    setShowSlideNotification();
+    hideNotificationTimer();
+    setPersonalInfoDetails(personalInfoDetails);
+    setIsEditing((prev) => ({...prev, isEditingPersonalInfoDetails: false}))
+  };
+
+  const hideNotificationTimer = () => {
+    const interval = setTimeout(setShowSlideNotification, 5000);
+    return () => clearTimeout(interval);
+  };
+  useEffect(() => {
+    if (state.success) {
+      queryClient.invalidateQueries({
+        queryKey: [`personalInfo`],
+      });
+    }
+    setIsPending(false);
+    onPersonalInformationActionSuccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
+
   return (
     <TabContentContainer header="Personal Information">
       <AnimatePresence mode="wait">
-        <motion.div layout className="flex flex-col gap-2 mt-1">
-          {isEditing.isEditingAccountDetails ? (
+        <motion.div className="flex flex-col gap-2 mt-1">
+          {isEditing.isEditingPersonalInfoDetails ? (
             <motion.form
+              action={formAction}
+              onSubmit={useHandleFormSubmit}
               key="editing"
               layout
               variants={isEditingVariants}
@@ -133,6 +194,14 @@ const PersonalInformation = ({ User, personalInfo, userInfo }: props) => {
               exit="exit"
               className="flex flex-col gap-2"
             >
+              <Input
+                state={personalInfo[0].userId!}
+                type="hidden"
+                name="userId"
+                placeholder=""
+                label=""
+                onChange={handleInputChange}
+              />
               <Input
                 state={personalInfoDetails.firstName}
                 type="text"
@@ -230,83 +299,16 @@ const PersonalInformation = ({ User, personalInfo, userInfo }: props) => {
                 onChange={handleInputChange}
                 onBlur={handleInputChange}
                 valid={validations?.contactNumber?.valid}
-                validationMessage={validations?.contactNumber?.validationMessage}
+                validationMessage={
+                  validations?.contactNumber?.validationMessage
+                }
               />
-            </motion.form>
-          ) : (
-            <motion.div
-              key="notEditing"
-              layout
-              variants={isNotEditingVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="flex flex-col gap-2"
-            >
-              <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
-                <label className="phone:text-sm">First Name:</label>
-                <p className="w-full text-white phone:text-sm">
-                  {personalInfoQueryData[0].firstName}
-                </p>
-              </div>
-              <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
-                <label className="phone:text-sm">Last Name:</label>
-                <p className="w-full text-white phone:text-sm">
-                  {personalInfoQueryData[0].lastName}
-                </p>
-              </div>
-              <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
-                <label className="phone:text-sm">Age:</label>
-                <p className="w-full text-white phone:text-sm">
-                  {personalInfoQueryData[0].age}
-                </p>
-              </div>
-              <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
-                <label className="phone:text-sm">Gender:</label>
-                <p className="w-full text-white phone:text-sm">
-                  {personalInfoQueryData[0].gender}
-                </p>
-              </div>
-              <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
-                <label className="phone:text-sm">Country:</label>
-                <p className="w-full text-white phone:text-sm">
-                  {personalInfoQueryData[0].country}
-                </p>
-              </div>
-              <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
-                <label className="phone:text-sm">State:</label>
-                <p className="w-full text-white phone:text-sm">
-                  {personalInfoQueryData[0].state}
-                </p>
-              </div>
-              <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
-                <label className="phone:text-sm">Street:</label>
-                <p className="w-full text-white phone:text-sm">
-                  {personalInfoQueryData[0].street}
-                </p>
-              </div>
-              <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
-                <label className="phone:text-sm">Zip Code:</label>
-                <p className="w-full text-white phone:text-sm">
-                  {personalInfoQueryData[0].zip}
-                </p>
-              </div>
-              <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
-                <label className="phone:text-sm">Contact Number:</label>
-                <p className="w-full text-white phone:text-sm">
-                  {personalInfoQueryData[0].contactNumber}
-                </p>
-              </div>
-            </motion.div>
-          )}
-          <motion.div className="flex gap-3 items-center mt-3" layout>
-            {isEditing.isEditingAccountDetails ? (
-              <>
+              <motion.div className="flex gap-3 items-center mt-3">
                 <motion.button
                   whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
                   whileTap={{ scale: 0.95 }}
                   className={`bg-LightPrimary text-LightSecondary w-max px-4 py-1 rounded-md items-center flex gap-1 mt-2`}
-                  type="button"
+                  type="submit"
                 >
                   <PhNotePencilThin color="#fff" />
                   Save
@@ -315,9 +317,10 @@ const PersonalInformation = ({ User, personalInfo, userInfo }: props) => {
                   whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
+                    setPersonalInfoDetails(personalInfoInitials)
                     setIsEditing((prev: toggleEditingType) => ({
                       ...prev,
-                      isEditingAccountDetails: false,
+                      isEditingPersonalInfoDetails: false,
                     }));
                   }}
                   className={`bg-Error text-LightSecondary w-max px-4 py-1 rounded-md items-center flex gap-1 mt-2`}
@@ -326,25 +329,93 @@ const PersonalInformation = ({ User, personalInfo, userInfo }: props) => {
                   <SolarCloseCircleOutline color="#fff" />
                   Cancel
                 </motion.button>
-              </>
-            ) : (
-              <motion.button
-                whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  setIsEditing((prev: toggleEditingType) => ({
-                    ...prev,
-                    isEditingAccountDetails: true,
-                  }));
-                }}
-                className={`bg-LightPrimary text-LightSecondary w-max px-4 py-1 rounded-md items-center flex gap-1 mt-2`}
-                type="button"
+              </motion.div>
+            </motion.form>
+          ) : (
+            <>
+              <motion.div
+                key="notEditing"
+                layout
+                variants={isNotEditingVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="flex flex-col gap-2"
               >
-                <PhNotePencilThin color="#fff" />
-                Edit
-              </motion.button>
-            )}
-          </motion.div>
+                <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
+                  <label className="phone:text-sm">First Name:</label>
+                  <p className="w-full text-white phone:text-sm">
+                    {personalInfoQueryData[0].firstName}
+                  </p>
+                </div>
+                <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
+                  <label className="phone:text-sm">Last Name:</label>
+                  <p className="w-full text-white phone:text-sm">
+                    {personalInfoQueryData[0].lastName}
+                  </p>
+                </div>
+                <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
+                  <label className="phone:text-sm">Age:</label>
+                  <p className="w-full text-white phone:text-sm">
+                    {personalInfoQueryData[0].age}
+                  </p>
+                </div>
+                <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
+                  <label className="phone:text-sm">Gender:</label>
+                  <p className="w-full text-white phone:text-sm">
+                    {personalInfoQueryData[0].gender}
+                  </p>
+                </div>
+                <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
+                  <label className="phone:text-sm">Country:</label>
+                  <p className="w-full text-white phone:text-sm">
+                    {personalInfoQueryData[0].country}
+                  </p>
+                </div>
+                <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
+                  <label className="phone:text-sm">State:</label>
+                  <p className="w-full text-white phone:text-sm">
+                    {personalInfoQueryData[0].state}
+                  </p>
+                </div>
+                <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
+                  <label className="phone:text-sm">Street:</label>
+                  <p className="w-full text-white phone:text-sm">
+                    {personalInfoQueryData[0].street}
+                  </p>
+                </div>
+                <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
+                  <label className="phone:text-sm">Zip Code:</label>
+                  <p className="w-full text-white phone:text-sm">
+                    {personalInfoQueryData[0].zip}
+                  </p>
+                </div>
+                <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
+                  <label className="phone:text-sm">Contact Number:</label>
+                  <p className="w-full text-white phone:text-sm">
+                    {personalInfoQueryData[0].contactNumber}
+                  </p>
+                </div>
+                <motion.div className="flex gap-3 items-center mt-3">
+                  <motion.button
+                    whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => {
+                      setIsEditing((prev: toggleEditingType) => ({
+                        ...prev,
+                        isEditingPersonalInfoDetails: true,
+                      }));
+                    }}
+                    className={`bg-LightPrimary text-LightSecondary w-max px-4 py-1 rounded-md items-center flex gap-1 mt-2`}
+                    type="button"
+                  >
+                    <PhNotePencilThin color="#fff" />
+                    Edit
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+            </>
+          )}
         </motion.div>
       </AnimatePresence>
     </TabContentContainer>

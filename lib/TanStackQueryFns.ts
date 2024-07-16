@@ -15,7 +15,7 @@ export const getPersonalInfo = async () => {
     let { data: personalInfo, error } = await supabase
     .from("PersonalInformation")
     .select(
-      "firstName, lastName, age, gender, contactNumber, country, state, zip, street"
+      "userId, firstName, lastName, age, gender, contactNumber, country, state, zip, street"
     )
     .eq("userId", `${userId}`);
     

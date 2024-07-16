@@ -16,13 +16,10 @@ const Profile = ({ User, personalInfo, userInfo }: props) => {
     <div className="mt-2 flex flex-col gap-2">
       <AccountDetails
         User={User}
-        personalInfo={personalInfo}
         userInfo={userInfo}
       />
       <PersonalInformation
-        User={User}
         personalInfo={personalInfo}
-        userInfo={userInfo}
       />
     </div>
   );

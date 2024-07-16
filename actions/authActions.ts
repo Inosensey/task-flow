@@ -59,8 +59,6 @@ export const signIn = async (
       username: formData.get("username") as string,
     };
 
-    console.log(personaInfo);
-
     // Register user
     let { data, error } = await supabase.auth.signUp({
       email: personaInfo.email,
@@ -105,7 +103,6 @@ export const signIn = async (
       message: "",
     };
   } catch (error) {
-    console.log(error);
     return {
       success: false,
       error: true,
