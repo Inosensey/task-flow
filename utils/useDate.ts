@@ -74,8 +74,8 @@ export const formatSelectedDate = (selectedDate: string) => {
   return formattedSelectedDate;
 };
 
-export const getCurrentDay = () => {
-  const currentDate = new Date();
+export const getCurrentDay = (selectedDate?: string) => {
+  const currentDate = selectedDate ? new Date(selectedDate) : new Date();
   const currentDay = currentDate.getDay();
   const days = getDays();
   const day = days[currentDay];

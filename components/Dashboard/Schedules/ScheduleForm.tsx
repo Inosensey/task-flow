@@ -214,7 +214,7 @@ const ScheduleForm = ({
         animate="show"
         exit="hidden"
         action={action}
-        className="bg-Primary p-3 phone:w-11/12 rounded-md phone:mt-2 phone:h-max"
+        className="bg-Primary p-3 rounded-md phone:w-11/12 phone:mt-2 phone:h-max tablet:max-w-[420px]"
         onSubmit={useHandleFormSubmit}
       >
         <div className="flex justify-between items-center">

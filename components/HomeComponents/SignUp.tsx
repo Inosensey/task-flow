@@ -114,7 +114,7 @@ const SignUp = ({ setCurrentForm }: props) => {
           message="Setting Up Your Task Command Center 🚀"
         />
       )}
-      <section className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:w-11/12">
+      <section className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:w-11/12 tablet:max-w-[420px]">
         <form action={formAction} onSubmit={useHandleFormSubmit}>
           <div className={`${currentStep === 1 ? "block" : "hidden"}`}>
             <FirstStep

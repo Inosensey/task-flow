@@ -14,7 +14,7 @@ export async function GET(
     let { data: schedules, error } = await supabase
       .from("Schedules")
       .select(
-        "*"
+        "*, ScheduleLocation(id, city, cityId, namePlace, long, lat, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))"
       )
       .eq("userId", `${userId}`);
 

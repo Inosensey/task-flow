@@ -23,8 +23,9 @@ import {
 // Store
 import { useDateStore } from "@/store/useDateStore";
 
+import { ScheduleDetails } from "@/Types/scheduleType";
 interface props {
-  schedules: TableRow<"Schedules">[] | [];
+  schedules: ScheduleDetails[] | [];
   locationCategories: TableRow<"LocationCategories">[] | [];
   locationKeys: TableRow<"LocationKeys">[] | [];
 }
@@ -49,7 +50,7 @@ const Schedules = ({ schedules, locationCategories, locationKeys }: props) => {
     initialData: locationKeys,
   });
 
-  const currentDaySchedules = getCurrentDaySchedules(
+  const currentDaySchedules:ScheduleDetails[] | [] = getCurrentDaySchedules(
     scheduleData,
     dateSelected
   );
@@ -58,25 +59,7 @@ const Schedules = ({ schedules, locationCategories, locationKeys }: props) => {
     <div className="w-full flex">
       {/* desktop */}
       <div className="w-full flex phone:hidden laptop:block">
-        <div className="border-r-2 border-LightPrimary phone:w-3/12">
-          <p className="py-4 px-2 font-semibold border-b-2 border-LightPrimary">
-            Time
-          </p>
-          <div className="flex flex-col">
-            {hours.map((hour: string, index: number) => (
-              <div
-                className="phone:h-20 mdphone:h-24 flex items-center"
-                key={index}
-              >
-                <p className="px-2 text-sm">{hour}</p>
-              </div>
-            ))}
-          </div>
-          d
-        </div>
-        <div className="flex flex-1">
-          <Schedule scheduleData={scheduleData} />
-        </div>
+        <Schedule scheduleData={currentDaySchedules} />
       </div>
 
       {/* Mobile */}

@@ -1,15 +1,16 @@
 // Types
 import { TableRow } from "@/Types/database.types";
 import { getCurrentDate } from "./useDate";
+import { ScheduleDetails } from "@/Types/scheduleType";
 
 export const getCurrentDaySchedules = (
-  schedules: TableRow<"Schedules">[] | null,
+  schedules: ScheduleDetails[] | null,
   date: string = ""
 ) => {
   const currentDate = date === "" ? getCurrentDate() : date;
-  const currentDateSchedules: TableRow<"Schedules">[] = [];
+  const currentDateSchedules: ScheduleDetails[] = [];
   if (schedules) {
-    schedules?.forEach((scheduleInfo: TableRow<"Schedules">) => {
+    schedules?.forEach((scheduleInfo: ScheduleDetails) => {
       if (scheduleInfo.date === currentDate) {
         currentDateSchedules.push(scheduleInfo);
       }
@@ -19,13 +20,13 @@ export const getCurrentDaySchedules = (
 };
 
 export const getCurrentWeekSchedules = (
-  schedules: TableRow<"Schedules">[] | null
-):TableRow<"Schedules">[]|[] => {
+  schedules: ScheduleDetails[] | null
+):ScheduleDetails[] | [] => {
   const weekRange: { currentDate: string; endDate: string } = getWeekRange();
-  let currentWeekSchedules: TableRow<"Schedules">[]
+  let currentWeekSchedules: ScheduleDetails[]
   if (schedules !== null) {
     currentWeekSchedules = schedules.filter(
-      (schedule: TableRow<"Schedules">) =>
+      (schedule: ScheduleDetails) =>
         schedule.date! >= weekRange.currentDate &&
         schedule.date! <= weekRange.endDate
     );

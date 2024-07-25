@@ -60,7 +60,7 @@ export const getSchedules = async () => {
   try {
     let { data: schedules, error } = await supabase
     .from("Schedules")
-    .select("*");
+    .select("*, ScheduleLocation(id, city, cityId, namePlace, long, lat, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))");
     
     if (error) {
       console.log("There is an error getting the Schedules", error);

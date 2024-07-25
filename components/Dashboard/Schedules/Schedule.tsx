@@ -4,11 +4,22 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
-import { faArrowRight, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faCalendar,
+  faCirclePlus,
+} from "@fortawesome/free-solid-svg-icons";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Utils
-import { formatHourTo12, getDays, useHours } from "@/utils/useDate";
+import {
+  formatHourTo12,
+  formatSelectedDate,
+  getCurrentDate,
+  getCurrentDay,
+  getDays,
+  useHours,
+} from "@/utils/useDate";
 import DetailedSchedule from "./DetailedSchedule";
 
 // Components
@@ -21,10 +32,12 @@ import { TableRow } from "@/Types/database.types";
 import { useFormStore } from "@/store/useFormStore";
 import { useDateStore } from "@/store/useDateStore";
 import NoData from "@/components/ReusableComponents/NoData";
+import MaterialSymbolsLocationCityRounded from "@/Icones/MaterialSymbolsLocationCityRounded";
 
 // Props
+import { ScheduleDetails } from "@/Types/scheduleType";
 type props = {
-  scheduleData: TableRow<"Schedules">[] | null;
+  scheduleData: ScheduleDetails[] | [];
 };
 type schedule = {
   timeStart: string;
@@ -70,11 +83,12 @@ const Schedule = ({ scheduleData }: props) => {
       setTimeHeightNumber(96);
     }
   }, []);
-  const hours = useHours();
+
+  console.log(scheduleData);
   return (
     <>
       <div className="flex-1">
-        <div className="text-LightSecondary py-4 px-2 border-b-2 border-LightPrimary flex justify-between items-center">
+        <div className="text-LightSecondary py-4 px-2 border-b-2 border-LightPrimary flex items-center phone:justify-between laptop:justify-start laptop:gap-6">
           <p className="select-none p-0 h-max">{days[date.getDay()]}</p>
           <motion.button
             whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
@@ -93,61 +107,88 @@ const Schedule = ({ scheduleData }: props) => {
         </div>
 
         {/* Desktop */}
-        <div className="flex flex-col pl-2 phone:hidden laptop:flex">
-          {hours.map((hour, index: number) => (
-            <div
-              className="flex relative justify-center phone:h-20 mdphone:h-24"
-              key={index}
-            >
-              {scheduleData?.map(
-                (info: TableRow<"Schedules">, index: number) => {
-                  if (info.timeStart === hour) {
-                    const height = timeHeightNumber;
-                    return (
-                      <div
-                        style={{ height: `${height}px` }}
-                        className={`absolute flex items-center px-2 border-l-2 border-LightPrimary w-full rounded-2xl`}
-                        key={index}
-                      >
-                        <div className="flex flex-col gap-1 bg-[#1a1a1a] rounded-lg w-full p-2 z-40">
-                          <div className="flex text-LightSecondary phone:text-sm phone:flex-col phone:items-start mdphone:gap-3 mdphone:flex-row mdphone:items-center">
-                            <p>{info.title}</p>
-                            <div className="phone:w-10/12 flex items-center gap-1">
-                              <span className="w-4">
-                                <FontAwesomeIcon
-                                  className="text-sm text-LightPrimary"
-                                  icon={faClock}
-                                />
-                              </span>
-                              <div className="flex gap-1 text-sm">
-                                <p>{info.timeStart}</p>
-                                {info.timeEnd !== "" && (
-                                  <span className="w-4">
-                                    <FontAwesomeIcon
-                                      className="text-sm"
-                                      icon={faArrowRight}
-                                    />
-                                  </span>
-                                )}
-                                <p>{info.timeEnd}</p>
-                              </div>
-                            </div>
-                          </div>
-                          <button className="cursor-pointer bg-Secondary phone:text-sm rounded-md text-LightSecondary phone:w-32 phone:py-1">
-                            More Details
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  }
-                }
-              )}
-            </div>
-          ))}
+        <div className="flex flex-col phone:hidden laptop:flex">
+          {scheduleData?.length !== 0 ? (
+            scheduleData?.map((info: ScheduleDetails, index: number) => (
+              <div key={info.id} className="px-2 flex mt-2">
+                <div className="w-2/12 justify-start flex flex-col text-lg text-right px-2">
+                  <p className="flex justify-end gap-1">
+                    <span className="w-4">
+                      <FontAwesomeIcon
+                        className="text-lg text-LightPrimary"
+                        icon={faCalendar}
+                      />
+                    </span>
+                    {getCurrentDay(info.date!)}
+                  </p>
+                  <div className="w-full flex items-center gap-1 justify-end">
+                    <span className="w-4">
+                      <FontAwesomeIcon
+                        className="text-lg text-LightPrimary"
+                        icon={faClock}
+                      />
+                    </span>
+                    <div className="flex gap-1 text-base">
+                      <p>{formatHourTo12(info.timeStart)}</p>
+                      {info.timeEnd !== "" && (
+                        <span className="w-4">
+                          <FontAwesomeIcon
+                            className="text-base"
+                            icon={faArrowRight}
+                          />
+                        </span>
+                      )}
+                      <p className="text-base">
+                        {formatHourTo12(info.timeEnd)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="border-l-2 border-LightPrimary px-2">
+                  <div>
+                    <p className="text-LightPrimary text-lg font-bold">
+                      {info.title}
+                    </p>
+                    <p className="text-base text-justify leading-5">
+                      {info.description}
+                    </p>
+                  </div>
+                  <div className="font-semibold text-base text-LightSecondary">
+                    <p className="flex items-end">
+                      <MaterialSymbolsLocationCityRounded color="#00ADB5" />
+                      {info.ScheduleLocation[0].namePlace},
+                    </p>
+                    <p className="flex items-end">
+                      <MaterialSymbolsLocationCityRounded color="#00ADB5" />
+                      {info.ScheduleLocation[0].city}
+                    </p>
+                  </div>
+                  <Link href={`/dashboard/schedules/${info.id}`}>
+                    <motion.button
+                      whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => {
+                        setShowDetailedSchedule((prev) => !prev);
+                        setSelectedSchedule(info);
+                      }}
+                      className="cursor-pointer mt-4 bg-Secondary rounded-md text-LightSecondary phone:text-sm phone:w-28 phone:py-1"
+                    >
+                      More Details
+                    </motion.button>
+                  </Link>
+                </div>
+              </div>
+            ))
+          ) : (
+            <NoData
+              setShowForm={setShowScheduleForm}
+              ButtonName="Add schedule"
+            />
+          )}
         </div>
 
         {/* Mobile */}
-        <div className="flex flex-wrap items-center justify-between px-2 gap-2 mt-2 ">
+        <div className="flex-wrap items-center justify-between px-2 gap-2 mt-2 phone:flex laptop:hidden">
           {scheduleData?.length !== 0 ? (
             scheduleData?.map((info: TableRow<"Schedules">, index: number) => (
               <div

@@ -114,7 +114,7 @@ const SignIn = ({ setCurrentForm }: props) => {
         message={loginProcessInfo.message}
       />
 
-      <section className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:h-[390px] phone:w-11/12">
+      <section className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:h-[390px] phone:w-11/12 tablet:max-w-[420px]">
         <div className="flex items-center gap-2">
           <h1
             className={`${poppins.className} text-LightPrimary font-bold text-2xl`}
