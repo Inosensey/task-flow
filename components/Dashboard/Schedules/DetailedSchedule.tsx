@@ -114,9 +114,10 @@ const DetailedSchedule = ({ details, scheduleId, notes }: props) => {
         exit="hidden"
         className="bg-Primary relative p-3 phone:w-full phone:h-full"
       >
+        <div className="mt-2 mx-auto flex flex-col phone:w-11/12 tablet:max-w-[850px]">
         <Link href={`/dashboard/schedules`}>
           <motion.button
-            className="text-base text-LightPrimary w-max px-3 py-[0.3rem] rounded-md flex gap-1 items-center"
+            className="text-base text-LightPrimary w-max py-[0.3rem] rounded-md flex gap-1 items-center"
             whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
             whileTap={{ scale: 0.9 }}
           >
@@ -124,7 +125,6 @@ const DetailedSchedule = ({ details, scheduleId, notes }: props) => {
             Schedules
           </motion.button>
         </Link>
-        <div className="mt-2 mx-auto flex flex-col phone:w-11/12 laptop:max-w-[500px]">
           <div className=" flex flex-col gap-2">
             <div className="p-2 bg-Secondary rounded-md">
               <div className="flex justify-between items-center">

@@ -60,8 +60,8 @@ export const DisplayNotes = ({
     return () => clearTimeout(interval);
   };
   return (
-    <div className="mx-auto flex flex-col phone:w-11/12 laptop:max-w-[500px] gap-1 mt-4">
-      <div className="flex justify-between items-end">
+    <div className="mx-auto flex flex-col phone:w-11/12 tablet:max-w-[850px] gap-1 mt-4">
+      <div className="flex items-end phone:justify-between tablet:justify-start tablet:gap-2">
         <p className="text-LightPrimary font-semibold text-lg">Notes</p>
         <motion.button
           className="text-xs bg-LightPrimary w-max px-3 py-[0.2rem] rounded-md flex gap-1 mt-3"

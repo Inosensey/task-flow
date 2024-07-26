@@ -58,7 +58,7 @@ const Page = async () => {
   const locationKeysData = await locationKeysJson.json();
 
   return (
-    <div className="w-full">
+    <div className="mx-auto phone:w-full tablet:w-10/12 laptop:max-w-[950px]">
       <div className="flex flex-col w-full bg-Primary">
         <Header
           headerName="Calendar"

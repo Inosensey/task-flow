@@ -39,7 +39,8 @@ export default function CustomCalendar({ setShowCustomCalendar }: props) {
   const [currentDate, setCurrentDate] = useState<number>(date.getDate());
 
   // Events
-  const nextMonth = () => {
+  const nextMonth = (event: React.MouseEvent<HTMLOrSVGElement>) => {
+    event.stopPropagation()
     if (currentMonth < 12) {
       date.setMonth(currentMonth + 1);
       const calendarDates = getCalendarDates(date);
@@ -47,7 +48,8 @@ export default function CustomCalendar({ setShowCustomCalendar }: props) {
       setMonthDates(calendarDates);
     }
   };
-  const prevMonth = () => {
+  const prevMonth = (event: React.MouseEvent<HTMLOrSVGElement>) => {
+    event.stopPropagation()
     if (currentMonth > 1) {
       date.setMonth(currentMonth - 1);
       const calendarDates = getCalendarDates(date);
@@ -73,7 +75,7 @@ export default function CustomCalendar({ setShowCustomCalendar }: props) {
         onClick={() => setShowCustomCalendar((prev) => !prev)}
         className="w-screen h-screen flex justify-center phone:mt-4 laptop:items-center "
       >
-        <div className="p-3 bg-Primary h-max rounded-lg phone:w-[95%]">
+        <div className="p-3 bg-Primary h-max rounded-lg phone:w-[95%] tablet:w-3/12">
           <div className="flex items-center justify-between gap-1 w-full">
             <p className="select-none">{months[currentMonth]}</p>
             <div className="flex items-center w-max">

@@ -84,7 +84,6 @@ const Schedule = ({ scheduleData }: props) => {
     }
   }, []);
 
-  console.log(scheduleData);
   return (
     <>
       <div className="flex-1">
@@ -111,7 +110,7 @@ const Schedule = ({ scheduleData }: props) => {
           {scheduleData?.length !== 0 ? (
             scheduleData?.map((info: ScheduleDetails, index: number) => (
               <div key={info.id} className="px-2 flex mt-2">
-                <div className="w-2/12 justify-start flex flex-col text-lg text-right px-2">
+                <div className="w-max justify-start flex flex-col text-lg text-right px-2">
                   <p className="flex justify-end gap-1">
                     <span className="w-4">
                       <FontAwesomeIcon
