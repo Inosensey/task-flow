@@ -43,7 +43,7 @@ const Page = async ({ params }: props) => {
   const todoDetails = await todoDetailsJson.json();
   const notesDetails = await notesJson.json();
   return (
-    <div className="w-full">
+    <div className="mx-auto phone:w-full tablet:w-10/12 laptop:max-w-[500px]">
       <DetailedTodo notes={notesDetails.response} todoDetails={todoDetails.todo[0]} />
     </div>
   );

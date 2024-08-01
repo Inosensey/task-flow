@@ -56,7 +56,6 @@ const Schedule = ({ scheduleData }: props) => {
   const days = getDays();
 
   // States
-  const [timeHeightNumber, setTimeHeightNumber] = useState<number>(0);
   const [showDetailedSchedule, setShowDetailedSchedule] =
     useState<boolean>(false);
   const [showScheduleForm, setShowScheduleForm] = useState<boolean>(false);
@@ -73,36 +72,30 @@ const Schedule = ({ scheduleData }: props) => {
     title: "",
     userId: null,
   });
-  const [currentDate, setCurrentDate] = useState<string>(days[date.getDay()]);
-
-  useEffect(() => {
-    if (window.innerWidth > 420) {
-      setTimeHeightNumber(96);
-    }
-    if (window.innerWidth > 280) {
-      setTimeHeightNumber(96);
-    }
-  }, []);
 
   return (
     <>
       <div className="flex-1">
         <div className="text-LightSecondary py-4 px-2 border-b-2 border-LightPrimary flex items-center phone:justify-between laptop:justify-start laptop:gap-6">
           <p className="select-none p-0 h-max">{days[date.getDay()]}</p>
-          <motion.button
-            whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              setShowScheduleForm((prev) => !prev);
-              setFormAction("add");
-            }}
-            className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1 select-none"
-          >
-            Add schedule
-            <span className="w-4">
-              <FontAwesomeIcon className="text-sm" icon={faCirclePlus} />
-            </span>
-          </motion.button>
+          {scheduleData?.length !== 0 ? (
+            <motion.button
+              whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                setShowScheduleForm((prev) => !prev);
+                setFormAction("add");
+              }}
+              className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1 select-none"
+            >
+              Add schedule
+              <span className="w-4">
+                <FontAwesomeIcon className="text-sm" icon={faCirclePlus} />
+              </span>
+            </motion.button>
+          ) : (
+            ""
+          )}
         </div>
 
         {/* Desktop */}

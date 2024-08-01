@@ -79,22 +79,26 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
   return (
     <>
       <div className="flex-1">
-        <div className="text-LightSecondary py-4 px-2 border-b-2 border-LightPrimary flex justify-between items-center">
-          <motion.button
-            whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              setFormAction("Add");
-              setShowNoteForm((prev) => !prev);
-              setSelectedNote(undefined);
-            }}
-            className="bg-LightPrimary px-2 py-[3px] rounded-md text-sm flex items-center gap-1"
-          >
-            Add Note
-            <span className="w-4">
-              <FontAwesomeIcon className="text-sm" icon={faCirclePlus} />
-            </span>
-          </motion.button>
+        <div className="text-LightSecondary px-2 border-b-2 border-LightPrimary flex justify-between items-center">
+          {notesData?.length !== 0 ? (
+            <motion.button
+              whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                setFormAction("Add");
+                setShowNoteForm((prev) => !prev);
+                setSelectedNote(undefined);
+              }}
+              className="bg-LightPrimary px-4 py-[3px] rounded-md text-sm flex items-center gap-1"
+            >
+              Add Note
+              <span className="w-4">
+                <FontAwesomeIcon className="text-sm" icon={faCirclePlus} />
+              </span>
+            </motion.button>
+          ) : (
+            ""
+          )}
         </div>
         <div className="flex mt-5 gap-8 items-center justify-center">
           {filters.map((status: string) => (
@@ -135,10 +139,7 @@ const Notes = ({ notes, schedules, todoList, noteTypes }: props) => {
               );
             })
           ) : (
-            <NoData
-              setShowForm={setShowNoteForm}
-              ButtonName="Add Note"
-            />
+            <NoData setShowForm={setShowNoteForm} ButtonName="Add Note" />
           )}
         </div>
       </div>

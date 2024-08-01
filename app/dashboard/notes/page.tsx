@@ -49,7 +49,7 @@ const page = async () => {
   const noteTypes = await noteTypesData.json();
 
   return (
-    <div className="w-full">
+    <div className="mx-auto phone:w-full tablet:w-10/12 laptop:max-w-[650px]">
       <div className="flex flex-col w-full bg-Primary">
         <Header headerName="Notes" Icon={GgNotes} />
         <Notes

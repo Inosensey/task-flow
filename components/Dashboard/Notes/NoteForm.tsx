@@ -21,7 +21,7 @@ import Overlay from "@/components/ReusableComponents/Overlay";
 import CustomSelect, {
   MobileSelectOptions,
 } from "@/components/ReusableComponents/inputs/CustomSelect";
-import { getMobileSelectOption } from "@/utils/getMobileSelectOption";
+import { getDesktopSelectOption } from "@/utils/getDesktopSelectOption";
 import Input, {
   TextareaInput,
 } from "@/components/ReusableComponents/inputs/Input";
@@ -139,7 +139,7 @@ const NoteForm = ({
     queryFn: getTodoList,
     enabled: selectedSchedule === undefined && selectedTodo === undefined,
   });
-  
+
   // UseFormState
   const [state, formAction] = useFormState(mutateNote, useFormStateInitials);
 
@@ -237,8 +237,7 @@ const NoteForm = ({
       } else if (selectedTodo) {
         queryClient.invalidateQueries({
           queryKey: [`TodoNotes#${selectedTodo.id}`],
-        })
-        
+        });
       }
       setIsPending(false);
       onNoteActionSuccess();
@@ -256,7 +255,7 @@ const NoteForm = ({
           initial="hidden"
           animate="show"
           exit="hidden"
-          className="bg-Primary p-3 phone:w-11/12 rounded-md phone:mt-2 phone:h-max"
+          className="bg-Primary p-3 rounded-md phone:w-11/12 phone:mt-2 phone:h-max tablet:max-w-[420px]"
         >
           <div className="flex justify-between items-center">
             <p className="py-0">Notes Form</p>
@@ -301,7 +300,7 @@ const NoteForm = ({
                 >
                   {windowCurrentWidth >= 769 &&
                     optionType === "noteType" &&
-                    getMobileSelectOption<
+                    getDesktopSelectOption<
                       TableInsert<"Notes">,
                       selectedTypes,
                       toggleTypes
@@ -342,7 +341,7 @@ const NoteForm = ({
                   >
                     {windowCurrentWidth >= 769 &&
                       optionType === "setSchedulesNote" &&
-                      getMobileSelectOption<
+                      getDesktopSelectOption<
                         TableInsert<"Notes">,
                         selectedTypes,
                         toggleTypes
@@ -386,7 +385,7 @@ const NoteForm = ({
                   >
                     {windowCurrentWidth >= 769 &&
                       optionType === "setTodosNote" &&
-                      getMobileSelectOption<
+                      getDesktopSelectOption<
                         TableInsert<"Notes">,
                         selectedTypes,
                         toggleTypes

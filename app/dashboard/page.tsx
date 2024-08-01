@@ -100,10 +100,10 @@ const Page = async () => {
   const currentWeekSchedules = getCurrentWeekSchedules(schedules.schedules);
 
   return (
-    <div className="flex flex-col w-full bg-Primary">
-      <div className="max-w-[900px] w-full">
+    <div className="flex flex-col mx-auto phone:w-full tablet:w-10/12 laptop:max-w-[950px] bg-Primary">
+      <div className="phone:w-full tablet:max-w-[900px]">
         <Header headerName="Overview" Icon={MaterialSymbolsOverviewOutline} />
-        <div className="flex gap-4 phone:flex-col mx-auto phone:w-10/12">
+        <div className="flex gap-4 phone:flex-col mx-auto phone:w-11/12">
           <OverviewSection
             OverviewTitle="Today's Schedules"
             Icon={MaterialSymbolsCalendarMonthOutlineRounded}

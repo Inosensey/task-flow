@@ -1,4 +1,8 @@
-import { sortedTodoListInterface, todoListDetails, todoListResponseInterface } from "@/Types/todoListTypes";
+import {
+  sortedTodoListInterface,
+  todoListDetails,
+  todoListResponseInterface,
+} from "@/Types/todoListTypes";
 import { getCurrentDay } from "@/utils/useDate";
 import { useSupabase } from "@/utils/useSupabaseClient";
 
@@ -13,23 +17,24 @@ export const getPersonalInfo = async () => {
   const userId = user.data.user!.id;
   try {
     let { data: personalInfo, error } = await supabase
-    .from("PersonalInformation")
-    .select(
-      "userId, firstName, lastName, age, gender, contactNumber, country, state, zip, street"
-    )
-    .eq("userId", `${userId}`);
-    
+      .from("PersonalInformation")
+      .select(
+        "userId, firstName, lastName, age, gender, contactNumber, country, state, zip, street"
+      )
+      .eq("userId", `${userId}`);
+
     if (error) {
       console.log("There is an error getting the Personal Information", error);
       return [];
     }
-    const response = personalInfo as unknown as TableRow<"PersonalInformation">[];;
+    const response =
+      personalInfo as unknown as TableRow<"PersonalInformation">[];
     return response;
   } catch (error) {
     console.log("There is an error getting the Personal Information", error);
     return [];
   }
-}
+};
 
 export const getUserInfo = async () => {
   const supabase = useSupabase;
@@ -37,31 +42,34 @@ export const getUserInfo = async () => {
   const userId = user.data.user!.id;
   try {
     let { data: userInfo, error } = await supabase
-    .from("User")
-    .select(
-      "username"
-    )
-    .eq("userId", `${userId}`);
-    
+      .from("User")
+      .select("username")
+      .eq("userId", `${userId}`);
+
     if (error) {
       console.log("There is an error getting the User Information", error);
       return [];
     }
-    const response = userInfo as unknown as TableRow<"User">[];;
+    const response = userInfo as unknown as TableRow<"User">[];
     return response;
   } catch (error) {
     console.log("There is an error getting the User Information", error);
     return [];
   }
-}
+};
 
 export const getSchedules = async () => {
   const supabase = useSupabase;
+  const user = await supabase.auth.getUser();
+  const userId = user.data.user!.id;
   try {
     let { data: schedules, error } = await supabase
-    .from("Schedules")
-    .select("*, ScheduleLocation(id, city, cityId, namePlace, long, lat, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))");
-    
+      .from("Schedules")
+      .select(
+        "*, ScheduleLocation(id, city, cityId, namePlace, long, lat, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))"
+      )
+      .eq("userId", `${userId}`);
+
     if (error) {
       console.log("There is an error getting the Schedules", error);
       return [];
@@ -72,35 +80,38 @@ export const getSchedules = async () => {
     console.log("There is an error getting the Schedules", error);
     return [];
   }
-}
+};
 
 export const getScheduleDetails = async (scheduleId: number) => {
   const supabase = useSupabase;
+  const user = await supabase.auth.getUser();
+  const userId = user.data.user!.id;
   try {
-    let { data: schedule, error } = await supabase.from("Schedules")
-    .select(
-      `*, ScheduleLocation(id, city, cityId, namePlace, long, lat, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))`
-    )
-    .eq("id", scheduleId);;
-    
+    let { data: schedule, error } = await supabase
+      .from("Schedules")
+      .select(
+        `*, ScheduleLocation(id, city, cityId, namePlace, long, lat, LocationKeys:categoryKeyId(id, key), LocationCategories:categoryKey(id, category))`
+      )
+      .eq("id", scheduleId);
+
     if (error) {
       console.log("There is an error getting the Schedule Details", error);
       return undefined;
     }
-    return {schedule: schedule};
+    return { schedule: schedule };
   } catch (error) {
     console.log("There is an error getting the Schedule Details", error);
     return undefined;
   }
-}
+};
 
 export const getLocationCategories = async () => {
   const supabase = useSupabase;
   try {
     let { data: locationCategories, error } = await supabase
-    .from("LocationCategories")
-    .select("*");
-    
+      .from("LocationCategories")
+      .select("*");
+
     if (error) {
       console.log("There is an error getting the Location Categories", error);
       return [];
@@ -111,15 +122,15 @@ export const getLocationCategories = async () => {
     console.log("There is an error getting the Location Categories", error);
     return [];
   }
-}
+};
 
 export const getLocationKeys = async () => {
   const supabase = useSupabase;
   try {
     let { data: locationKeys, error } = await supabase
-    .from("LocationKeys")
-    .select("*");
-    
+      .from("LocationKeys")
+      .select("*");
+
     if (error) {
       console.log("There is an error getting the Location Keys", error);
       return [];
@@ -130,7 +141,7 @@ export const getLocationKeys = async () => {
     console.log("There is an error getting the Location Keys", error);
     return [];
   }
-}
+};
 
 const handleTodoListSort = (todoLists: todoListDetails[]) => {
   const currentDay = getCurrentDay();
@@ -201,7 +212,7 @@ export const getTodoList = async () => {
         "id, title, description, PriorityLevel(level, description, color), Frequencies(id, frequency), TodoListStatus(id, status)"
       )
       .eq("userId", `${userId}`);
-    
+
     if (result.error) {
       console.log("There is an error getting the Todo-Lists", result.error);
       return {
@@ -224,19 +235,21 @@ export const getTodoList = async () => {
       sortedTodoList: [],
     };
   }
-}
+};
 
 export const getTodoDetails = async (todoId: number) => {
   const supabase = useSupabase;
+  const user = await supabase.auth.getUser();
+  const userId = user.data.user!.id;
   try {
-    
     let { data: todo, error } = await supabase
       .from("TodoList")
       .select(
         "id, title, description, PriorityLevel(level, description, color), Frequencies(id, frequency), TodoListStatus(id, status)"
       )
       .eq("id", `${todoId}`)
-      
+      .eq("userId", `${userId}`);
+
     if (error) {
       console.log("There is an error getting the Todo Details", error);
       return undefined;
@@ -247,14 +260,14 @@ export const getTodoDetails = async (todoId: number) => {
     console.log("There is an error getting the Todo Details", error);
     return undefined;
   }
-}
+};
 export const getFrequencies = async () => {
   const supabase = useSupabase;
   try {
     let { data: frequencies, error } = await supabase
-    .from("Frequencies")
-    .select("*");
-    
+      .from("Frequencies")
+      .select("*");
+
     if (error) {
       console.log("There is an error getting the Frequencies", error);
       return [];
@@ -265,16 +278,15 @@ export const getFrequencies = async () => {
     console.log("There is an error getting the Frequencies", error);
     return [];
   }
-}
+};
 
 export const getPriorityLevels = async () => {
-  
   const supabase = useSupabase;
   try {
     let { data: priorityLevels, error } = await supabase
-    .from("PriorityLevel")
-    .select("*");
-    
+      .from("PriorityLevel")
+      .select("*");
+
     if (error) {
       console.log("There is an error getting the Priority Levels", error);
       return [];
@@ -285,15 +297,20 @@ export const getPriorityLevels = async () => {
     console.log("There is an error getting the Priority Levels", error);
     return [];
   }
-}
+};
 
 export const getNotes = async () => {
   const supabase = useSupabase;
+  const user = await supabase.auth.getUser();
+  const userId = user.data.user!.id;
   try {
     let { data: notes, error } = await supabase
-    .from("Notes")
-    .select(`*, NoteType:noteType(id, type), Schedules:scheduleId(id, title), TodoList:todoId(id, title)`)
-    
+      .from("Notes")
+      .select(
+        `*, NoteType:noteType(id, type), Schedules:scheduleId(id, title), TodoList:todoId(id, title)`
+      )
+      .eq("userId", `${userId}`);
+
     if (error) {
       console.log("There is an error getting the Notes", error);
       return [];
@@ -304,14 +321,14 @@ export const getNotes = async () => {
     console.log("There is an error getting the Notes", error);
     return [];
   }
-}
+};
 export const getNoteTypes = async () => {
   const supabase = useSupabase;
   try {
     let { data: noteTypes, error } = await supabase
-    .from("NoteType")
-    .select(`*`)
-    
+      .from("NoteType")
+      .select(`*`);
+
     if (error) {
       console.log("There is an error getting the Note Types", error);
       return [];
@@ -322,18 +339,21 @@ export const getNoteTypes = async () => {
     console.log("There is an error getting the Note Types", error);
     return [];
   }
-}
+};
 
-export const getScheduleNotes = async (scheduleId:number) => {
+export const getScheduleNotes = async (scheduleId: number) => {
   const supabase = useSupabase;
+  const user = await supabase.auth.getUser();
+  const userId = user.data.user!.id;
   try {
     let { data: noteList, error } = await supabase
-    .from("Notes")
-    .select(
-      `id, note, scheduleId, todoId, NoteType:noteType(id, type), Schedules:scheduleId(id, title)`
-    )
-    .eq("scheduleId", `${scheduleId}`);
-    
+      .from("Notes")
+      .select(
+        `id, note, scheduleId, todoId, NoteType:noteType(id, type), Schedules:scheduleId(id, title)`
+      )
+      .eq("scheduleId", `${scheduleId}`)
+      .eq("userId", `${userId}`);
+
     if (error) {
       console.log("There is an error getting the Notes", error);
       return [];
@@ -344,18 +364,21 @@ export const getScheduleNotes = async (scheduleId:number) => {
     console.log("There is an error getting the Notes", error);
     return [];
   }
-}
+};
 
-export const getTodoNotes = async (todoId: number) => {  
+export const getTodoNotes = async (todoId: number) => {
   const supabase = useSupabase;
+  const user = await supabase.auth.getUser();
+  const userId = user.data.user!.id;
   try {
     let { data: noteList, error } = await supabase
-    .from("Notes")
-    .select(
-      `id, note, scheduleId, todoId, NoteType:noteType(id, type), TodoList:todoId(id, title)`
-    )
-    .eq("todoId", `${todoId}`);
-    
+      .from("Notes")
+      .select(
+        `id, note, scheduleId, todoId, NoteType:noteType(id, type), TodoList:todoId(id, title)`
+      )
+      .eq("todoId", `${todoId}`)
+      .eq("userId", `${userId}`);
+
     if (error) {
       console.log("There is an error getting the Notes", error);
       return [];
@@ -366,4 +389,4 @@ export const getTodoNotes = async (todoId: number) => {
     console.log("There is an error getting the Notes", error);
     return [];
   }
-}
+};

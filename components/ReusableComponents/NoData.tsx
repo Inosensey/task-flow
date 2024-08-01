@@ -14,7 +14,7 @@ const NoData = ({ setShowForm, ButtonName }: props) => {
     <motion.div
       whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
       whileTap={{ scale: 0.95 }}
-      className="mdphone:w-[35%] tablet:w-2/12 tablet:mt-4 p-3 flex flex-col gap-1 rounded-lg h-44 bg-white bg-opacity-10 justify-center items-center cursor-pointer"
+      className="mdphone:w-[35%] tablet:w-2/12 tablet:mt-4 laptop:min-w-[150px] p-3 flex flex-col gap-1 rounded-lg h-44 bg-white bg-opacity-10 justify-center items-center cursor-pointer"
       onClick={() => setShowForm(true)}
     >
       <button>

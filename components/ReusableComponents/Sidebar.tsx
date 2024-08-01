@@ -1,7 +1,7 @@
 "use client";
 
 // Cores
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TaskIcon from "@/svg/SimpleIconsTask.svg";
 import { useAnimation, motion } from "framer-motion";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -93,6 +93,14 @@ const Sidebar = () => {
     }
   };
 
+  useEffect(() => {
+    if (window.innerWidth >= 769) {
+      setShowSideBar(true);
+    } else {
+      setShowSideBar(false);
+    }
+  }, []);
+
   return (
     <>
       <Loading
@@ -102,8 +110,8 @@ const Sidebar = () => {
       <motion.div
         variants={sidebarVariant}
         animate={sidebarAnimation}
-        initial={showSideBar ? "show" : "hidden"}
-        className={`bg-[#1a1a1a] text-LightSecondary w-64 h-screen shadow-inner shadow-Secondary fixed z-50`}
+        // initial={showSideBar ? "show" : "hidden"}
+        className={`bg-[#1a1a1a] text-LightSecondary w-64 h-screen shadow-inner shadow-Secondary fixed z-50 phone:left-[100%] desktop:left-[0%]`}
       >
         <div className="flex items-center justify-center">
           <TaskIcon />
@@ -118,8 +126,10 @@ const Sidebar = () => {
                 <li
                   className="select-none"
                   onClick={() => {
-                    sidebarAnimation.start("hidden");
-                    setShowSideBar(false);
+                    if (window.innerWidth <= 768) {
+                      sidebarAnimation.start("hidden");
+                      setShowSideBar(false);
+                    }
                   }}
                 >
                   <MaterialSymbolsOverviewOutline color="#00ADB5" /> Overview
@@ -128,8 +138,10 @@ const Sidebar = () => {
               <Link href={"/dashboard/schedules"}>
                 <li
                   onClick={() => {
-                    sidebarAnimation.start("hidden");
-                    setShowSideBar(false);
+                    if (window.innerWidth <= 768) {
+                      sidebarAnimation.start("hidden");
+                      setShowSideBar(false);
+                    }
                   }}
                   className="select-none"
                 >
@@ -141,8 +153,10 @@ const Sidebar = () => {
               <Link href={"/dashboard/todolist"}>
                 <li
                   onClick={() => {
-                    sidebarAnimation.start("hidden");
-                    setShowSideBar(false);
+                    if (window.innerWidth <= 768) {
+                      sidebarAnimation.start("hidden");
+                      setShowSideBar(false);
+                    }
                   }}
                   className="select-none"
                 >
@@ -171,8 +185,10 @@ const Sidebar = () => {
               <Link href={"/dashboard/settings"}>
                 <li
                   onClick={() => {
-                    sidebarAnimation.start("hidden");
-                    setShowSideBar(false);
+                    if (window.innerWidth <= 768) {
+                      sidebarAnimation.start("hidden");
+                      setShowSideBar(false);
+                    }
                   }}
                   className="select-none"
                 >

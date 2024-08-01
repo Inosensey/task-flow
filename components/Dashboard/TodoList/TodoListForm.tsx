@@ -38,7 +38,7 @@ import FormValidation from "@/utils/validation";
 // Types
 import { todoListDetails } from "@/Types/todoListTypes";
 import { useFormStateType } from "@/Types/formStates";
-import { getMobileSelectOption } from "@/utils/getMobileSelectOption";
+import { getDesktopSelectOption } from "@/utils/getDesktopSelectOption";
 interface props {
   setShowTodoListForm: React.Dispatch<React.SetStateAction<boolean>>;
   action: string;
@@ -109,8 +109,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
 
   // Zustand Store
   const { setMessage, setShowSlideNotification } = useNotificationStore();
-  const { setValidation, validations, resetValidation } =
-    useFormStore();
+  const { setValidation, validations, resetValidation } = useFormStore();
 
   // UseFormState
   const [state, formAction] = useFormState(
@@ -193,7 +192,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
       if (action === "Add") {
         queryClient.invalidateQueries({ queryKey: ["todolists"] });
       } else {
-        queryClient.invalidateQueries({ queryKey: [`todo#${data?.id}`], });
+        queryClient.invalidateQueries({ queryKey: [`todo#${data?.id}`] });
       }
       setIsPending(false);
       onTodoListAddSuccess();
@@ -222,7 +221,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
       },
     },
   };
-
+  console.log(toggle);
   return (
     <>
       <Overlay>
@@ -233,10 +232,10 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
           animate="show"
           exit="hidden"
           onSubmit={useHandleFormSubmit}
-          className="bg-Primary p-3 phone:w-11/12 rounded-md phone:mt-2 phone:h-max"
+          className="bg-Primary p-3 rounded-md phone:w-11/12 phone:mt-2 phone:h-max tablet:max-w-[420px]"
         >
           <div className="flex justify-between items-center">
-            <p className="py-0">TodoList Form</p>
+            <p className="py-0">Todo-List Form</p>
             <p
               style={{ height: "max-content" }}
               className="cursor-pointer bg-LightPrimary px-2 py-0 font-bold text-lg rounded-md"
@@ -272,7 +271,7 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 setToggleMobileOptions={() => {
                   setToggle((prev) => ({
                     ...prev,
-                    toggleMobileOptions: !prev,
+                    toggleMobileOptions: !prev.toggleMobileOptions,
                   }));
                   setOptionType("PriorityLevel");
                   setMobileOptionHeader("Priority Levels");
@@ -283,14 +282,14 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 setToggleDesktopOptions={() => {
                   setToggle((prev) => ({
                     ...prev,
-                    togglePriorityLevel: !prev,
+                    togglePriorityLevel: !prev.togglePriorityLevel,
                   }));
                   setOptionType("PriorityLevel");
                 }}
               >
                 {windowCurrentWidth >= 769 &&
                   optionType === "PriorityLevel" &&
-                  getMobileSelectOption<
+                  getDesktopSelectOption<
                     TableInsert<"TodoList">,
                     selectedTypes,
                     toggleTypes
@@ -313,26 +312,26 @@ const TodoListForm = ({ setShowTodoListForm, action, data }: props) => {
                 selected={selected.selectedFrequency}
                 placeHolder={"Frequencies"}
                 showChoices={toggle.toggleFrequency}
-                setToggleDesktopOptions={() => {
-                  setToggle((prev) => ({
-                    ...prev,
-                    toggleFrequency: !prev,
-                  }));
-                  setOptionType("Frequencies");
-                }}
                 setToggleMobileOptions={() => {
                   setToggle((prev) => ({
                     ...prev,
-                    toggleMobileOptions: !prev,
+                    toggleMobileOptions: !prev.toggleMobileOptions,
                   }));
                   setOptionType("Frequencies");
                   setMobileOptionHeader("Frequencies");
                   setSelectedMobileOptions(frequencies!);
                 }}
+                setToggleDesktopOptions={() => {
+                  setToggle((prev) => ({
+                    ...prev,
+                    toggleFrequency: !prev.toggleFrequency,
+                  }));
+                  setOptionType("Frequencies");
+                }}
               >
                 {windowCurrentWidth >= 769 &&
                   optionType === "Frequencies" &&
-                  getMobileSelectOption<
+                  getDesktopSelectOption<
                     TableInsert<"TodoList">,
                     selectedTypes,
                     toggleTypes

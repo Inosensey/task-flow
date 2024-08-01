@@ -11,7 +11,7 @@ import { formatStringName } from "@/helpers/GeneralHelpers";
 
 // Types
 import { TableRow } from "@/Types/database.types";
-import { getMobileSelectOption } from "@/utils/getMobileSelectOption";
+import { getDesktopSelectOption } from "@/utils/getDesktopSelectOption";
 interface props {
   placeHolder: string;
   children: React.ReactNode;
@@ -53,6 +53,7 @@ const CustomSelect = ({
       <div
         style={{ pointerEvents: dynamic ? (fetching ? "none" : "all") : "all" }}
         onClick={() => {
+          console.log("wew")
           if (windowCurrentWidth >= 280 && windowCurrentWidth <= 768) {
             setToggleMobileOptions && setToggleMobileOptions();
           } else {
@@ -147,7 +148,7 @@ export function MobileSelectOptions<T, M, N>({
   setState,
   setSelected
 }: MobileSelectOptionsProps<T, M, N>) {
-  const mobileOptions = getMobileSelectOption<T, M, N>({
+  const mobileOptions = getDesktopSelectOption<T, M, N>({
     optionType,
     setState,
     setSelected,

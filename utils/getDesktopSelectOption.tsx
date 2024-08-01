@@ -1,6 +1,6 @@
 //Types
 import { TableRow } from "@/Types/database.types";
-interface MobileSelectOptionsProps<T, M, N> {
+interface DesktopSelectOptionsProps<T, M, N> {
   setState: React.Dispatch<React.SetStateAction<T>>;
   setSelected: React.Dispatch<React.SetStateAction<M>>;
   setToggleOptions: React.Dispatch<React.SetStateAction<N>>;
@@ -8,13 +8,13 @@ interface MobileSelectOptionsProps<T, M, N> {
   optionType: string;
 }
 
-export const getMobileSelectOption = <T, M, N>({
+export const getDesktopSelectOption = <T, M, N>({
   optionType,
   setState,
   setSelected,
   setToggleOptions,
   choices,
-}: MobileSelectOptionsProps<T, M, N>) => {
+}: DesktopSelectOptionsProps<T, M, N>) => {
   let options;
   switch (optionType) {
     case "PriorityLevel":
@@ -32,7 +32,10 @@ export const getMobileSelectOption = <T, M, N>({
                   ...prev,
                   selectedPriorityLevel: priorityLevelInfo.description,
                 }));
-                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: !prev}));
+                setToggleOptions((prev: N) => ({
+                  ...prev,
+                  toggleMobileOptions: !prev,
+                }));
               }}
               key={priorityLevelInfo.id}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -61,7 +64,10 @@ export const getMobileSelectOption = <T, M, N>({
                   ...prev,
                   selectedFrequency: frequencyInfo.frequency,
                 }));
-                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: !prev}));
+                setToggleOptions((prev: N) => ({
+                  ...prev,
+                  toggleMobileOptions: !prev,
+                }));
               }}
               key={frequencyInfo.id}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
@@ -93,7 +99,10 @@ export const getMobileSelectOption = <T, M, N>({
                   ...prev,
                   selectedNoteType: noteTypeInfo.type,
                 }));
-                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: false}));
+                setToggleOptions((prev: N) => ({
+                  ...prev,
+                  toggleNoteTypeSelect: !prev,
+                }));
               }}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >
@@ -120,7 +129,10 @@ export const getMobileSelectOption = <T, M, N>({
                   ...prev,
                   selectedSchedule: scheduleInfo.title,
                 }));
-                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: false}));
+                setToggleOptions((prev: N) => ({
+                  ...prev,
+                  toggleScheduleSelect: !prev,
+                }));
               }}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >
@@ -149,7 +161,10 @@ export const getMobileSelectOption = <T, M, N>({
                   ...prev,
                   selectedTodo: todoInfo.title,
                 }));
-                setToggleOptions((prev: N) => ({...prev, toggleMobileOptions: false}));
+                setToggleOptions((prev: N) => ({
+                  ...prev,
+                  toggleTodoSelect: !prev,
+                }));
               }}
               className="w-full h-12 border-b-2 flex items-center border-Primary px-2 cursor-pointer hover:bg-SmoothSecondary"
             >
