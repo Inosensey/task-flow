@@ -218,7 +218,7 @@ const Sidebar = () => {
         </div>
       </motion.div>
       <div
-        className="fixed w-8 bottom-5 right-5 flex flex-col gap-2 cursor-pointer z-50"
+        className="fixed w-8 bottom-5 right-5 flex flex-col gap-2 cursor-pointer z-50 mobile:block tablet:hidden"
         onClick={() => {
           animateSidebar();
           setShowSideBar((prev) => !prev);

@@ -7,7 +7,7 @@ import { useFormState } from "react-dom";
 import { mutatePersonalInformation } from "@/actions/settingsAction";
 
 // Libs
-import { getPersonalInfo, getUserInfo } from "@/lib/TanStackQueryFns";
+import { getPersonalInfo } from "@/lib/TanStackQueryFns";
 
 // Zustand Store
 import { useFormStore } from "@/store/useFormStore";
@@ -192,7 +192,7 @@ const PersonalInformation = ({ personalInfo }: props) => {
               initial="initial"
               animate="animate"
               exit="exit"
-              className="flex flex-col gap-2"
+              className="flex flex-col gap-2 py-2"
             >
               <Input
                 state={personalInfo[0].userId!}

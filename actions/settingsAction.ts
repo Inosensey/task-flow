@@ -61,7 +61,7 @@ export const mutatePersonalInformation = async (
         success: false,
         error: true,
         data: [result.Response],
-        message: "There is an error creating new account",
+        message: "There is an error updating your personal information",
       };
     }
     
@@ -76,7 +76,7 @@ export const mutatePersonalInformation = async (
       success: false,
       error: true,
       data: [],
-      message: "There is an error creating new account",
+      message: "There is an error updating your personal information",
     };
   }
 };
@@ -104,7 +104,7 @@ const updateProfileInformation = async (
     if (result.error)
       return returnResult(
         "error",
-        "There is an error updating the Profile information",
+        "There is an error updating your Profile information",
         result.error
       );
     return returnResult(
@@ -115,8 +115,30 @@ const updateProfileInformation = async (
   } catch (error) {
     return returnResult(
       "error",
-      "There is an error updating the Profile information",
+      "There is an error updating your Profile information",
       error
     );
   }
 };
+
+export const mutateEmail = async (
+  prevState: useFormStateType,
+  formData: FormData) => {
+    try {
+  
+      
+      return {
+        success: true,
+        error: false,
+        data: [],
+        message: "",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: true,
+        data: [],
+        message: "There is an error creating new account",
+      };
+    }
+}

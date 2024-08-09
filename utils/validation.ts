@@ -46,6 +46,8 @@ const FormValidation = (data: params): validationInfo => {
     case "username":
       return validateUsername(data);
     case "email":
+    case "currentEmail":
+    case "newEmail":
       return validateEmail(data);
     case "password":
       return validatePassword(data);

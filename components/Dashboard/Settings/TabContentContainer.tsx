@@ -7,7 +7,7 @@ interface props {
 
 const TabContentContainer = ({ children, header }: props) => {
   return (
-    <div className="p-2 bg-Secondary rounded-md">
+    <div className="p-2 bg-Secondary rounded-md shadow-inner shadow-Primary">
       <p className="font-semibold">{header}</p>
       {children}
     </div>
