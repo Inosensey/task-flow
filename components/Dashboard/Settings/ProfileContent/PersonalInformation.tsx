@@ -172,9 +172,9 @@ const PersonalInformation = ({ personalInfo }: props) => {
       queryClient.invalidateQueries({
         queryKey: [`personalInfo`],
       });
+      onPersonalInformationActionSuccess();
     }
     setIsPending(false);
-    onPersonalInformationActionSuccess();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 

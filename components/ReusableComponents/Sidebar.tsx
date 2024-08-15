@@ -72,13 +72,13 @@ const Sidebar = () => {
   // Variants
   const sidebarVariant = {
     hidden: {
-      x: "-100%",
+      left: "-100%",
       transition: {
         type: "tween",
       },
     },
     show: {
-      x: "0%",
+      left: "0%",
       transition: {
         type: "tween",
       },
@@ -111,7 +111,7 @@ const Sidebar = () => {
         variants={sidebarVariant}
         animate={sidebarAnimation}
         // initial={showSideBar ? "show" : "hidden"}
-        className={`bg-[#1a1a1a] text-LightSecondary w-64 h-screen shadow-inner shadow-Secondary fixed z-50 phone:left-[100%] desktop:left-[0%]`}
+        className={`bg-[#1a1a1a] text-LightSecondary w-64 h-screen shadow-inner shadow-Secondary fixed z-50 phone:-left-[100%] laptop:-left-[0%]`}
       >
         <div className="flex items-center justify-center">
           <TaskIcon />
@@ -166,8 +166,10 @@ const Sidebar = () => {
               <Link href={"/dashboard/notes"}>
                 <li
                   onClick={() => {
-                    sidebarAnimation.start("hidden");
-                    setShowSideBar(false);
+                    if (window.innerWidth <= 768) {
+                      sidebarAnimation.start("hidden");
+                      setShowSideBar(false);
+                    }
                   }}
                   className="select-none"
                 >
@@ -218,7 +220,7 @@ const Sidebar = () => {
         </div>
       </motion.div>
       <div
-        className="fixed w-8 bottom-5 right-5 flex flex-col gap-2 cursor-pointer z-50 mobile:block tablet:hidden"
+        className="fixed w-8 bottom-5 right-5 flex flex-col gap-2 cursor-pointer z-50 mobile:block laptop:hidden"
         onClick={() => {
           animateSidebar();
           setShowSideBar((prev) => !prev);
