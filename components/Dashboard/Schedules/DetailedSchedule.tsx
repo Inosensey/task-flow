@@ -109,7 +109,6 @@ const DetailedSchedule = ({ details, scheduleId, notes }: props) => {
     <>
       <motion.div
         variants={popUpVariants}
-        initial="hidden"
         animate="show"
         exit="hidden"
         className="bg-Primary relative p-3 phone:w-full phone:h-full"
@@ -220,7 +219,9 @@ const DetailedSchedule = ({ details, scheduleId, notes }: props) => {
           setSelectedNote={setSelectedNote}
           setShowNoteForm={setShowNoteForm}
           notes={noteList}
+          scheduleId={scheduleId}
           setNoteFormAction={setNoteFormAction}
+          noteType="schedule"
         />
       </motion.div>
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>

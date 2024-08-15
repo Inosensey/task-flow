@@ -130,6 +130,8 @@ export default function DetailedTodo({ notes, todoDetails }: props) {
           setShowNoteForm={setShowNoteForm}
           notes={noteList}
           setNoteFormAction={setNoteFormAction}
+          noteType="todo"
+          todoId={todoData!.id}
         />
       </motion.div>
 

@@ -20,6 +20,9 @@ interface props {
   setShowNoteForm: React.Dispatch<React.SetStateAction<boolean>>;
   setNoteFormAction: React.Dispatch<React.SetStateAction<string>>;
   notes: noteType[];
+  scheduleId?: string,
+  todoId?: number,
+  noteType: string
 }
 
 export const DisplayNotes = ({
@@ -27,6 +30,9 @@ export const DisplayNotes = ({
   setNoteFormAction,
   notes,
   setSelectedNote,
+  scheduleId,
+  todoId,
+  noteType
 }: props) => {
   // Initialize useQuery
   const queryClient = useQueryClient();
@@ -37,11 +43,15 @@ export const DisplayNotes = ({
   // Mutation
   const { mutate: deleteMutate, isPending: deleting } = useMutation({
     mutationFn: (noteId: number) => {
-      return deleteNote(noteId);
+      const id = noteType === "schedule" ? scheduleId! : todoId!
+      return deleteNote(noteId, noteType, id);
     },
     onSuccess: (data) => {
-      console.log(data);
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      if(noteType === "schedule") {
+        queryClient.invalidateQueries({ queryKey: [`ScheduleNotes#${scheduleId}`] });
+      } else {
+        queryClient.invalidateQueries({ queryKey: [`TodoNotes#${todoId}`] });
+      }
       onNoteActionSuccess(`Note: ${data.Response[0].note}, Deleted`);
     },
     onError: (data) => {
@@ -75,7 +85,7 @@ export const DisplayNotes = ({
           Add Note
         </motion.button>
       </div>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 mt-1">
         {notes?.map((noteDetails: noteType, index) => (
           <div
             key={noteDetails.id}

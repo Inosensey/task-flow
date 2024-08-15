@@ -36,10 +36,9 @@ const Note = ({
   // Mutation
   const { mutate: deleteMutate, isPending: deleting } = useMutation({
     mutationFn: (noteId: number) => {
-      return deleteNote(noteId);
+      return deleteNote(noteId, "none");
     },
     onSuccess: (data) => {
-      console.log(data);
       queryClient.invalidateQueries({ queryKey: ["notes"] });
       onNoteActionSuccess(`Note: ${data.Response[0].note}, Deleted`);
     },

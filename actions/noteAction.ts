@@ -105,7 +105,7 @@ const updateNote = async (noteInfo: TableUpdate<"Notes">) => {
 };
 
 export const deleteNote = async (
-  noteId: number
+  noteId: number, noteType: string, id?: string | number
 ): Promise<ReturnInterface<TableRow<"Notes">> | ReturnInterface<any>> => {
   try {
     const supabase = createClient();
@@ -117,7 +117,13 @@ export const deleteNote = async (
       .eq("id", noteId)
       .eq("userId", userId)
       .select();
-    revalidateTag("notes");
+      if(noteType === "schedule") {
+        revalidateTag(`scheduleNotes${id}`);
+      } else if(noteType === "todo") {
+        revalidateTag(`todoNotes${id}`);
+      } else {
+        revalidateTag(`notes`);
+      }
     if (result.error) {
       return returnError("There is an error deleting the Note", result.error);
     }

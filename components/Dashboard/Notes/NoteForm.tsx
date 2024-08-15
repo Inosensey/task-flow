@@ -228,7 +228,7 @@ const NoteForm = ({
   }, []);
   useEffect(() => {
     if (state.success) {
-      if (!selectedTodo && selectedSchedule!) {
+      if (!selectedTodo && !selectedSchedule) {
         queryClient.invalidateQueries({ queryKey: ["notes"] });
       } else if (selectedSchedule) {
         queryClient.invalidateQueries({
