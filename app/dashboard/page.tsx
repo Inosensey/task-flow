@@ -27,9 +27,7 @@ import { getSupabaseUser } from "@/utils/supabaseUtils";
 
 // Types
 import { TableRow } from "@/Types/database.types";
-import {
-  todoListDetails,
-} from "@/Types/todoListTypes";
+import { todoListDetails } from "@/Types/todoListTypes";
 
 const Page = async () => {
   const userData = await getSupabaseUser();
@@ -38,27 +36,27 @@ const Page = async () => {
   const currentDay = getCurrentDay();
 
   let apiRootUrl;
-  if(process.env.NODE_ENV === "development") {
-    apiRootUrl = process.env.NEXT_DEV_URL
+  if (process.env.NODE_ENV === "development") {
+    apiRootUrl = process.env.NEXT_DEV_URL;
   } else {
-    apiRootUrl = process.env.NEXT_PROD_URL
+    apiRootUrl = process.env.NEXT_PROD_URL;
   }
-  
+
   // Fetch
   const resetTodoListRes = await resetTodoLists();
   let todoList;
   let schedules;
-  if(resetTodoListRes) {
+  if (resetTodoListRes) {
     const [schedulesData, todoLists] = await Promise.all([
       fetch(`${apiRootUrl}api/supabase/getSchedules?user=${userId}`, {
         headers: { cookie: headerInfo.get("cookie")! },
         next: { tags: ["schedules"] },
-        cache: "force-cache"
+        cache: "force-cache",
       }),
       fetch(`${apiRootUrl}api/supabase/getTodoList?user=${userId}`, {
         headers: { cookie: headerInfo.get("cookie")! },
         next: { tags: ["todolists"] },
-        cache: "force-cache"
+        cache: "force-cache",
       }),
     ]);
     todoList = await todoLists.json();
@@ -68,19 +66,20 @@ const Page = async () => {
       fetch(`${apiRootUrl}api/supabase/getSchedules?user=${userId}`, {
         headers: { cookie: headerInfo.get("cookie")! },
         next: { tags: ["schedules"] },
-        cache: "force-cache"
+        cache: "force-cache",
       }),
       fetch(`${apiRootUrl}api/supabase/getTodoList?user=${userId}`, {
         headers: { cookie: headerInfo.get("cookie")! },
         next: { tags: ["todolists"] },
-        cache: "force-cache"
+        cache: "force-cache",
       }),
     ]);
     todoList = await todoLists.json();
     schedules = await schedulesData.json();
   }
 
-  const unsortedTodoList: todoListDetails[] = todoList.response.unsortedTodoList;
+  const unsortedTodoList: todoListDetails[] =
+    todoList.response.unsortedTodoList;
   const formattedTodoList = unsortedTodoList.filter(
     (details: todoListDetails) =>
       details.Frequencies.frequency === currentDay ||
@@ -93,17 +92,15 @@ const Page = async () => {
     (details: todoListDetails) => details.TodoListStatus.status === "Active"
   );
 
-  const currentDaySchedules = getCurrentDaySchedules(
-    schedules.schedules,
-    ""
-  );schedules
+  const currentDaySchedules = getCurrentDaySchedules(schedules.schedules, "");
+  schedules;
   const currentWeekSchedules = getCurrentWeekSchedules(schedules.schedules);
 
   return (
     <div className="flex flex-col mx-auto phone:w-full tablet:w-10/12 laptop:max-w-[950px] bg-Primary">
       <div className="phone:w-full tablet:max-w-[900px]">
         <Header headerName="Overview" Icon={MaterialSymbolsOverviewOutline} />
-        <div className="flex gap-4 phone:flex-col mx-auto phone:w-11/12">
+        <div className="flex gap-4 phone:flex-col mx-auto phone:w-11/12 tablet:w-full">
           <OverviewSection
             OverviewTitle="Today's Schedules"
             Icon={MaterialSymbolsCalendarMonthOutlineRounded}

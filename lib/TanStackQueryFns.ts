@@ -7,10 +7,14 @@ import { getCurrentDay } from "@/utils/useDate";
 import { useSupabase } from "@/utils/useSupabaseClient";
 
 // Types
-import { ScheduleDetails } from "@/Types/scheduleType";
 import { noteType } from "@/Types/noteTypes";
 import { TableRow } from "@/Types/database.types";
 
+export const getUserData = async () => {
+  const supabase = useSupabase;
+  const session = await supabase.auth.getUser();
+  return session
+}
 export const getPersonalInfo = async () => {
   const supabase = useSupabase;
   const user = await supabase.auth.getUser();

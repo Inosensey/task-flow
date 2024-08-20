@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useFormState } from "react-dom";
+import { useQuery } from "@tanstack/react-query";
 
 // Actions
 import { mutateEmail } from "@/actions/settingsAction";
+
+// Lib
+import { getUserData } from "@/lib/TanStackQueryFns";
 
 // store
 import { useFormStore } from "@/store/useFormStore";
@@ -30,6 +34,7 @@ interface props {
 interface inputTypes {
   currentEmail: string;
   newEmail: string;
+  userEmail?: string
 }
 
 // Variants
@@ -71,14 +76,25 @@ const EmailChangeForm = ({ setShowEmailChangeForm }: props) => {
   const { setValidation, validations, resetValidation, formAction } =
     useFormStore();
 
+  // Use Queries
+  let { data: userData } = useQuery({
+    queryKey: ["userData"],
+    queryFn: getUserData,
+  });
+
   // States
   const [state, action] = useFormState(mutateEmail, useFormStateInitials);
   const [input, setInput] = useState<inputTypes>(inputInitial);
   const [isPending, setIsPending] = useState<boolean>(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState<boolean>(false);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    const validationParams = {
+    let validationParams: {
+      value: string;
+      stateName: string;
+      currentEmail?: string;
+    } = {
       value: value,
       stateName: name,
     };
@@ -87,7 +103,9 @@ const EmailChangeForm = ({ setShowEmailChangeForm }: props) => {
       ...prev,
       [name]: value,
     }));
-
+    if (name === "currentEmail") {
+      validationParams.currentEmail = userData?.data.user?.email;
+    }
     const result: validation = FormValidation(validationParams);
     setValidation(result);
   };
@@ -97,16 +115,31 @@ const EmailChangeForm = ({ setShowEmailChangeForm }: props) => {
     const fieldsToCheck = ["currentEmail", "newEmail"];
     let formValues: inputTypes & { [key: string]: string } =
       useFormSerialize(event);
+      formValues.userEmail = userData?.data.user?.email;
     if (!useFormValidation(fieldsToCheck, formValues, setValidation)) {
       event.preventDefault();
       setIsPending(false);
     }
   };
 
+  useEffect(() => {
+    if (state.success) {
+      setShowSuccessMessage(true)
+      setIsPending(false);
+      setInput(inputInitial)
+    } else {
+      setShowSuccessMessage(false)
+      setIsPending(false);
+      setInput(inputInitial)
+    }
+  }, [state]);
+
   return (
     <Overlay>
       <motion.form
         variants={popUpVariants}
+        onSubmit={useHandleFormSubmit}
+        action={action}
         initial="hidden"
         animate="show"
         exit="hidden"
@@ -145,6 +178,16 @@ const EmailChangeForm = ({ setShowEmailChangeForm }: props) => {
             valid={validations?.newEmail?.valid}
             validationMessage={validations?.newEmail?.validationMessage}
           />
+          {showSuccessMessage && (
+            <div className="phone:w-[96%] mdphone:w-11/12 p-1 border-2 border-LightPrimary">
+              <p className="text-[0.75rem] text-LightPrimary">
+                We’ve sent a confirmation email to your new address. Please
+                check your inbox and click the link to verify your new email.
+                Your email change will be completed once you confirm.
+              </p>
+            </div>
+          )}
+
           <div>
             <motion.button
               whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}

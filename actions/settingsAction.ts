@@ -124,13 +124,25 @@ const updateProfileInformation = async (
 export const mutateEmail = async (
   prevState: useFormStateType,
   formData: FormData) => {
+    const supabase = createClient();
     try {
-  
+      const newEmail = formData.get("newEmail") as string;
+      const { data, error } = await supabase.auth.updateUser({
+        email: newEmail
+      })
       
+      if(error) {
+        return {
+          success: false,
+          error: true,
+          data: [error],
+          message: "There is an error updating your Email",
+        };
+      }
       return {
         success: true,
         error: false,
-        data: [],
+        data: [data],
         message: "",
       };
     } catch (error) {
@@ -138,7 +150,7 @@ export const mutateEmail = async (
         success: false,
         error: true,
         data: [],
-        message: "There is an error creating new account",
+        message: "There is an error updating your Email",
       };
     }
 }

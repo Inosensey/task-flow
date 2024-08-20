@@ -2,6 +2,7 @@ type params = {
   value: string;
   stateName: string;
   confirmPassword?: string;
+  currentEmail?: string
 };
 type validationInfo = {
   validationName: string;
@@ -159,19 +160,29 @@ const validateUsername = (data: params): validationInfo => {
 const validateEmail = (data: params): validationInfo => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  if (emailRegex.test(data.value)) {
-    return (validationInfo = {
-      validationName: data.stateName,
-      valid: true,
-      validationMessage: "",
-    });
-  }
-
+  if (!emailRegex.test(data.value)) {
   return (validationInfo = {
     validationName: data.stateName,
     valid: false,
     validationMessage: "Email is invalid",
   });
+  }
+
+  if(data.stateName === "currentEmail") {
+    if(data.value !== data.currentEmail) {
+      return (validationInfo = {
+        validationName: data.stateName,
+        valid: false,
+        validationMessage: "Email is not the same as the Current Email",
+      });
+    }
+  }
+
+    return (validationInfo = {
+      validationName: data.stateName,
+      valid: true,
+      validationMessage: "",
+    });
 };
 
 const validatePassword = (data: params): validationInfo => {

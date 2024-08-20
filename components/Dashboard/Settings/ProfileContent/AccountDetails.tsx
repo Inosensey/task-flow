@@ -5,14 +5,16 @@ import { useQuery } from "@tanstack/react-query";
 // Zustand Store
 import { useFormStore } from "@/store/useFormStore";
 
+// Libs
+import { getUserData, getUserInfo } from "@/lib/TanStackQueryFns";
+
 // Components
 import TabContentContainer from "../TabContentContainer";
+import EmailChangeForm from "./EmailChangeForm";
 
 // Types
 import { UserResponse } from "@supabase/supabase-js";
 import { TableRow } from "@/Types/database.types";
-import { getUserInfo } from "@/lib/TanStackQueryFns";
-import EmailChangeForm from "./EmailChangeForm";
 
 type profileDetailsType = {
   email: string;
@@ -80,7 +82,10 @@ const AccountDetails = ({ User, userInfo }: props) => {
     queryFn: getUserInfo,
     initialData: userInfo,
   });
-
+  useQuery({
+    queryKey: ["userSession"],
+    queryFn: getUserData,
+  });
   // Dynamic Initials
   const profileDetailsInitials: profileDetailsType = {
     email: User.data.user?.email!,
@@ -101,7 +106,6 @@ const AccountDetails = ({ User, userInfo }: props) => {
     const { name, value } = event.target;
     setProfileDetails((prev) => ({ ...prev, [name]: value }));
   };
-  console.log(User);
   // const { data, error } = await supabase.auth.updateUser({
   //   email: 'new@email.com'
   // })
@@ -113,8 +117,8 @@ const AccountDetails = ({ User, userInfo }: props) => {
             <motion.div
               key="notEditing"
               layout
-              variants={isNotEditingVariants}
-              initial="initial"
+                variants={isNotEditingVariants}
+                initial="initial"
               animate="animate"
               exit="exit"
               className="flex flex-col gap-2"

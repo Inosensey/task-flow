@@ -10,7 +10,7 @@ module.exports = {
       phone: '280px',
       mdphone: '420px',
       tablet: '481px',
-      laptop: '769px',
+      laptop: '992px',
       desktop: '1280px',
       larger: '1920px'
     },
