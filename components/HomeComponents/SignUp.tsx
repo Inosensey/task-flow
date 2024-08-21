@@ -178,7 +178,18 @@ const SignUp = ({ setCurrentForm }: props) => {
               </motion.button>
             )}
           </div>
-        </form>
+        </form>        
+        <div className="text-center mx-auto mt-3 w-52">
+          <p className="phone:text-sm w-max">
+            Already have an account?{" "}
+            <span
+              onClick={() => setCurrentForm("Sign In")}
+              className="cursor-pointer underline text-LightPrimary"
+            >
+              Sign In
+            </span>
+          </p>
+        </div>
       </section>
     </>
   );

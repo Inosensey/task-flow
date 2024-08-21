@@ -2,6 +2,7 @@
 
 import { cookies, headers } from "next/headers";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 // Components
 import OverviewSection from "@/components/Dashboard/OverviewSection";
@@ -31,6 +32,9 @@ import { todoListDetails } from "@/Types/todoListTypes";
 
 const Page = async () => {
   const userData = await getSupabaseUser();
+  if(!userData.data.user) {
+    redirect("/");
+  }
   const userId = userData.data.user!.id;
   const headerInfo = headers();
   const currentDay = getCurrentDay();

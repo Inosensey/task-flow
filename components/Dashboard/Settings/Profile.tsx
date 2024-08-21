@@ -13,7 +13,7 @@ interface props {
 
 const Profile = ({ User, personalInfo, userInfo }: props) => {
   return (
-    <div className="mt-2 flex flex-col gap-2">
+    <div className="mt-2 flex flex-col gap-2 laptop:flex-row">
       <AccountDetails
         User={User}
         userInfo={userInfo}

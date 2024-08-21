@@ -25,6 +25,9 @@ interface sortedTodoListInterface {
 
 const page = async () => {
   const userData = await getSupabaseUser();
+  if(!userData.data.user) {
+    return
+  }
   const userId = userData.data.user!.id;
   const headerInfo = headers();
 

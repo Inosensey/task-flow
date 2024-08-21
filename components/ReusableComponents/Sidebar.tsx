@@ -93,14 +93,6 @@ const Sidebar = () => {
     }
   };
 
-  useEffect(() => {
-    if (window.innerWidth >= 769) {
-      setShowSideBar(true);
-    } else {
-      setShowSideBar(false);
-    }
-  }, []);
-
   return (
     <>
       <Loading
@@ -126,7 +118,7 @@ const Sidebar = () => {
                 <li
                   className="select-none"
                   onClick={() => {
-                    if (window.innerWidth <= 768) {
+                    if (window.innerWidth <= 991) {
                       sidebarAnimation.start("hidden");
                       setShowSideBar(false);
                     }
@@ -138,7 +130,7 @@ const Sidebar = () => {
               <Link href={"/dashboard/schedules"}>
                 <li
                   onClick={() => {
-                    if (window.innerWidth <= 768) {
+                    if (window.innerWidth <= 991) {
                       sidebarAnimation.start("hidden");
                       setShowSideBar(false);
                     }
@@ -153,7 +145,7 @@ const Sidebar = () => {
               <Link href={"/dashboard/todolist"}>
                 <li
                   onClick={() => {
-                    if (window.innerWidth <= 768) {
+                    if (window.innerWidth <= 991) {
                       sidebarAnimation.start("hidden");
                       setShowSideBar(false);
                     }
@@ -166,7 +158,7 @@ const Sidebar = () => {
               <Link href={"/dashboard/notes"}>
                 <li
                   onClick={() => {
-                    if (window.innerWidth <= 768) {
+                    if (window.innerWidth <= 991) {
                       sidebarAnimation.start("hidden");
                       setShowSideBar(false);
                     }
@@ -187,7 +179,7 @@ const Sidebar = () => {
               <Link href={"/dashboard/settings"}>
                 <li
                   onClick={() => {
-                    if (window.innerWidth <= 768) {
+                    if (window.innerWidth <= 991) {
                       sidebarAnimation.start("hidden");
                       setShowSideBar(false);
                     }

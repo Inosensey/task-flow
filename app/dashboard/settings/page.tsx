@@ -1,5 +1,5 @@
 import React from "react";
-import { getSupabaseSession, getSupabaseUser } from "@/utils/supabaseUtils";
+import { getSupabaseUser } from "@/utils/supabaseUtils";
 
 // Components
 import Header from "@/components/Dashboard/Header";
@@ -11,6 +11,9 @@ import { headers } from "next/headers";
 
 const Page = async () => {
   const userData = await getSupabaseUser();
+  if(!userData.data.user) {
+    return
+  }
   const userId = userData.data.user!.id;
   const headerInfo = headers();
   let apiRootUrl;

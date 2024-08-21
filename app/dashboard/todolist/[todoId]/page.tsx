@@ -12,6 +12,9 @@ interface props {
 const Page = async ({ params }: props) => {
   const headerInfo = headers();  
   const userData = await getSupabaseUser();
+  if(!userData.data.user) {
+    return
+  }
   const userId = userData.data.user!.id;
 
   let apiRootUrl;

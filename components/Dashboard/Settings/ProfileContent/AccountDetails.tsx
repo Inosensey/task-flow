@@ -111,42 +111,44 @@ const AccountDetails = ({ User, userInfo }: props) => {
   // })
   return (
     <>
-      <TabContentContainer header="Account Details">
-        <AnimatePresence mode="wait">
-          <motion.div className="flex flex-col gap-2 mt-1">
-            <motion.div
-              key="notEditing"
-              layout
+      <div className="laptop: w-[50%]">
+        <TabContentContainer header="Account Details">
+          <AnimatePresence mode="wait">
+            <motion.div className="flex flex-col gap-2 mt-1">
+              <motion.div
+                key="notEditing"
+                layout
                 variants={isNotEditingVariants}
                 initial="initial"
-              animate="animate"
-              exit="exit"
-              className="flex flex-col gap-2"
-            >
-              <div className="flex items-center gap-4 phone:w-[96%] mdphone:w-11/12">
-                <div>
-                  <label className="phone:text-sm">Email:</label>
-                  <p className="w-full text-white phone:text-sm">
-                    {User.data.user?.email}
+                animate="animate"
+                exit="exit"
+                className="flex flex-col gap-2"
+              >
+                <div className="flex items-center gap-4 phone:w-[96%] mdphone:w-11/12">
+                  <div>
+                    <label className="phone:text-sm laptop:phone:text-base text-LightPrimary underline font-semibold">Email:</label>
+                    <p className="w-full text-white phone:text-sm">
+                      {User.data.user?.email}
+                    </p>
+                  </div>
+                  <p
+                    onClick={() => setIsEmailEditing(true)}
+                    className="phone:text-sm underline text-LightPrimary cursor-pointer"
+                  >
+                    Change Email
                   </p>
                 </div>
-                <p
-                  onClick={() => setIsEmailEditing(true)}
-                  className="phone:text-sm underline text-LightPrimary cursor-pointer"
-                >
-                  Change Email
-                </p>
-              </div>
-              <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
-                <label className="phone:text-sm">Username:</label>
-                <p className="w-full text-white phone:text-sm">
-                  {userInfoQueryData[0].username}
-                </p>
-              </div>
+                <div className="flex flex-col phone:w-[96%] mdphone:w-11/12">
+                  <label className="phone:text-sm laptop:phone:text-base text-LightPrimary underline font-semibold">Username:</label>
+                  <p className="w-full text-white phone:text-sm">
+                    {userInfoQueryData[0].username}
+                  </p>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        </AnimatePresence>
-      </TabContentContainer>
+          </AnimatePresence>
+        </TabContentContainer>
+      </div>
 
       <AnimatePresence initial={false} mode="wait" onExitComplete={() => null}>
         {isEmailEditing && (
