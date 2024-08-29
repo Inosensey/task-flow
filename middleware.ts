@@ -8,10 +8,13 @@ import { supabaseAuth } from "./utils/cookiesUtils";
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   // const auth: any = getCookieAuth();
-  const auth: any = supabaseAuth(request);
+  // const auth: any = supabaseAuth(request);
+
+  // console.log('auth', request.cookies.getAll());
+  // console.log('request', request.cookies.getAll());
   // Protected routes
   if (request.nextUrl.pathname.startsWith("/dashboard")) {
-    if (auth === undefined) {
+    if (request.cookies.getAll().length === 0) {
       return NextResponse.rewrite(new URL("/", request.url));
     }
   }

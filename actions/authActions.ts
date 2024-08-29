@@ -192,6 +192,31 @@ export const loginAuthWithEmailPass = async (credentials: credentials) => {
   }
 };
 
+export const loginWithThirdParty = async (provider: string) => {
+  let nextUrl;
+  if (process.env.NODE_ENV === "development") {
+    nextUrl = `${process.env.NEXT_DEV_URL}auth/callback?next=/dashboard`;
+  } else {
+    nextUrl = `${process.env.NEXT_PROD_URL}auth/callback?next=/dashboard`;
+  }
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: nextUrl,
+        queryParams: {next: "/dashboard"}
+      }
+    })
+    if (error) return returnError("Login Failed", error.message);
+
+    return returnSuccess("Login Successfully", data.url);
+  } catch (error) {
+    return returnError("Login Failed", error);
+  }
+
+}
+
 export const signOut = async () => {
   try {
     // const cookieStore = cookies();

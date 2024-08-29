@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 
 // Icons
 import SolarChecklistMinimalisticBroken from "@/Icones/SolarChecklistMinimalisticBroken";
+import MdiGithub from "@/Icones/MdiGithub";
+import TablerBrandGoogle from "@/Icones/TablerBrandGoogle";
 
 // Actions
-import { loginAuthWithEmailPass } from "@/actions/authActions";
+import { loginAuthWithEmailPass, loginWithThirdParty } from "@/actions/authActions";
 
 // Utils
 import { useFormSerialize } from "@/utils/formUtils";
@@ -16,6 +18,7 @@ import CarbonLogin from "@/Icones/CarbonLogin";
 
 // Components
 import Loading from "../ReusableComponents/Loading/Loading";
+import ThirdPartyLoginButton from "./ThirdPartyLoginButton";
 
 // Import fonts
 const playFairDisplay = Playfair_Display({
@@ -50,6 +53,11 @@ type loginError = {
   isError: boolean,
   errorMessage:any
 }
+interface mutateProps  {
+  credentials?: credentials,
+  loginType: string,
+  provider?: string,
+}
 
 const SignIn = ({ setCurrentForm }: props) => {
   // Initialize useRouter
@@ -73,12 +81,16 @@ const SignIn = ({ setCurrentForm }: props) => {
 
   // Mutation
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
-    mutationFn: (credentials: credentials) => {
+    mutationFn: ({credentials, loginType, provider}:mutateProps) => {
       setLoginProcessInfo({
         isLoading: true,
         message: "Authenticating Your Credentials 🔍",
       });
-      return loginAuthWithEmailPass(credentials);
+      if(loginType === "loginWithEmail") {
+        return loginAuthWithEmailPass(credentials!);
+      } {
+        return loginWithThirdParty(provider!);
+      }
     },
     onSuccess: (data) => {
       console.log(data);
@@ -97,15 +109,19 @@ const SignIn = ({ setCurrentForm }: props) => {
         isLoading: true,
         message: "Success! Redirecting to Your Workspace 🛠️",
       });
-      queryClient.setQueryData(["user-session"], data);
-      router.push("/dashboard");
+      // queryClient.setQueryData(["user-session"], data);
+      // router.push("/dashboard");
     },
   });
+
+  const useLoginWithThirdParty = (loginType: string, provider: string) => {
+    mutate({loginType:loginType, provider: provider});
+  }
 
   const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formValues: credentials = useFormSerialize(event);
-    mutate(formValues);
+    mutate({credentials: formValues, loginType:"loginWithEmail"});
   };
   return (
     <>
@@ -114,7 +130,7 @@ const SignIn = ({ setCurrentForm }: props) => {
         message={loginProcessInfo.message}
       />
 
-      <section className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:h-[390px] phone:w-11/12 tablet:max-w-[420px]">
+      <section className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:h-[410px] phone:w-11/12 tablet:max-w-[420px]">
         <div className="flex items-center gap-2">
           <h1
             className={`${poppins.className} text-LightPrimary font-bold text-2xl`}
@@ -161,6 +177,13 @@ const SignIn = ({ setCurrentForm }: props) => {
             </motion.button>
           </div>
         </form>
+        <div className="flex flex-col items-center">
+          <p className="max-w-max phone:text-sm text-LightPrimary">Or Sign in Using</p>
+          <div className="flex gap-2">
+            <ThirdPartyLoginButton mutateFn={useLoginWithThirdParty} buttonName="Google" provider="google" Icon={TablerBrandGoogle} backgroundColor="#34A853" />
+            <ThirdPartyLoginButton mutateFn={useLoginWithThirdParty} buttonName="Github" provider="github" Icon={MdiGithub} backgroundColor="#181717" />
+          </div>
+        </div>
         <div className="text-center absolute bottom-1 left-[50%] -translate-x-[50%] w-52">
           <p className="phone:text-sm w-max">
             Don&apos;t have an account yet?{" "}

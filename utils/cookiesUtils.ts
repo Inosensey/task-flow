@@ -18,8 +18,11 @@ export const supabaseAuth = (request:NextRequest) => {
   const cookieStore = request.cookies
   const cookieList = cookieStore.getAll();
   let auth;
+  if(!cookieList) return 
+  console.log("cookieList", cookieList)
   cookieList.map((cookie) => {
-    auth = JSON.parse(cookie.value);
+    // auth = JSON.parse(cookie.value);
+    // console.log(cookie.name ,cookie.value);
   });
   return auth;
 }
