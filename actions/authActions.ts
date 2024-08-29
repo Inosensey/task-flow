@@ -36,6 +36,7 @@ type personalInfo = nameInfo & additionalInfo & accountInfo;
 import { useFormStateType } from "@/Types/formStates";
 import { TableInsert } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
+import { Provider } from "react";
 
 export const signIn = async (
   prevState: useFormStateType,
@@ -192,7 +193,7 @@ export const loginAuthWithEmailPass = async (credentials: credentials) => {
   }
 };
 
-export const loginWithThirdParty = async (provider: string) => {
+export const loginWithThirdParty = async (providerString: any) => {
   let nextUrl;
   if (process.env.NODE_ENV === "development") {
     nextUrl = `${process.env.NEXT_DEV_URL}auth/callback?next=/dashboard`;
@@ -201,8 +202,9 @@ export const loginWithThirdParty = async (provider: string) => {
   }
   try {
     const supabase = createClient();
+    const provider = providerString;
     const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: provider,
       options: {
         redirectTo: nextUrl,
         queryParams: {next: "/dashboard"}
@@ -210,7 +212,12 @@ export const loginWithThirdParty = async (provider: string) => {
     })
     if (error) return returnError("Login Failed", error.message);
 
-    return returnSuccess("Login Successfully", data.url);
+    const response: {redirectLink: string, loginType: string} = {
+      redirectLink: data.url,
+      loginType: "thirdParty"
+    }
+
+    return returnSuccess<{redirectLink: string, loginType: string}>("Login Successfully", response);
   } catch (error) {
     return returnError("Login Failed", error);
   }

@@ -94,6 +94,7 @@ const SignIn = ({ setCurrentForm }: props) => {
     },
     onSuccess: (data) => {
       console.log(data);
+      const res:any = data.Response; 
       if (data.Status === "Error") {
         setLoginError({
           isError: true,
@@ -109,8 +110,12 @@ const SignIn = ({ setCurrentForm }: props) => {
         isLoading: true,
         message: "Success! Redirecting to Your Workspace 🛠️",
       });
-      // queryClient.setQueryData(["user-session"], data);
-      // router.push("/dashboard");
+      if(res.loginType === "thirdParty") {
+        router.push(res.redirectLink);
+      } else {
+        queryClient.setQueryData(["user-session"], data);
+        router.push("/dashboard");
+      }
     },
   });
 
