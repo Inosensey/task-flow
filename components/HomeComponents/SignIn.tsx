@@ -82,13 +82,17 @@ const SignIn = ({ setCurrentForm }: props) => {
   // Mutation
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
     mutationFn: ({credentials, loginType, provider}:mutateProps) => {
-      setLoginProcessInfo({
-        isLoading: true,
-        message: "Authenticating Your Credentials 🔍",
-      });
       if(loginType === "loginWithEmail") {
+        setLoginProcessInfo({
+          isLoading: true,
+          message: "Authenticating Your Credentials 🔍",
+        });
         return loginAuthWithEmailPass(credentials!);
       } {
+        setLoginProcessInfo({
+          isLoading: true,
+          message: `Redirecting to ${provider} 🔍`,
+        });
         return loginWithThirdParty(provider!);
       }
     },
@@ -106,13 +110,13 @@ const SignIn = ({ setCurrentForm }: props) => {
         });
         return
       }
-      setLoginProcessInfo({
-        isLoading: true,
-        message: "Success! Redirecting to Your Workspace 🛠️",
-      });
       if(res.loginType === "thirdParty") {
         router.push(res.redirectLink);
       } else {
+        setLoginProcessInfo({
+          isLoading: true,
+          message: "Success! Redirecting to Your Workspace 🛠️",
+        });
         queryClient.setQueryData(["user-session"], data);
         router.push("/dashboard");
       }

@@ -67,7 +67,7 @@ export const signIn = async (
       phone: personaInfo.contactNumber,
     });
     if (error) {
-      console.log(error)
+      console.log(error);
       return {
         success: true,
         error: false,
@@ -207,22 +207,28 @@ export const loginWithThirdParty = async (providerString: any) => {
       provider: provider,
       options: {
         redirectTo: nextUrl,
-        queryParams: {next: "/dashboard"}
-      }
-    })
+        queryParams: {
+          next: "/dashboard",
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
+    });
     if (error) return returnError("Login Failed", error.message);
 
-    const response: {redirectLink: string, loginType: string} = {
+    const response: { redirectLink: string; loginType: string } = {
       redirectLink: data.url,
-      loginType: "thirdParty"
-    }
+      loginType: "thirdParty",
+    };
 
-    return returnSuccess<{redirectLink: string, loginType: string}>("Login Successfully", response);
+    return returnSuccess<{ redirectLink: string; loginType: string }>(
+      "Login Successfully",
+      response
+    );
   } catch (error) {
     return returnError("Login Failed", error);
   }
-
-}
+};
 
 export const signOut = async () => {
   try {
