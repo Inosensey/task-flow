@@ -100,6 +100,7 @@ const Sidebar = () => {
         message={logoutProcessInfo.message}
       />
       <motion.div
+        data-testid="sidebar"
         variants={sidebarVariant}
         animate={sidebarAnimation}
         // initial={showSideBar ? "show" : "hidden"}
