@@ -1,9 +1,7 @@
 "use server";
-import { NextResponse } from 'next/server';
 import DisplayError from '@/components/authComponents/DisplayError';
 
-const page = (request:Request) => {
-    console.log(request.url)
+const page = () => {
   return (
     <div>Auth Code Error display
         <div>
