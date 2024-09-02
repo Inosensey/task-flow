@@ -1,20 +1,24 @@
-"use client"
+"use client";
 
-import React from 'react'
-import { usePathname } from 'next/navigation'
+import React, { useEffect, useState } from "react";
 
 const DisplayError = () => {
-    const pathname = usePathname()
-    const params = new URLSearchParams(window.location.hash.slice())
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.hash.slice());
+    if (typeof window !== undefined) {
+      setErrorCode(params.get("#error"));
+      setErrorDesc(params.get("error_description"));
+    }
+  }, []);
 
-    const errorCode = params.get('#error')
-    const errorDesc = params.get('error_description')
+  const [errorCode, setErrorCode] = useState<string | null>("");
+  const [errorDesc, setErrorDesc] = useState<string | null>("");
   return (
     <div>
       <p>Error: {errorCode}</p>
       <p>Error Description: {errorDesc}</p>
     </div>
-  )
-}
+  );
+};
 
-export default DisplayError
+export default DisplayError;
