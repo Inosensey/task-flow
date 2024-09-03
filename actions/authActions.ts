@@ -38,10 +38,16 @@ import { TableInsert } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
 import { Provider } from "react";
 
-export const signIn = async (
+export const signUp = async (
   prevState: useFormStateType,
   formData: FormData
 ) => {
+  let rootUrl;
+  if (process.env.NODE_ENV === "development") {
+    rootUrl = process.env.NEXT_DEV_URL;
+  } else {
+    rootUrl = process.env.NEXT_PROD_URL;
+  }
   try {
     const supabase = createClient();
     let result;
@@ -65,6 +71,9 @@ export const signIn = async (
       email: personaInfo.email,
       password: personaInfo.password,
       phone: personaInfo.contactNumber,
+      options: {
+        emailRedirectTo: `${rootUrl}dashboard`
+      }
     });
     if (error) {
       console.log(error);

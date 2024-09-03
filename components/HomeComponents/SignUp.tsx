@@ -2,9 +2,10 @@ import React, { useState, CSSProperties, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios, { Axios } from "axios";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 // Actions
-import { signIn } from "@/actions/authActions";
+import { signUp } from "@/actions/authActions";
 
 // Components
 import FirstStep from "./SignUpSteps/FirstStep";
@@ -59,11 +60,14 @@ const useFormStateInitials: useFormStateType = {
 };
 
 const SignUp = ({ setCurrentForm }: props) => {
+  // Initialize useRouter
+  const router = useRouter();
+
   // Initialize use query
   const queryClient = useQueryClient();
 
   // UseFormState
-  const [state, formAction] = useFormState(signIn, useFormStateInitials);
+  const [state, formAction] = useFormState(signUp, useFormStateInitials);
 
   // States
   const [isPending, setIsPending] = useState<boolean>(false);
@@ -97,20 +101,23 @@ const SignUp = ({ setCurrentForm }: props) => {
 
   useEffect(() => {
     if (state.success) {
-    setIsPending(false);
+      <Loading
+        isLoading={true}
+        message="Success! Redirecting to Your Workspace 🛠️"
+      />;
+      queryClient.setQueryData(["user-session"], state.data);
+      router.push("/dashboard");
+    } else {
+      setIsPending(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   return (
     <>
-      {isPending ? (
+      {isPending && (
         <Loading
           isLoading={true}
-          message="Setting Up Your Task Command Center 🚀"
-        />
-      ) : (
-        <Loading
-          isLoading={false}
           message="Setting Up Your Task Command Center 🚀"
         />
       )}
@@ -178,7 +185,7 @@ const SignUp = ({ setCurrentForm }: props) => {
               </motion.button>
             )}
           </div>
-        </form>        
+        </form>
         <div className="text-center mx-auto mt-3 w-52">
           <p className="phone:text-sm w-max">
             Already have an account?{" "}

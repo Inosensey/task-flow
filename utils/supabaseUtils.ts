@@ -22,7 +22,6 @@ export const getSupabaseUser = async () => {
     }
   );
   const user = await supabase.auth.getUser();
-
   return user;
 };
 

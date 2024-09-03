@@ -10,7 +10,10 @@ import MdiGithub from "@/Icones/MdiGithub";
 import TablerBrandGoogle from "@/Icones/TablerBrandGoogle";
 
 // Actions
-import { loginAuthWithEmailPass, loginWithThirdParty } from "@/actions/authActions";
+import {
+  loginAuthWithEmailPass,
+  loginWithThirdParty,
+} from "@/actions/authActions";
 
 // Utils
 import { useFormSerialize } from "@/utils/formUtils";
@@ -50,13 +53,13 @@ type credentials = {
   password: string;
 };
 type loginError = {
-  isError: boolean,
-  errorMessage:any
-}
-interface mutateProps  {
-  credentials?: credentials,
-  loginType: string,
-  provider?: string,
+  isError: boolean;
+  errorMessage: any;
+};
+interface mutateProps {
+  credentials?: credentials;
+  loginType: string;
+  provider?: string;
 }
 
 const SignIn = ({ setCurrentForm }: props) => {
@@ -81,14 +84,15 @@ const SignIn = ({ setCurrentForm }: props) => {
 
   // Mutation
   const { status, error, mutate, isPending, isSuccess, isIdle } = useMutation({
-    mutationFn: ({credentials, loginType, provider}:mutateProps) => {
-      if(loginType === "loginWithEmail") {
+    mutationFn: ({ credentials, loginType, provider }: mutateProps) => {
+      if (loginType === "loginWithEmail") {
         setLoginProcessInfo({
           isLoading: true,
           message: "Authenticating Your Credentials 🔍",
         });
         return loginAuthWithEmailPass(credentials!);
-      } {
+      }
+      {
         setLoginProcessInfo({
           isLoading: true,
           message: `Redirecting to ${provider} 🔍`,
@@ -98,7 +102,7 @@ const SignIn = ({ setCurrentForm }: props) => {
     },
     onSuccess: (data) => {
       console.log(data);
-      const res:any = data.Response; 
+      const res: any = data.Response;
       if (data.Status === "Error") {
         setLoginError({
           isError: true,
@@ -108,9 +112,9 @@ const SignIn = ({ setCurrentForm }: props) => {
           isLoading: false,
           message: "",
         });
-        return
+        return;
       }
-      if(res.loginType === "thirdParty") {
+      if (res.loginType === "thirdParty") {
         router.push(res.redirectLink);
       } else {
         setLoginProcessInfo({
@@ -124,13 +128,13 @@ const SignIn = ({ setCurrentForm }: props) => {
   });
 
   const useLoginWithThirdParty = (loginType: string, provider: string) => {
-    mutate({loginType:loginType, provider: provider});
-  }
+    mutate({ loginType: loginType, provider: provider });
+  };
 
   const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formValues: credentials = useFormSerialize(event);
-    mutate({credentials: formValues, loginType:"loginWithEmail"});
+    mutate({ credentials: formValues, loginType: "loginWithEmail" });
   };
   return (
     <>
@@ -139,7 +143,10 @@ const SignIn = ({ setCurrentForm }: props) => {
         message={loginProcessInfo.message}
       />
 
-      <section className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:h-[410px] phone:w-11/12 tablet:max-w-[420px]">
+      <section
+        data-testid="login-contianer"
+        className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:h-[410px] phone:w-11/12 tablet:max-w-[420px]"
+      >
         <div className="flex items-center gap-2">
           <h1
             className={`${poppins.className} text-LightPrimary font-bold text-2xl`}
@@ -171,7 +178,11 @@ const SignIn = ({ setCurrentForm }: props) => {
               className="bg-Secondary text-white px-2 py-3 rounded-md phone:text-sm"
             />
           </div>
-          {loginError.isError && <p className="text-Error bg-SmoothError px-2 py-1 text-sm font-semibold">{loginError.errorMessage}</p>}
+          {loginError.isError && (
+            <p className="text-Error bg-SmoothError px-2 py-1 text-sm font-semibold">
+              {loginError.errorMessage}
+            </p>
+          )}
           <div className="flex justify-center items-center">
             <motion.button
               whileHover={{
@@ -187,10 +198,24 @@ const SignIn = ({ setCurrentForm }: props) => {
           </div>
         </form>
         <div className="flex flex-col items-center">
-          <p className="max-w-max phone:text-sm text-LightPrimary">Or Sign in Using</p>
+          <p className="max-w-max phone:text-sm text-LightPrimary">
+            Or Sign in Using
+          </p>
           <div className="flex gap-2">
-            <ThirdPartyLoginButton mutateFn={useLoginWithThirdParty} buttonName="Google" provider="google" Icon={TablerBrandGoogle} backgroundColor="#34A853" />
-            <ThirdPartyLoginButton mutateFn={useLoginWithThirdParty} buttonName="Github" provider="github" Icon={MdiGithub} backgroundColor="#181717" />
+            <ThirdPartyLoginButton
+              mutateFn={useLoginWithThirdParty}
+              buttonName="Google"
+              provider="google"
+              Icon={TablerBrandGoogle}
+              backgroundColor="#34A853"
+            />
+            <ThirdPartyLoginButton
+              mutateFn={useLoginWithThirdParty}
+              buttonName="Github"
+              provider="github"
+              Icon={MdiGithub}
+              backgroundColor="#181717"
+            />
           </div>
         </div>
         <div className="text-center absolute bottom-1 left-[50%] -translate-x-[50%] w-52">
