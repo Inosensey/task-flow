@@ -121,9 +121,9 @@ const SignUp = ({ setCurrentForm }: props) => {
           message="Setting Up Your Task Command Center 🚀"
         />
       )}
-      <section className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:w-11/12 tablet:max-w-[420px]">
+      <section data-testid="signUp-container" className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:w-11/12 tablet:max-w-[420px]">
         <form action={formAction} onSubmit={useHandleFormSubmit}>
-          <div className={`${currentStep === 1 ? "block" : "hidden"}`}>
+          <div data-testid="first-step-container" className={`${currentStep === 1 ? "block" : "hidden"}`}>
             <FirstStep
               nameInfo={nameInfo}
               setNameInfo={setNameInfo}
@@ -131,7 +131,7 @@ const SignUp = ({ setCurrentForm }: props) => {
               currentStep={currentStep}
             />
           </div>
-          <div className={`${currentStep === 2 ? "block" : "hidden"}`}>
+          <div data-testid="second-step-container" className={`${currentStep === 2 ? "block" : "hidden"}`}>
             <SecondStep
               additionalInfo={additionalInfo}
               setAdditioNalInfo={setAdditionalInfo}
@@ -140,7 +140,7 @@ const SignUp = ({ setCurrentForm }: props) => {
               currentStep={currentStep}
             />
           </div>
-          <div className={`${currentStep === 3 ? "block" : "hidden"}`}>
+          <div data-testid="third-step-container" className={`${currentStep === 3 ? "block" : "hidden"}`}>
             <ThirdStep
               accountInfo={accountInfo}
               setAccountInfo={setAccountInfo}
@@ -148,7 +148,7 @@ const SignUp = ({ setCurrentForm }: props) => {
               currentStep={currentStep}
             />
           </div>
-          <div className="w-full mt-8 flex justify-center items-center gap-10">
+          <div data-testid="navigate-submit-container" className="w-full mt-8 flex justify-center items-center gap-10">
             {currentStep !== 1 && (
               <motion.button
                 type="button"
@@ -186,7 +186,7 @@ const SignUp = ({ setCurrentForm }: props) => {
             )}
           </div>
         </form>
-        <div className="text-center mx-auto mt-3 w-52">
+        <div  data-testid="signIn-button" className="text-center mx-auto mt-3 w-52">
           <p className="phone:text-sm w-max">
             Already have an account?{" "}
             <span

@@ -106,8 +106,8 @@ const ThirdStep = ({ accountInfo, setAccountInfo }: props) => {
   };
 
   return (
-    <div>
-      <div className="p-2">
+    <div data-testid="third-step">
+      <div data-testid="greetings-container" className="p-2">
         <p className="text-justify phone:text-sm">
           You&apos;re nearly there{" "}
           <span className="font-bold text-LightPrimary">Insert Name here</span>,
@@ -120,57 +120,67 @@ const ThirdStep = ({ accountInfo, setAccountInfo }: props) => {
           Account Details
         </h1>
         <div className="flex flex-col gap-2">
-          <Input
-            state={accountInfo.username}
-            type="text"
-            name="username"
-            placeholder="Enter your Username"
-            label="Username"
-            onChange={handleInputChange}
-            onBlur={handleInputBlur}
-            valid={accountDetailsValidation.username.valid}
-            validationMessage={
-              accountDetailsValidation.username.validationMessage
-            }
-          />
-          <Input
-            state={accountInfo.email}
-            type="email"
-            name="email"
-            placeholder="Enter your Email"
-            label="Email"
-            onChange={handleInputChange}
-            onBlur={handleInputBlur}
-            valid={accountDetailsValidation.email.valid}
-            validationMessage={accountDetailsValidation.email.validationMessage}
-          />
+          <div data-testid="username-input">
+            <Input
+              state={accountInfo.username}
+              type="text"
+              name="username"
+              placeholder="Enter your Username"
+              label="Username"
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              valid={accountDetailsValidation.username.valid}
+              validationMessage={
+                accountDetailsValidation.username.validationMessage
+              }
+            />
+          </div>
+          <div data-testid="email-input">
+            <Input
+              state={accountInfo.email}
+              type="email"
+              name="email"
+              placeholder="Enter your Email"
+              label="Email"
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              valid={accountDetailsValidation.email.valid}
+              validationMessage={
+                accountDetailsValidation.email.validationMessage
+              }
+            />
+          </div>
           <div className="mt-4 flex flex-col gap-2">
-            <Input
-              state={accountInfo.password}
-              type="password"
-              name="password"
-              placeholder="Enter your Password"
-              label="Password"
-              onChange={handleInputChange}
-              onBlur={handleInputBlur}
-              valid={accountDetailsValidation.password.valid}
-              validationMessage={
-                accountDetailsValidation.password.validationMessage
-              }
-            />
-            <Input
-              state={accountInfo.confirmPassword}
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm your Password"
-              label="Confirm Password"
-              onChange={handleInputChange}
-              onBlur={handleInputBlur}
-              valid={accountDetailsValidation.confirmPassword.valid}
-              validationMessage={
-                accountDetailsValidation.confirmPassword.validationMessage
-              }
-            />
+            <div data-testid="password-input">
+              <Input
+                state={accountInfo.password}
+                type="password"
+                name="password"
+                placeholder="Enter your Password"
+                label="Password"
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+                valid={accountDetailsValidation.password.valid}
+                validationMessage={
+                  accountDetailsValidation.password.validationMessage
+                }
+              />
+            </div>
+            <div data-testid="confirmPassword-input">
+              <Input
+                state={accountInfo.confirmPassword}
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm your Password"
+                label="Confirm Password"
+                onChange={handleInputChange}
+                onBlur={handleInputBlur}
+                valid={accountDetailsValidation.confirmPassword.valid}
+                validationMessage={
+                  accountDetailsValidation.confirmPassword.validationMessage
+                }
+              />
+            </div>
           </div>
         </div>
       </div>

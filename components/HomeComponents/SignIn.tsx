@@ -144,7 +144,7 @@ const SignIn = ({ setCurrentForm }: props) => {
       />
 
       <section
-        data-testid="login-contianer"
+        data-testid="signIn-container"
         className="bg-white rounded-xl text-black p-3 relative phone:mt-12 phone:h-[410px] phone:w-11/12 tablet:max-w-[420px]"
       >
         <div className="flex items-center gap-2">
@@ -160,7 +160,7 @@ const SignIn = ({ setCurrentForm }: props) => {
           className="flex flex-col phone:py-4 phone:px-2 gap-3"
           onSubmit={useHandleFormSubmit}
         >
-          <div className="flex flex-col">
+          <div data-testid="email-input" className="flex flex-col">
             <label className="phone:text-sm">Email</label>
             <input
               type="text"
@@ -169,7 +169,7 @@ const SignIn = ({ setCurrentForm }: props) => {
               className="bg-Secondary text-white px-2 py-3 rounded-md phone:text-sm"
             />
           </div>
-          <div className="flex flex-col">
+          <div data-testid="password-input" className="flex flex-col">
             <label className="phone:text-sm">Password</label>
             <input
               type="password"
@@ -183,7 +183,10 @@ const SignIn = ({ setCurrentForm }: props) => {
               {loginError.errorMessage}
             </p>
           )}
-          <div className="flex justify-center items-center">
+          <div
+            data-testid="signIn-button"
+            className="flex justify-center items-center"
+          >
             <motion.button
               whileHover={{
                 scale: 1.1,
@@ -201,7 +204,7 @@ const SignIn = ({ setCurrentForm }: props) => {
           <p className="max-w-max phone:text-sm text-LightPrimary">
             Or Sign in Using
           </p>
-          <div className="flex gap-2">
+          <div className="flex gap-2" data-testid="third-party-login">
             <ThirdPartyLoginButton
               mutateFn={useLoginWithThirdParty}
               buttonName="Google"
@@ -218,7 +221,10 @@ const SignIn = ({ setCurrentForm }: props) => {
             />
           </div>
         </div>
-        <div className="text-center absolute bottom-1 left-[50%] -translate-x-[50%] w-52">
+        <div
+          data-testid="signUp-button"
+          className="text-center absolute bottom-1 left-[50%] -translate-x-[50%] w-52"
+        >
           <p className="phone:text-sm w-max">
             Don&apos;t have an account yet?{" "}
             <span

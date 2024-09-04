@@ -49,7 +49,7 @@ const FirstStep = ({
 
   // Use Effect
   useEffect(() => {
-    if(currentStep !== 1) return
+    if (currentStep !== 1) return;
     if (
       validation.firstName.valid == null &&
       validation.lastName.valid == null
@@ -113,36 +113,44 @@ const FirstStep = ({
   };
 
   return (
-    <div className="flex flex-col items-center py-4">
-      <div className="flex flex-col items-center gap-4">
+    <div data-testid="first-step" className="flex flex-col items-center py-4">
+      <div
+        data-testid="greetings-container"
+        className="flex flex-col items-center gap-4"
+      >
         <GreetingSvg />
         <p className="phone:px-20 text-center phone:text-sm">
           Hey there, Let&apos;s start with your name
         </p>
       </div>
       <div className="mt-4 w-full flex flex-col items-center gap-3">
-        <Input
-          state={nameInfo.firstName}
-          type="text"
-          name="firstName"
-          placeholder="Enter your first name"
-          label="First Name"
-          onChange={handleInputChange}
-          onBlur={handleInputBlur}
-          valid={validation.firstName.valid}
-          validationMessage={validation.firstName.validationMessage}
-        />
-        <Input
-          state={nameInfo.lastName}
-          type="text"
-          name="lastName"
-          placeholder="Enter your last name"
-          label="Last Name"
-          onChange={handleInputChange}
-          onBlur={handleInputBlur}
-          valid={validation.lastName.valid}
-          validationMessage={validation.lastName.validationMessage}
-        />
+        <div data-testid="firstName-input">
+          <Input
+            state={nameInfo.firstName}
+            type="text"
+            name="firstName"
+            placeholder="Enter your first name"
+            label="First Name"
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            valid={validation.firstName.valid}
+            validationMessage={validation.firstName.validationMessage}
+          />
+        </div>
+
+        <div data-testid="secondName-input">
+          <Input
+            state={nameInfo.lastName}
+            type="text"
+            name="lastName"
+            placeholder="Enter your last name"
+            label="Last Name"
+            onChange={handleInputChange}
+            onBlur={handleInputBlur}
+            valid={validation.lastName.valid}
+            validationMessage={validation.lastName.validationMessage}
+          />
+        </div>
       </div>
     </div>
   );

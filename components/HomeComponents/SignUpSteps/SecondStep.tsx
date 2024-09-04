@@ -156,8 +156,8 @@ const SecondStep = ({
     }
   };
   return (
-    <div className="flex flex-col gap-4">
-      <div className="p-2">
+    <div data-testid="second-step" className="flex flex-col gap-4">
+      <div data-testid="greetings-container" className="p-2">
         <p className="text-justify phone:text-sm">
           Hello,{" "}
           <span className="font-bold text-LightPrimary">{firstName}</span>. Nice
@@ -171,7 +171,7 @@ const SecondStep = ({
         </h1>
         <div className="flex flex-col gap-1">
           <div className="flex">
-            <div className="w-16">
+            <div data-testid="age-input" className="w-16">
               <Input
                 state={additionalInfo.age}
                 type="text"
@@ -186,7 +186,7 @@ const SecondStep = ({
                 }
               />
             </div>
-            <div className="w-24">
+            <div data-testid="gender-input" className="w-24">
               <Input
                 state={additionalInfo.gender}
                 type="text"
@@ -202,19 +202,21 @@ const SecondStep = ({
               />
             </div>
           </div>
-          <Input
-            state={additionalInfo.contactNumber}
-            type="text"
-            name="contactNumber"
-            placeholder="Enter your Contact Number"
-            label="Contact Number"
-            onChange={handleInputChange}
-            onBlur={handleInputBlur}
-            valid={additionalInfoValidation.contactNumber.valid}
-            validationMessage={
-              additionalInfoValidation.contactNumber.validationMessage
-            }
-          />
+          <div data-testid="contactNumber-input">
+            <Input
+              state={additionalInfo.contactNumber}
+              type="text"
+              name="contactNumber"
+              placeholder="Enter your Contact Number"
+              label="Contact Number"
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              valid={additionalInfoValidation.contactNumber.valid}
+              validationMessage={
+                additionalInfoValidation.contactNumber.validationMessage
+              }
+            />
+          </div>
         </div>
       </div>
       <div className="flex flex-col gap-2 px-2 w-11/12">
@@ -222,42 +224,50 @@ const SecondStep = ({
           Address
         </h1>
         <div className="flex flex-col gap-2">
-          <Input
-            state={additionalInfo.country}
-            type="text"
-            name="country"
-            placeholder="Enter your Country"
-            label="Country"
-            onChange={handleInputChange}
-            onBlur={handleInputBlur}
-            valid={additionalInfoValidation.country.valid}
-            validationMessage={
-              additionalInfoValidation.country.validationMessage
-            }
-          />
-          <Input
-            state={additionalInfo.state}
-            type="text"
-            name="state"
-            placeholder="Enter your State"
-            label="State"
-            onChange={handleInputChange}
-            onBlur={handleInputBlur}
-            valid={additionalInfoValidation.state.valid}
-            validationMessage={additionalInfoValidation.state.validationMessage}
-          />
-          <Input
-            state={additionalInfo.street}
-            type="text"
-            name="street"
-            placeholder="Enter your Street"
-            label="Street"
-            onChange={handleInputChange}
-            onBlur={handleInputBlur}
-            valid={true}
-            validationMessage={""}
-          />
-          <div className="w-28">
+          <div data-testid="country-input">
+            <Input
+              state={additionalInfo.country}
+              type="text"
+              name="country"
+              placeholder="Enter your Country"
+              label="Country"
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              valid={additionalInfoValidation.country.valid}
+              validationMessage={
+                additionalInfoValidation.country.validationMessage
+              }
+            />
+          </div>
+          <div data-testid="state-input">
+            <Input
+              state={additionalInfo.state}
+              type="text"
+              name="state"
+              placeholder="Enter your State"
+              label="State"
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              valid={additionalInfoValidation.state.valid}
+              validationMessage={
+                additionalInfoValidation.state.validationMessage
+              }
+            />
+          </div>
+          <div data-testid="street-input">
+            <Input
+              state={additionalInfo.street}
+              type="text"
+              name="street"
+              placeholder="Enter your Street"
+              label="Street"
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              valid={true}
+              validationMessage={""}
+            />
+          </div>
+          <div data-testid="zip-input" className="w-28">
             <Input
               state={additionalInfo.zip}
               type="text"

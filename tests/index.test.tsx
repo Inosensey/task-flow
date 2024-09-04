@@ -11,7 +11,7 @@ jest.mock("next/navigation", () => ({
     return {
       prefetch: () => null,
     };
-  },
+  }, 
 }));
 
 describe("Sidebar", () => {
