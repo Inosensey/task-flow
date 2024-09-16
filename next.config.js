@@ -30,7 +30,9 @@ const nextConfig = {
       "https://maps.geoapify.com/v1/staticmap?style=osm-bright-smooth",
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: "AIzaSyARmMbVSukKogbhCMTP10tcJQ1HMKukf_I",
     NEXT_DEV_URL: "http://localhost:3000/",
-    NEXT_PROD_URL:"https://taskf.vercel.app/"
+    NEXT_PROD_URL:"https://taskf.vercel.app/",
+    NEXT_GOOGLE_PASS:"deqhnbzxlarqbrkc",
+    NEXT_GOOGLE_EMAIL:"dingcong.bae@gmail.com"
   },
 };
 
