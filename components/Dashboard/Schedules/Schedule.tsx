@@ -103,7 +103,7 @@ const Schedule = ({ scheduleData }: props) => {
           {scheduleData?.length !== 0 ? (
             scheduleData?.map((info: ScheduleDetails, index: number) => (
               <div key={info.id} className="px-2 flex mt-2">
-                <div className="w-max justify-start flex flex-col text-lg text-right px-2">
+                <div className="w-max justify-start flex flex-col text-base text-right px-2">
                   <p className="flex justify-end gap-1">
                     <span className="w-4">
                       <FontAwesomeIcon
@@ -138,14 +138,14 @@ const Schedule = ({ scheduleData }: props) => {
                 </div>
                 <div className="border-l-2 border-LightPrimary px-2">
                   <div>
-                    <p className="text-LightPrimary text-lg font-bold">
+                    <p className="text-LightPrimary text-base font-bold">
                       {info.title}
                     </p>
-                    <p className="text-base text-justify leading-5">
+                    <p className="text-sm text-justify leading-5">
                       {info.description}
                     </p>
                   </div>
-                  <div className="font-semibold text-base text-LightSecondary">
+                  <div className="font-semibold text-sm text-LightSecondary">
                     <p className="flex items-end">
                       <MaterialSymbolsLocationCityRounded color="#00ADB5" />
                       {info.ScheduleLocation[0].namePlace},

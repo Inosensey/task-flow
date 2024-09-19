@@ -209,6 +209,7 @@ export const loginWithThirdParty = async (providerString: any) => {
   } else {
     nextUrl = `${process.env.NEXT_PROD_URL}auth/callback?next=/dashboard`;
   }
+  
   try {
     const supabase = createClient();
     const provider = providerString;

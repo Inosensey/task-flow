@@ -31,6 +31,9 @@ import { todoListDetails } from "@/Types/todoListTypes";
 
 const Page = async () => {
   const userData = await getSupabaseUser();
+  if(!userData) {
+    return
+  }
   const userId = userData.data.user!.id;
   const headerInfo = headers();
   const currentDay = getCurrentDay();
