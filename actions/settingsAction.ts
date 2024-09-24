@@ -7,9 +7,9 @@ import { getSupabaseUser } from "@/utils/supabaseUtils";
 
 //Types
 import { useFormStateType } from "@/Types/formStates";
-import { TableUpdate } from "@/Types/database.types";
+import { TableUpdate, TableInsert } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
-import { returnResult } from "@/utils/formUtils";
+import { returnResult, useFormSerialize } from "@/utils/formUtils";
 type nameInfo = {
   firstName: string;
   lastName: string;
@@ -50,11 +50,11 @@ export const mutatePersonalInformation = async (
       email: formData.get("email") as string,
       password: formData.get("password") as string,
       username: formData.get("username") as string,
-      userId: formData.get("userId") as string
+      userId: formData.get("userId") as string,
     };
 
     result = await updateProfileInformation(personaInfo);
-    revalidateTag("personalInformation")
+    revalidateTag("personalInformation");
 
     if (result.Status === "error") {
       return {
@@ -64,7 +64,7 @@ export const mutatePersonalInformation = async (
         message: "There is an error updating your personal information",
       };
     }
-    
+
     return {
       success: true,
       error: false,
@@ -121,36 +121,84 @@ const updateProfileInformation = async (
   }
 };
 
-export const mutateEmail = async (
+export const mutatePreferences = async (
   prevState: useFormStateType,
-  formData: FormData) => {
-    const supabase = createClient();
-    try {
-      const newEmail = formData.get("newEmail") as string;
-      const { data, error } = await supabase.auth.updateUser({
-        email: newEmail
-      })
-      
-      if(error) {
-        return {
-          success: false,
-          error: true,
-          data: [error],
-          message: "There is an error updating your Email",
-        };
-      }
-      return {
-        success: true,
-        error: false,
-        data: [data],
-        message: "",
-      };
-    } catch (error) {
+  formData: FormData
+) => {
+  const supabase = createClient();
+  const userData = await getSupabaseUser();
+  const userId = userData.data.user!.id;
+
+  let formValues: FormData = {} as FormData;
+
+  formData.forEach((value, key) => {
+    formValues[key as keyof FormData] =
+      value === "True" ? true : (false as any);
+  });
+  formValues["user_id" as keyof FormData] = userId as any;
+  console.log(formValues);
+
+  try {
+    let result = await supabase
+      .from("Settings")
+      .upsert(formValues)
+      .eq("userId", userId);
+
+    if (result.error) {
       return {
         success: false,
         error: true,
-        data: [],
+        data: [result.error],
+        message: "There is an error updating your Preferences",
+      };
+    }
+    return {
+      success: true,
+      error: false,
+      data: [result.data],
+      message: "",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: true,
+      data: [],
+      message: "There is an error updating your Preferences",
+    };
+  }
+};
+
+export const mutateEmail = async (
+  prevState: useFormStateType,
+  formData: FormData
+) => {
+  const supabase = createClient();
+  try {
+    const newEmail = formData.get("newEmail") as string;
+    const { data, error } = await supabase.auth.updateUser({
+      email: newEmail,
+    });
+
+    if (error) {
+      return {
+        success: false,
+        error: true,
+        data: [error],
         message: "There is an error updating your Email",
       };
     }
-}
+    return {
+      success: true,
+      error: false,
+      data: [data],
+      message: "",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: true,
+      data: [],
+      message: "There is an error updating your Email",
+    };
+  }
+};

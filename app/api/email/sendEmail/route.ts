@@ -1,6 +1,9 @@
+import { encrypt, decrypt } from "@/utils/crypto";
+
 import { routeHandlerSupabaseIns } from "@/utils/supabaseUtils";
 import { transporter, mailOptions } from "@/utils/nodemailerConfig";
 import { formatHourTo12, getCurrentDate } from "@/utils/useDate";
+
 
 interface scheduleType {
   firstName: string;
@@ -108,8 +111,12 @@ const generateEmailContent = (schedulesData: scheduleType) => {
 };
 
 export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const SecretEmailKey = searchParams.get('secretEmailKey')?.toString();
   const supabase = routeHandlerSupabaseIns();
   const currentDate = getCurrentDate("");
+
+  if(!SecretEmailKey || SecretEmailKey !== process.env.NEXT_EMAIL_SECRET_KEY) return Response.json({ success: false, Message: "There's something wrong with the secret key", secretKey: SecretEmailKey });
   try {
     let { data, error } = await supabase
       .from("DailyNotification")
@@ -130,7 +137,7 @@ export async function GET(req: Request) {
       // console.log(schedules);
     }
 
-    return Response.json({ success: true, date: currentDate, data: data });
+    return Response.json({ success: true, data: data});
   } catch (err) {
     console.log(err);
     return Response.json({ message: err });

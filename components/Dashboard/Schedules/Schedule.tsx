@@ -136,7 +136,7 @@ const Schedule = ({ scheduleData }: props) => {
                     </div>
                   </div>
                 </div>
-                <div className="border-l-2 border-LightPrimary px-2">
+                <div className="border-l-2 w-8/12 border-LightPrimary px-2">
                   <div>
                     <p className="text-LightPrimary text-base font-bold">
                       {info.title}

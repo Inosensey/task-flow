@@ -1,9 +1,12 @@
-import React from 'react'
+// Components
+import NotificationDetails from "./PreferencesContent/NotificationDetails";
 
 const Preferences = () => {
   return (
-    <div>Preferences</div>
-  )
-}
+    <div className="mt-2 flex flex-col gap-2 laptop:flex-row">
+      <NotificationDetails />
+    </div>
+  );
+};
 
-export default Preferences
+export default Preferences;
