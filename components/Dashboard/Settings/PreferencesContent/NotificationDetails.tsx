@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Actions
 import { mutatePreferences } from "@/actions/settingsAction";
@@ -43,22 +44,30 @@ const initialAnimation = {
 
 // Types
 import { useFormStateType } from "@/Types/formStates";
+import { TableRow } from "@/Types/database.types";
 interface toggleNotificationType {
   scheduleRemainder: string;
 }
+interface props {
+  settingsInfo: TableRow<"Settings">
+}
 
-// Initials
-const toggleNotificationInit: toggleNotificationType = {
-  scheduleRemainder: "",
-};
-const useFormStateInitials: useFormStateType = {
-  success: null,
-  error: null,
-  message: "",
-  data: [],
-};
 
-const NotificationDetails = () => {
+const NotificationDetails = ({settingsInfo}:props) => {
+  // useQuery
+  const queryClient = useQueryClient();
+
+  // Initials
+  const toggleNotificationInit: toggleNotificationType = {
+    scheduleRemainder: settingsInfo ? `${settingsInfo.scheduleRemainder}` : "",
+  };
+  const useFormStateInitials: useFormStateType = {
+    success: null,
+    error: null,
+    message: "",
+    data: [],
+  };
+
   // Zustand store
   const { setValidation, validations, resetValidation, formAction } =
     useFormStore();
@@ -72,13 +81,6 @@ const NotificationDetails = () => {
   // Events
   const useHandleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     setIsPending(true);
-    // const fieldsToCheck = ["enableDailyScheduleRemainder"];
-    // let formValues: toggleNotificationType & { [key: string]: string } =
-    //   useFormSerialize(event);
-    // if (!useFormValidation(fieldsToCheck, formValues, setValidation)) {
-    //   event.preventDefault();
-    //   setIsPending(false);
-    // }
   };
   const onCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = event.target;
@@ -86,8 +88,9 @@ const NotificationDetails = () => {
     if (checked) {
       setToggleNotification((prev) => ({
         ...prev,
-        [name]: "True",
+        [name]: "true",
       }));
+      
     } else {
       setToggleNotification((prev) => ({
         ...prev,
@@ -97,8 +100,12 @@ const NotificationDetails = () => {
   };
 
   useEffect(() => {
-    console.log(state);
+    if(state.success) {
+      queryClient.invalidateQueries({queryKey: ["settingsInfo"]})
+      setIsPending(false);
+    }
     setIsPending(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   return (
@@ -127,6 +134,7 @@ const NotificationDetails = () => {
                     id="scheduleRemainder"
                     onChange={onCheckBoxChange}
                     value={toggleNotification.scheduleRemainder}
+                    defaultChecked={settingsInfo.scheduleRemainder ? true : false}
                   />
                   <label htmlFor="scheduleRemainder">
                     Enable Daily Schedule Remainder

@@ -15,7 +15,7 @@ const nextConfig = {
         hostname: "maps.geoapify.com",
       },
     ],
-  }
+  },
 };
 
 module.exports = nextConfig;

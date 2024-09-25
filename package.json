@@ -52,7 +52,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.38",
     "prisma": "^5.14.0",
-    "supabase": "^1.169.8",
+    "supabase": "^1.200.3",
     "tailwindcss": "^3.4.3",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",

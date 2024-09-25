@@ -9,7 +9,7 @@ import { getSupabaseUser } from "@/utils/supabaseUtils";
 import { useFormStateType } from "@/Types/formStates";
 import { TableUpdate, TableInsert } from "@/Types/database.types";
 import { ReturnInterface } from "@/Types/generalTypes";
-import { returnResult, useFormSerialize } from "@/utils/formUtils";
+import { returnResult } from "@/utils/formUtils";
 type nameInfo = {
   firstName: string;
   lastName: string;
@@ -129,20 +129,16 @@ export const mutatePreferences = async (
   const userData = await getSupabaseUser();
   const userId = userData.data.user!.id;
 
-  let formValues: FormData = {} as FormData;
-
-  formData.forEach((value, key) => {
-    formValues[key as keyof FormData] =
-      value === "True" ? true : (false as any);
-  });
-  formValues["user_id" as keyof FormData] = userId as any;
-  console.log(formValues);
+  let formValues: TableInsert<"Settings"> = {
+    scheduleRemainder: formData.get("scheduleRemainder") ? true : false,
+    user_id: userId
+  };
 
   try {
     let result = await supabase
       .from("Settings")
       .upsert(formValues)
-      .eq("userId", userId);
+      
 
     if (result.error) {
       return {
@@ -152,10 +148,12 @@ export const mutatePreferences = async (
         message: "There is an error updating your Preferences",
       };
     }
+    
+    revalidateTag("userSettings");
     return {
       success: true,
       error: false,
-      data: [result.data],
+      data: [],
       message: "",
     };
   } catch (error) {

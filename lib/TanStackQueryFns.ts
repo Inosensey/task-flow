@@ -40,6 +40,31 @@ export const getPersonalInfo = async () => {
   }
 };
 
+export const getSettingsInfo = async () => {
+  const supabase = useSupabase;
+  const user = await supabase.auth.getUser();
+  const userId = user.data.user!.id;
+  try {
+    let { data: settingsInfo, error } = await supabase
+      .from("Settings")
+      .select(
+        "scheduleRemainder"
+      )
+      .eq("user_id", `${userId}`);
+
+    if (error) {
+      console.log("There is an error getting your settings", error);
+      return [];
+    }
+    const response =
+      settingsInfo as unknown as TableRow<"Settings">[];
+    return response;
+  } catch (error) {
+    console.log("There is an error getting your settings", error);
+    return [];
+  }
+};
+
 export const getUserInfo = async () => {
   const supabase = useSupabase;
   const user = await supabase.auth.getUser();

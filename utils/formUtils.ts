@@ -29,7 +29,6 @@ export const useFormValidation = <T extends { [key: string]: any }>(
   let isValid = true;
   let currentEmail = "";
   fieldsToCheck.some((field) => {
-    console.log(field);
     if(field === "currentEmail") {
       currentEmail = formValues.userEmail
     }

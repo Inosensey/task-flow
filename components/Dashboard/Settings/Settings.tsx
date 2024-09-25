@@ -32,9 +32,10 @@ interface props {
   User: UserResponse;
   personalInfo: TableRow<"PersonalInformation">[];
   userInfo: TableRow<"User">[];
+  settingsInfo: TableRow<"Settings">[]
 }
 
-const Settings = ({ User, personalInfo, userInfo }: props) => {
+const Settings = ({ User, personalInfo, userInfo, settingsInfo }: props) => {
   // useState
   const [activeTab, setActiveTab] = useState<string>(tabs[0].id);
 
@@ -50,7 +51,7 @@ const Settings = ({ User, personalInfo, userInfo }: props) => {
           />
         );
       case "preferences":
-        return <Preferences />;
+        return <Preferences settingsInfo={settingsInfo} />;
 
       default:
         return "";

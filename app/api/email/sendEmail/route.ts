@@ -128,7 +128,7 @@ export async function GET(req: Request) {
       schedules.map(async (data: scheduleType) => {
         const emailContent: { text: string; html: string } =
           generateEmailContent(data);
-        await transporter.sendMail({
+          await transporter.sendMail({
           ...mailOptions,
           ...emailContent,
           subject: "Schedule Remainder",

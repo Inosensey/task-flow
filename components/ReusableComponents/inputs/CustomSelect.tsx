@@ -53,7 +53,6 @@ const CustomSelect = ({
       <div
         style={{ pointerEvents: dynamic ? (fetching ? "none" : "all") : "all" }}
         onClick={() => {
-          console.log("wew")
           if (windowCurrentWidth >= 280 && windowCurrentWidth <= 768) {
             setToggleMobileOptions && setToggleMobileOptions();
           } else {

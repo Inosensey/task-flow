@@ -101,7 +101,6 @@ const SignIn = ({ setCurrentForm }: props) => {
       }
     },
     onSuccess: (data) => {
-      console.log(data);
       const res: any = data.Response;
       if (data.Status === "Error") {
         setLoginError({

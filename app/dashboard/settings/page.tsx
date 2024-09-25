@@ -24,7 +24,7 @@ const Page = async () => {
   }
 
   // Fetch
-  const [personalInfoData, userInfoData] = await Promise.all([
+  const [personalInfoData, userInfoData, settingsInfoData] = await Promise.all([
     fetch(`${apiRootUrl}api/supabase/getPersonalInformation?user=${userId}`, {
       headers: { cookie: headerInfo.get("cookie")! },
       next: { tags: ["personalInformation"] },
@@ -35,10 +35,16 @@ const Page = async () => {
       next: { tags: ["userInformation"] },
       cache: "force-cache",
     }),
+    fetch(`${apiRootUrl}api/supabase/getUserSettings?user=${userId}`, {
+      headers: { cookie: headerInfo.get("cookie")! },
+      next: { tags: ["userSettings"] },
+      cache: "force-cache",
+    }),
   ]);
 
   const personalInfo = await personalInfoData.json();
   const userInfo = await userInfoData.json();
+  const settingsInfo = await settingsInfoData.json();
 
   return (
     <div className="mx-auto phone:w-full tablet:w-10/12 laptop:max-w-[950px]">
@@ -51,6 +57,7 @@ const Page = async () => {
           User={userData}
           personalInfo={personalInfo.response}
           userInfo={userInfo.response}
+          settingsInfo={settingsInfo.response}
         />
       </div>
     </div>
