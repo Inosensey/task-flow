@@ -135,7 +135,9 @@ export async function GET(req: Request) {
     if (data) {
       const schedules: scheduleType[] = data[0].schedules;
       for (const schedule of schedules) {
-        const emailContent: { text: string; html: string } = generateEmailContent(schedule);
+        mailOptions.to = schedule.email
+        const emailContent: { text: string; html: string } =
+          generateEmailContent(schedule);
         await transporter.sendMail({
           ...mailOptions,
           ...emailContent,
@@ -143,18 +145,8 @@ export async function GET(req: Request) {
         });
       }
     }
-    // const schedules: scheduleType = data![0].schedules[0];
-    // const emailContent: { text: string; html: string } =
-    //   generateEmailContent(schedules);
-    // await transporter.sendMail({
-    //   ...mailOptions,
-    //   ...emailContent,
-    //   subject: "Schedule Remainder",
-    // });
-
     return Response.json({
       success: true,
-      data: data,
     });
   } catch (err) {
     console.log(err);
