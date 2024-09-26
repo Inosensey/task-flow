@@ -132,31 +132,30 @@ export async function GET(req: Request) {
       .from("DailyNotification")
       .select("schedules")
       .eq("date", currentDate);
-    // if (data) {
-    //   const schedules: scheduleType[] = data[0].schedules;
-    //   schedules.map(async (data: scheduleType) => {
-    //     const emailContent: { text: string; html: string } =
-    //       generateEmailContent(data);
-    //     await transporter.sendMail({
-    //       ...mailOptions,
-    //       ...emailContent,
-    //       subject: "Schedule Remainder",
-    //     });
-    //   });
-    // }
-    const schedules: scheduleType = data![0].schedules[0];
-    const emailContent: { text: string; html: string } =
-      generateEmailContent(schedules);
-    await transporter.sendMail({
-      ...mailOptions,
-      ...emailContent,
-      subject: "Schedule Remainder",
-    });
-
-    // return Response.json({
-    //   success: true,
-    //   data: data,
+    if (data) {
+      const schedules: scheduleType[] = data[0].schedules;
+      for (const schedule of schedules) {
+        const emailContent: { text: string; html: string } = generateEmailContent(schedule);
+        await transporter.sendMail({
+          ...mailOptions,
+          ...emailContent,
+          subject: "Schedule Reminder",
+        });
+      }
+    }
+    // const schedules: scheduleType = data![0].schedules[0];
+    // const emailContent: { text: string; html: string } =
+    //   generateEmailContent(schedules);
+    // await transporter.sendMail({
+    //   ...mailOptions,
+    //   ...emailContent,
+    //   subject: "Schedule Remainder",
     // });
+
+    return Response.json({
+      success: true,
+      data: data,
+    });
   } catch (err) {
     console.log(err);
     return Response.json({ message: err });
