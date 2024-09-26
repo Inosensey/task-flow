@@ -145,10 +145,10 @@ export async function GET(req: Request) {
       });
     }
 
-    return Response.json({
-      success: true,
-      data: data,
-    });
+    // return Response.json({
+    //   success: true,
+    //   data: data,
+    // });
   } catch (err) {
     console.log(err);
     return Response.json({ message: err });
