@@ -4,7 +4,6 @@ import { routeHandlerSupabaseIns } from "@/utils/supabaseUtils";
 import { transporter, mailOptions } from "@/utils/nodemailerConfig";
 import { formatHourTo12, getCurrentDate } from "@/utils/useDate";
 
-
 interface scheduleType {
   firstName: string;
   lastName: string;
@@ -64,25 +63,31 @@ const generateEmailContent = (schedulesData: scheduleType) => {
                                 
                                 Upcoming Schedules: <br>
                                 <ul>
-                                  ${schedulesData.scheduleList.map(
-                                    (
-                                      data: {
-                                        title: string;
-                                        timeStart: string;
-                                        timeEnd: string;
-                                        description: string;
-                                      },
-                                      index: number
-                                    ) => {
-                                      return `
+                                  ${schedulesData.scheduleList
+                                    .map(
+                                      (
+                                        data: {
+                                          title: string;
+                                          timeStart: string;
+                                          timeEnd: string;
+                                          description: string;
+                                        },
+                                        index: number
+                                      ) => {
+                                        return `
                                         <li>
                                           Event ${index + 1}: ${data.title} <br>
-                                          Time: ${formatHourTo12(data.timeStart)} - ${formatHourTo12(data.timeEnd)} <br>
+                                          Time: ${formatHourTo12(
+                                            data.timeStart
+                                          )} - ${formatHourTo12(
+                                          data.timeEnd
+                                        )} <br>
                                           Description: ${data.description} <br>
                                         </li>
                                       `;
-                                    }
-                                  ).join("")}
+                                      }
+                                    )
+                                    .join("")}
                                 </ul>
                               </td>
                           </tr>
@@ -111,20 +116,22 @@ const generateEmailContent = (schedulesData: scheduleType) => {
 };
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-  const SecretEmailKey = searchParams.get('secretEmailKey')?.toString();
+  const { searchParams } = new URL(req.url);
+  const SecretEmailKey = searchParams.get("secretEmailKey")?.toString();
   const supabase = routeHandlerSupabaseIns();
   const currentDate = getCurrentDate("");
 
-  if(!SecretEmailKey || SecretEmailKey !== process.env.NEXT_EMAIL_SECRET_KEY) return Response.json({ success: false, Message: "There's something wrong with the secret key", secretKey: SecretEmailKey });
+  if (!SecretEmailKey || SecretEmailKey !== process.env.NEXT_EMAIL_SECRET_KEY)
+    return Response.json({
+      success: false,
+      Message: "There's something wrong with the secret key",
+      secretKey: SecretEmailKey,
+    });
   try {
     let { data, error } = await supabase
       .from("DailyNotification")
       .select("schedules")
       .eq("date", currentDate);
-    
-    const wew: { text: string; html: string } =
-    generateEmailContent(data![0].schedules[0]);
     if (data) {
       const schedules: scheduleType[] = data[0].schedules;
       schedules.map(async (data: scheduleType) => {
@@ -138,11 +145,10 @@ export async function GET(req: Request) {
       });
     }
 
-    return Response.json({ success: true, data: data, wew: await transporter.sendMail({
-      ...mailOptions,
-      ...wew,
-      subject: "Schedule Remainder",
-    })});
+    return Response.json({
+      success: true,
+      data: data,
+    });
   } catch (err) {
     console.log(err);
     return Response.json({ message: err });
