@@ -122,23 +122,27 @@ export async function GET(req: Request) {
       .from("DailyNotification")
       .select("schedules")
       .eq("date", currentDate);
-    let test;
-
+    
+    const wew: { text: string; html: string } =
+    generateEmailContent(data![0].schedules[0]);
     if (data) {
       const schedules: scheduleType[] = data[0].schedules;
       schedules.map(async (data: scheduleType) => {
         const emailContent: { text: string; html: string } =
           generateEmailContent(data);
-          test = await transporter.sendMail({
+        await transporter.sendMail({
           ...mailOptions,
           ...emailContent,
           subject: "Schedule Remainder",
         });
       });
-      // console.log(schedules);
     }
 
-    return Response.json({ success: true, data: data, test: test});
+    return Response.json({ success: true, data: data, wew: await transporter.sendMail({
+      ...mailOptions,
+      ...wew,
+      subject: "Schedule Remainder",
+    })});
   } catch (err) {
     console.log(err);
     return Response.json({ message: err });
